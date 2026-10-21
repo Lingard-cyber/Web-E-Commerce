@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Kepuharjo Market — etalase digital produk lokal Forkom UMKM Kalurahan Kepuharjo." />
+    <title>Kepuharjo Market — Produk Lokal, Pasar Lebih Luas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --red: #982f2e;
+        --red-deep: #742625;
+        --red-soft: #ead0c5;
+        --green: #73814d;
+        --green-dark: #4c5b38;
+        --cream: #f6f2e9;
+        --paper: #fffdf8;
+        --ink: #2f2a25;
+        --muted: #81766c;
+        --line: #e6ded4;
+        --orange: #c7794f;
+        --shadow: 0 18px 50px rgba(81, 57, 41, .11);
+        --radius: 22px;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { margin: 0; background: var(--cream); color: var(--ink); font-family: "DM Sans", system-ui, sans-serif; }
+      button, input, select { font: inherit; }
+      button { cursor: pointer; }
+      a { color: inherit; text-decoration: none; }
+      .site-shell { min-height: 100vh; }
+      .topbar { background: var(--red-deep); color: #fff9ef; font-size: 12px; letter-spacing: .04em; }
+      .topbar-inner { max-width: 1180px; margin: auto; padding: 9px 24px; display: flex; justify-content: space-between; gap: 16px; }
+      .topbar span:last-child { opacity: .75; }
+      .nav { position: sticky; top: 0; z-index: 20; background: rgba(255,253,248,.92); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(230,222,212,.8); }
+      .nav-inner { max-width: 1180px; margin: auto; padding: 18px 24px; display: flex; align-items: center; gap: 30px; }
+      .brand { display: flex; align-items: center; gap: 10px; min-width: 210px; }
+      .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--red); border-radius: 50%; color: var(--red); font-family: "Playfair Display", serif; font-size: 18px; }
+      .brand-text { line-height: .95; }
+      .brand-name { display: block; font-size: 15px; font-weight: 700; letter-spacing: .14em; }
+      .brand-sub { display: block; margin-top: 4px; color: var(--muted); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; }
+      .nav-links { display: flex; align-items: center; gap: 24px; color: #6f655e; font-size: 13px; flex: 1; }
+      .nav-links button { padding: 0; border: 0; background: none; color: inherit; }
+      .nav-links button:hover, .nav-links button.active { color: var(--red); }
+      .nav-actions { display: flex; gap: 8px; align-items: center; }
+      .icon-btn { width: 40px; height: 40px; display: grid; place-items: center; background: transparent; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); position: relative; }
+      .icon-btn:hover { border-color: var(--red); color: var(--red); }
+      .cart-count { position: absolute; top: -3px; right: -3px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 20px; background: var(--red); color: #fff; font-size: 10px; display: grid; place-items: center; }
+      .menu-btn { display: none; }
+      .view { max-width: 1180px; margin: auto; padding: 56px 24px 100px; }
+      .hero { position: relative; overflow: hidden; min-height: 530px; display: grid; grid-template-columns: 1.06fr .94fr; align-items: center; gap: 34px; padding: 62px; border-radius: 32px; background: var(--red); color: #fff9ef; }
+      .hero::before, .hero::after { content: ""; position: absolute; border: 1px solid rgba(255,255,255,.16); border-radius: 50%; pointer-events: none; }
+      .hero::before { width: 580px; height: 580px; right: -200px; bottom: -250px; }
+      .hero::after { width: 440px; height: 440px; right: -130px; bottom: -180px; }
+      .eyebrow { margin: 0 0 18px; font-size: 11px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; opacity: .78; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1, h2, h3 { font-family: "Playfair Display", Georgia, serif; font-weight: 600; }
+      h1 { max-width: 570px; margin-bottom: 18px; font-size: clamp(45px, 6vw, 78px); line-height: .98; letter-spacing: -.055em; }
+      .hero-copy p { max-width: 470px; margin-bottom: 30px; color: rgba(255,249,239,.77); font-size: 16px; line-height: 1.7; }
+      .btn { border: 0; border-radius: 99px; padding: 13px 20px; font-size: 13px; font-weight: 700; transition: transform .2s, box-shadow .2s, background .2s; }
+      .btn:hover { transform: translateY(-2px); }
+      .btn-primary { background: #fff9ef; color: var(--red); box-shadow: 0 10px 24px rgba(45,20,17,.16); }
+      .btn-dark { background: var(--ink); color: #fff; }
+      .btn-outline { border: 1px solid var(--line); background: transparent; color: var(--ink); }
+      .btn-outline-light { border: 1px solid rgba(255,255,255,.4); background: transparent; color: #fff; }
+      .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+      .hero-art { min-height: 360px; position: relative; z-index: 1; display: grid; place-items: center; }
+      .hero-image { width: 80%; height: 350px; object-fit: cover; border-radius: 150px 150px 24px 24px; filter: saturate(.8); box-shadow: 20px 24px 0 rgba(89,32,27,.22); }
+      .hero-stamp { position: absolute; left: 0; bottom: 14px; width: 125px; height: 125px; display: grid; place-items: center; padding: 20px; border: 1px solid rgba(255,255,255,.65); border-radius: 50%; background: rgba(152,47,46,.82); font-family: "Playfair Display", serif; font-size: 18px; line-height: 1.05; text-align: center; transform: rotate(-10deg); }
+      .section { padding-top: 74px; }
+      .section-head { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+      .section-head h2 { margin: 0; font-size: clamp(30px, 4vw, 48px); line-height: 1; letter-spacing: -.04em; }
+      .section-head p { max-width: 430px; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
+      .text-link { border: 0; background: none; color: var(--red); font-size: 13px; font-weight: 700; white-space: nowrap; }
+      .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+      .category-card { min-height: 190px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: end; padding: 22px; border-radius: var(--radius); color: #fff; background: var(--green); }
+      .category-card::after { content: ""; position: absolute; width: 160px; height: 160px; top: -70px; right: -30px; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; }
+      .category-card:nth-child(2) { background: var(--red); }
+      .category-card:nth-child(3) { background: #b56b48; }
+      .category-card:nth-child(4) { background: #5c6345; }
+      .category-card .number { position: absolute; top: 18px; right: 18px; font-size: 11px; opacity: .7; }
+      .category-card h3 { position: relative; z-index: 1; max-width: 150px; margin: 0 0 7px; font-size: 25px; line-height: 1; }
+      .category-card p { position: relative; z-index: 1; margin: 0; font-size: 12px; opacity: .78; }
+      .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+      .product-card { position: relative; min-width: 0; }
+      .product-image { height: 245px; overflow: hidden; position: relative; border-radius: var(--radius); background: #e5d3be; }
+      .product-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s; }
+      .product-card:hover .product-image img { transform: scale(1.04); }
+      .product-tag { position: absolute; top: 12px; left: 12px; padding: 6px 9px; border-radius: 99px; background: rgba(255,253,248,.9); color: var(--red); font-size: 10px; font-weight: 700; }
+      .like-btn { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border: 0; border-radius: 50%; background: rgba(255,253,248,.88); color: var(--red); }
+      .product-body { padding: 14px 2px 0; }
+      .product-body h3 { margin: 0 0 5px; font-family: "DM Sans", sans-serif; font-size: 15px; font-weight: 700; }
+      .product-meta { color: var(--muted); font-size: 12px; }
+      .product-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 10px; }
+      .price { color: var(--red); font-size: 15px; font-weight: 700; }
+      .add-mini { width: 30px; height: 30px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--ink); color: #fff; font-size: 18px; }
+      .story-panel { display: grid; grid-template-columns: .9fr 1.1fr; gap: 28px; align-items: stretch; padding: 28px; border-radius: 28px; background: #e8e2d4; }
+      .story-image { min-height: 330px; overflow: hidden; border-radius: 20px; }
+      .story-image img { width: 100%; height: 100%; object-fit: cover; }
+      .story-copy { display: flex; flex-direction: column; justify-content: center; padding: 20px 22px; }
+      .story-copy h2 { max-width: 520px; margin-bottom: 17px; font-size: clamp(32px, 4vw, 54px); line-height: 1; }
+      .story-copy p { max-width: 510px; margin-bottom: 24px; color: #6d655d; line-height: 1.7; }
+      .story-stats { display: flex; gap: 24px; margin-top: 20px; }
+      .stat strong { display: block; color: var(--red); font-family: "Playfair Display", serif; font-size: 32px; }
+      .stat span { color: var(--muted); font-size: 11px; }
+      .quote-panel { display: grid; grid-template-columns: 1.1fr .9fr; overflow: hidden; border-radius: 28px; background: var(--green-dark); color: #fff; }
+      .quote-copy { padding: 48px; }
+      .quote-copy h2 { max-width: 520px; margin-bottom: 22px; font-size: clamp(32px, 4vw, 54px); line-height: 1; }
+      .quote-copy blockquote { max-width: 620px; margin: 0 0 22px; font-family: "Playfair Display", serif; font-size: 23px; line-height: 1.45; }
+      .quote-copy cite { color: rgba(255,255,255,.65); font-size: 12px; font-style: normal; }
+      .quote-art { min-height: 310px; overflow: hidden; }
+      .quote-art img { width: 100%; height: 100%; object-fit: cover; opacity: .83; }
+      .benefit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+      .benefit { padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255,253,248,.55); }
+      .benefit-icon { width: 38px; height: 38px; display: grid; place-items: center; margin-bottom: 20px; border-radius: 50%; background: var(--red-soft); color: var(--red); }
+      .benefit h3 { margin-bottom: 8px; font-family: "DM Sans", sans-serif; font-size: 15px; }
+      .benefit p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+      .page-head { display: flex; justify-content: space-between; align-items: end; gap: 22px; margin-bottom: 34px; }
+      .page-head h1 { max-width: 670px; color: var(--red); margin: 0; font-size: clamp(42px, 6vw, 72px); }
+      .page-head p { max-width: 420px; margin: 0; color: var(--muted); line-height: 1.7; }
+      .filters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; }
+      .filter-select { padding: 11px 14px; border: 1px solid var(--line); border-radius: 99px; background: var(--paper); color: var(--ink); font-size: 12px; }
+      .filter-search { min-width: 250px; flex: 1; padding: 12px 16px; border: 1px solid var(--line); border-radius: 99px; background: var(--paper); outline: none; }
+      .filter-search:focus { border-color: var(--red); }
+      .result-count { margin-left: auto; color: var(--muted); font-size: 12px; }
+      .category-page-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+      .category-feature { min-height: 270px; display: flex; flex-direction: column; justify-content: end; padding: 30px; border-radius: 28px; color: #fff; overflow: hidden; position: relative; }
+      .category-feature::before { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(25,21,17,.62), transparent 68%); }
+      .category-feature > * { position: relative; z-index: 1; }
+      .category-feature h2 { margin: 0 0 6px; font-size: 34px; }
+      .category-feature p { margin: 0; font-size: 13px; opacity: .82; }
+      .category-feature:nth-child(1) { background: url('https://images.unsplash.com/photo-1621939514649-280e2aa92a7f?auto=format&fit=crop&w=1000&q=85') center/cover; }
+      .category-feature:nth-child(2) { background: url('https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1000&q=85') center/cover; }
+      .category-feature:nth-child(3) { background: url('https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=1000&q=85') center/cover; }
+      .category-feature:nth-child(4) { background: url('https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1000&q=85') center/cover; }
+      .umkm-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+      .umkm-card { overflow: hidden; border-radius: 24px; background: var(--paper); box-shadow: var(--shadow); }
+      .umkm-card img { width: 100%; height: 210px; object-fit: cover; }
+      .umkm-body { padding: 20px; }
+      .umkm-body h3 { margin: 0 0 7px; font-family: "DM Sans", sans-serif; font-size: 17px; }
+      .umkm-body p { min-height: 62px; margin-bottom: 16px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+      .about-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: 30px; align-items: center; }
+      .about-image { min-height: 530px; overflow: hidden; border-radius: 28px; }
+      .about-image img { width: 100%; height: 100%; object-fit: cover; }
+      .about-copy h2 { max-width: 620px; margin-bottom: 20px; color: var(--red); font-size: clamp(40px, 5vw, 68px); line-height: 1; }
+      .about-copy p { max-width: 550px; color: var(--muted); line-height: 1.8; }
+      .about-note { margin-top: 28px; padding: 20px 22px; border-left: 3px solid var(--green); background: #ebe6d9; color: #61594f; font-size: 13px; line-height: 1.7; }
+      .help-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+      .faq { padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); }
+      .faq h3 { margin: 0 0 9px; font-family: "DM Sans", sans-serif; font-size: 15px; }
+      .faq p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+      .footer { background: var(--ink); color: #fff8ed; }
+      .footer-inner { max-width: 1180px; margin: auto; padding: 56px 24px 26px; }
+      .footer-main { display: flex; justify-content: space-between; gap: 35px; padding-bottom: 45px; }
+      .footer h2 { max-width: 360px; margin: 0; font-size: 38px; line-height: 1; }
+      .footer-links { display: grid; grid-template-columns: repeat(2, 130px); gap: 12px 24px; color: rgba(255,248,237,.65); font-size: 12px; }
+      .footer-links button { padding: 0; border: 0; background: transparent; color: inherit; text-align: left; }
+      .footer-bottom { display: flex; justify-content: space-between; gap: 15px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.14); color: rgba(255,248,237,.5); font-size: 11px; }
+      .hidden { display: none !important; }
+      .empty-state { grid-column: 1/-1; padding: 55px 20px; border: 1px dashed var(--line); border-radius: 20px; color: var(--muted); text-align: center; }
+      .modal-backdrop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(39,26,21,.55); backdrop-filter: blur(8px); }
+      .modal { width: min(900px, 100%); max-height: 90vh; overflow: auto; border-radius: 28px; background: var(--paper); box-shadow: 0 30px 90px rgba(25,15,10,.25); }
+      .modal.product-modal { display: grid; grid-template-columns: .9fr 1.1fr; }
+      .modal-visual { min-height: 420px; overflow: hidden; border-radius: 28px 0 0 28px; background: #dfccb5; }
+      .modal-visual img { width: 100%; height: 100%; object-fit: cover; }
+      .modal-content { position: relative; padding: 42px; }
+      .close-btn { position: absolute; top: 17px; right: 17px; width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--cream); color: var(--ink); }
+      .modal-content h2 { margin-bottom: 10px; color: var(--red); font-size: 43px; line-height: 1; }
+      .modal-content .large-price { margin: 20px 0; color: var(--red); font-family: "Playfair Display", serif; font-size: 28px; }
+      .modal-content p { color: var(--muted); font-size: 14px; line-height: 1.75; }
+      .modal-actions { display: flex; gap: 10px; margin-top: 26px; }
+      .drawer { position: fixed; inset: 0; z-index: 60; display: flex; justify-content: end; background: rgba(39,26,21,.35); }
+      .drawer-panel { width: min(430px, 100%); height: 100%; overflow: auto; padding: 28px; background: var(--paper); box-shadow: -18px 0 50px rgba(25,15,10,.18); }
+      .drawer-head { display: flex; justify-content: space-between; align-items: center; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+      .drawer-head h2 { margin: 0; font-size: 30px; }
+      .cart-list { padding: 16px 0; }
+      .cart-item { display: grid; grid-template-columns: 65px 1fr auto; gap: 12px; align-items: center; padding: 13px 0; border-bottom: 1px solid var(--line); }
+      .cart-item img { width: 65px; height: 65px; object-fit: cover; border-radius: 12px; }
+      .cart-item h3 { margin: 0 0 5px; font-family: "DM Sans", sans-serif; font-size: 13px; }
+      .cart-item p { margin: 0; color: var(--red); font-size: 12px; font-weight: 700; }
+      .qty-control { display: flex; align-items: center; gap: 6px; margin-top: 8px; color: var(--muted); font-size: 12px; }
+      .qty-control button { width: 23px; height: 23px; border: 1px solid var(--line); border-radius: 50%; background: transparent; }
+      .cart-summary { padding-top: 16px; }
+      .summary-row { display: flex; justify-content: space-between; margin: 10px 0; color: var(--muted); font-size: 13px; }
+      .summary-row.total { margin-top: 18px; color: var(--ink); font-size: 17px; font-weight: 700; }
+      .checkout-note { margin-top: 20px; padding: 13px; border-radius: 12px; background: #e9efdf; color: var(--green-dark); font-size: 11px; line-height: 1.5; }
+      .toast { position: fixed; left: 50%; bottom: 25px; z-index: 100; padding: 13px 18px; border-radius: 99px; background: var(--ink); color: #fff; box-shadow: var(--shadow); font-size: 12px; transform: translate(-50%, 120px); transition: transform .3s; }
+      .toast.show { transform: translate(-50%, 0); }
+      @media (max-width: 900px) {
+        .nav-inner { gap: 14px; }
+        .brand { min-width: auto; flex: 1; }
+        .nav-links { position: absolute; top: 73px; left: 0; right: 0; display: none; padding: 16px 24px 22px; background: var(--paper); border-bottom: 1px solid var(--line); box-shadow: var(--shadow); flex-direction: column; align-items: start; gap: 16px; }
+        .nav-links.open { display: flex; }
+        .menu-btn { display: grid; }
+        .hero { grid-template-columns: 1fr; padding: 44px 32px; }
+        .hero-art { min-height: 250px; }
+        .hero-image { width: 68%; height: 270px; }
+        .category-grid, .product-grid { grid-template-columns: repeat(2, 1fr); }
+        .story-panel, .quote-panel, .about-grid { grid-template-columns: 1fr; }
+        .story-image { min-height: 240px; }
+        .quote-art { min-height: 230px; order: -1; }
+        .about-image { min-height: 330px; }
+        .umkm-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+      @media (max-width: 560px) {
+        .topbar-inner { padding-left: 16px; padding-right: 16px; }
+        .topbar span:last-child { display: none; }
+        .nav-inner { padding: 14px 16px; }
+        .brand-name { font-size: 13px; }
+        .brand-sub { font-size: 8px; }
+        .nav-actions .icon-btn:first-child { display: none; }
+        .view { padding: 32px 16px 70px; }
+        .hero { min-height: 640px; padding: 34px 24px; border-radius: 23px; }
+        h1 { font-size: 51px; }
+        .hero-image { width: 82%; height: 260px; }
+        .hero-stamp { left: 5px; bottom: -4px; width: 100px; height: 100px; font-size: 14px; }
+        .section { padding-top: 55px; }
+        .section-head, .page-head, .footer-main { align-items: start; flex-direction: column; }
+        .section-head h2 { font-size: 36px; }
+        .category-grid, .product-grid, .category-page-grid, .benefit-grid, .help-grid, .umkm-grid { grid-template-columns: 1fr; }
+        .product-image { height: 280px; }
+        .story-panel, .quote-panel { padding: 15px; }
+        .story-copy, .quote-copy { padding: 18px 8px 10px; }
+        .quote-copy blockquote { font-size: 19px; }
+        .page-head h1 { font-size: 48px; }
+        .filter-search { min-width: 100%; }
+        .result-count { margin-left: 0; }
+        .modal.product-modal { display: block; }
+        .modal-visual { min-height: 250px; border-radius: 28px 28px 0 0; }
+        .modal-content { padding: 30px 24px 28px; }
+        .footer-links { grid-template-columns: repeat(2, 1fr); width: 100%; }
+        .footer-bottom { flex-direction: column; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="site-shell">
+      <div class="topbar"><div class="topbar-inner"><span>Produk lokal, pasar lebih luas.</span><span>Etalase bersama Forkom UMKM Kepuharjo · Sleman, DIY</span></div></div>
+      <header class="nav">
+        <div class="nav-inner">
+          <button class="icon-btn menu-btn" aria-label="Buka menu" data-menu><span>☰</span></button>
+          <a class="brand" href="#/" data-route="home"><span class="brand-mark">K</span><span class="brand-text"><span class="brand-name">KEPUHARJO</span><span class="brand-sub">market · dari warga, untuk warga</span></span></a>
+          <nav class="nav-links" data-nav>
+            <button data-route="home">Beranda</button>
+            <button data-route="shop">Belanja</button>
+            <button data-route="categories">Kategori</button>
+            <button data-route="umkm">UMKM</button>
+            <button data-route="about">Tentang</button>
+            <button data-route="welcome">Sambutan</button>
+            <button data-route="help">Bantuan</button>
+          </nav>
+          <div class="nav-actions"><button class="icon-btn" aria-label="Cari" data-focus-search>⌕</button><button class="icon-btn" aria-label="Keranjang" data-cart>♡<span class="cart-count" data-cart-count>0</span></button></div>
+        </div>
+      </header>
+
+      <main id="app"></main>
+
+      <footer class="footer">
+        <div class="footer-inner">
+          <div class="footer-main"><h2>Satu Kepuharjo.<br />Banyak karya.</h2><div class="footer-links"><button data-route="shop">Belanja produk</button><button data-route="umkm">Profil UMKM</button><button data-route="about">Tentang Kepuharjo</button><button data-route="welcome">Sambutan Lurah</button><button data-route="help">Cara pesan</button><button data-route="help">Kontak & bantuan</button></div></div>
+          <div class="footer-bottom"><span>© 2026 Forkom UMKM Kepuharjo</span><span>Rancangan antarmuka · siap dikembangkan</span></div>
+        </div>
+      </footer>
+    </div>
+
+    <div class="hidden" data-modal-root></div>
+    <div class="hidden" data-drawer-root></div>
+    <div class="toast" data-toast></div>
+
+    <script>
+      const products = [
+        { id: 1, name: 'Sambel Bawang', maker: "The Ngatmo’s", category: 'Makanan & camilan', price: 20000, label: 'Terlaris', image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=900&q=85', description: 'Sambel bawang tanpa pengawet dengan pilihan kemasan botol 115 g atau sachet. Pedasnya akrab, cocok jadi teman makan harian.' },
+        { id: 2, name: 'Kopi Merapi Robusta', maker: 'Kopi Merapi', category: 'Minuman & herbal', price: 30000, label: 'Favorit', image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=85', description: 'Kopi robusta dari lereng Merapi dalam kemasan 75 g. Karakter bold, hangat, dan pas untuk teman sore.' },
+        { id: 3, name: 'Criping Talas', maker: 'Merapi Bangkit Desa Prima', category: 'Makanan & camilan', price: 25000, label: 'Lokal pilihan', image: 'https://images.unsplash.com/photo-1621939514649-280e2aa92a7f?auto=format&fit=crop&w=900&q=85', description: 'Camilan renyah dari talas pilihan. Tersedia juga varian pisang, pegagan, jamur, dan kentang.' },
+        { id: 4, name: 'Jahe Merapi Joss', maker: 'Merapi Joss', category: 'Minuman & herbal', price: 25000, label: 'Hangatkan hari', image: 'https://images.unsplash.com/photo-1599909533730-f9d1a2c39f11?auto=format&fit=crop&w=900&q=85', description: 'Jahe instan kemasan 250 g, diracik untuk menemani pagi atau malam dengan rasa rempah yang nyaman.' },
+        { id: 5, name: 'Donat isi 6', maker: 'Donat & Bolu Arga', category: 'Makanan & camilan', price: 18000, label: 'Pesan dulu', image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=900&q=85', description: 'Donat lembut isi 6. Untuk produk segar, ketersediaan dan waktu ambil akan dikonfirmasi oleh admin.' },
+        { id: 6, name: 'Susu Kurma', maker: 'Susu Pasteurisasi Jogja', category: 'Minuman & herbal', price: 16000, label: 'Segar', image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=900&q=85', description: 'Susu kurma segar. Tersedia juga susu plain dan varian rasa-rasa.' },
+        { id: 7, name: 'Tas Rajut', maker: 'Karya Warga Kepuharjo', category: 'Kerajinan & souvenir', price: 85000, label: 'Handmade', image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=85', description: 'Tas kerajinan tangan yang dibuat dengan teknik merajut, dengan karakter unik di setiap karya.' },
+        { id: 8, name: 'Souvenir Ngatmo’s', maker: 'Souvenir Ngatmo’s', category: 'Kerajinan & souvenir', price: 2500, label: 'Oleh-oleh', image: 'https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=900&q=85', description: 'Gantungan kunci, pin jarum, dan pin magnet. Pilihan ukuran 44 mm atau 55 mm.' },
+        { id: 9, name: 'Madu Murni Akasia', maker: 'Petani Madu Kepuharjo', category: 'Minuman & herbal', price: 65000, label: 'Panen lokal', image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=900&q=85', description: 'Madu murni akasia carpa dalam kemasan 320 ml, dengan karakter manis asam yang segar.' },
+        { id: 10, name: 'Pizza Mini', maker: 'Pizza Kepuharjo', category: 'Makanan & camilan', price: 2500, label: 'Cocok ramean', image: 'https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=900&q=85', description: 'Pizza mini yang praktis untuk acara keluarga dan kumpul bersama.' },
+        { id: 11, name: 'Jasa Jahit', maker: 'Rumah Jahit Masruroh', category: 'Fashion & jasa jahit', price: 0, label: 'Konsultasi', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=900&q=85', description: 'Menerima jasa jahit wanita, pria, anak, couple, seragam sekolah, gamis, jas, dan kebutuhan lainnya.' },
+        { id: 12, name: 'Kopi Arabika Winey', maker: 'Kopi Kersa', category: 'Minuman & herbal', price: 100000, label: 'Pilihan spesial', image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=85', description: 'Kopi Kersa Arabika Winey kemasan 200 g dengan karakter rasa yang istimewa.' }
+      ];
+      const categories = [
+        { key: 'Makanan & camilan', title: 'Makanan & Camilan', count: '10 entri', copy: 'Apem, criping, keripik, sambal, olahan siap saji' },
+        { key: 'Minuman & herbal', title: 'Minuman & Herbal', count: '8 entri', copy: 'Kopi, jahe, madu, susu' },
+        { key: 'Kerajinan & souvenir', title: 'Kerajinan & Souvenir', count: '3 entri', copy: 'Souvenir, tas rajut, dekorasi' },
+        { key: 'Fashion & jasa jahit', title: 'Fashion & Jasa Jahit', count: '2 entri', copy: 'Rumah Jahit Masruroh, Yuni Taylor' }
+      ];
+      const umkm = [
+        { name: 'Merapi Bangkit Desa Prima', copy: 'Aneka criping dari talas, pisang, pegagan, jamur, hingga kentang.', image: 'https://images.unsplash.com/photo-1621939514649-280e2aa92a7f?auto=format&fit=crop&w=900&q=85' },
+        { name: 'Kopi Kersa', copy: 'Pilihan arabika dan robusta dengan beberapa ukuran kemasan.', image: 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=900&q=85' },
+        { name: 'Rumah Jahit Masruroh', copy: 'Layanan jahit untuk pakaian wanita, pria, anak, dan seragam.', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=900&q=85' },
+        { name: 'The Ngatmo’s', copy: 'Sambel bawang tanpa pengawet dan souvenir kecil khas Kepuharjo.', image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=900&q=85' },
+        { name: 'Donat & Bolu Arga', copy: 'Donat, bolu, kue ulang tahun, dan kue kering untuk momen istimewa.', image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=900&q=85' },
+        { name: 'Susu Pasteurisasi Jogja', copy: 'Susu plain, rasa-rasa, dan susu kurma yang segar.', image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=900&q=85' }
+      ];
+      let cart = JSON.parse(localStorage.getItem('kepuharjo-cart') || '[]');
+      let currentRoute = (location.hash || '#/').replace('#/', '') || 'home';
+      let searchTerm = '';
+      let selectedCategory = 'Semua kategori';
+      let sortMode = 'Pilihan kami';
+      const rupiah = value => value ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value).replace('IDR', 'Rp') : 'Konsultasi';
+      const esc = value => String(value).replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+      const productCard = product => `<article class="product-card"><div class="product-image"><img src="${product.image}" alt="${esc(product.name)}" loading="lazy" /><span class="product-tag">${esc(product.label)}</span><button class="like-btn" aria-label="Simpan produk">♡</button></div><div class="product-body"><h3>${esc(product.name)}</h3><div class="product-meta">${esc(product.maker)}</div><div class="product-row"><span class="price">${rupiah(product.price)}</span><button class="add-mini" data-add="${product.id}" aria-label="Tambah ke keranjang">+</button></div></div></article>`;
+      const productGrid = list => list.length ? `<div class="product-grid">${list.map(productCard).join('')}</div>` : '<div class="empty-state">Belum ada produk yang cocok. Coba ganti kata kunci atau filter.</div>';
+      const homeView = () => `<div class="view"><section class="hero"><div class="hero-copy"><p class="eyebrow">Belanja produk lokal</p><h1>Dari Kepuharjo, untuk lebih banyak rumah.</h1><p>Jelajahi rasa, karya, dan usaha warga di kaki Merapi. Satu etalase untuk menemukan produk lokal dengan cerita yang dekat.</p><div class="hero-actions"><button class="btn btn-primary" data-route="shop">Jelajahi produk <span>→</span></button><button class="btn btn-outline-light" data-route="umkm">Kenali pelaku usaha</button></div></div><div class="hero-art"><img class="hero-image" src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1000&q=85" alt="Produk makanan lokal" /><div class="hero-stamp">Dari lereng<br />Merapi</div></div></section><section class="section"><div class="section-head"><div><p class="eyebrow" style="color:var(--red)">Temukan lebih cepat</p><h2>Kategori favorit</h2></div><button class="text-link" data-route="categories">Lihat semua kategori →</button></div><div class="category-grid">${categories.map((c, i) => `<button class="category-card" data-category-route="${c.key}"><span class="number">0${i + 1}</span><h3>${c.title}</h3><p>${c.count} · ${c.copy}</p></button>`).join('')}</div></section><section class="section"><div class="section-head"><div><p class="eyebrow" style="color:var(--red)">Pilihan warga</p><h2>Produk yang paling dicari</h2></div><button class="text-link" data-route="shop">Lihat semua produk →</button></div>${productGrid(products.slice(0, 4))}</section><section class="section"><div class="story-panel"><div class="story-image"><img src="https://images.unsplash.com/photo-1621939514649-280e2aa92a7f?auto=format&fit=crop&w=1000&q=85" alt="Camilan lokal" loading="lazy" /></div><div class="story-copy"><p class="eyebrow" style="color:var(--green-dark)">Cerita pelaku usaha</p><h2>Yang tumbuh di sini, layak dikenal lebih jauh.</h2><p>Di balik setiap kemasan ada ketekunan warga Kepuharjo. Kenali UMKM-nya, temukan produknya, lalu dukung langkah kecil yang berdampak besar.</p><button class="btn btn-dark" style="align-self:start" data-route="umkm">Temui para pelaku usaha →</button><div class="story-stats"><div class="stat"><strong>23</strong><span>entri produk & jasa</span></div><div class="stat"><strong>4</strong><span>kelompok kategori</span></div><div class="stat"><strong>1</strong><span>etalase bersama</span></div></div></div></div></section><section class="section"><div class="quote-panel"><div class="quote-copy"><p class="eyebrow">Sambutan Lurah Kepuharjo</p><h2>Belanja dengan rasa memiliki.</h2><blockquote>“Membeli dan menggunakan produk UMKM Kepuharjo bukan sekadar bertransaksi, melainkan sebuah bentuk gotong royong nyata.”</blockquote><cite>Heri Suprapto · Lurah Kepuharjo · Juni 2026</cite><br /><button class="btn btn-outline-light" style="margin-top:24px" data-route="welcome">Baca sambutan lengkap</button></div><div class="quote-art"><img src="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1000&q=85" alt="Lereng hijau" loading="lazy" /></div></div></section><section class="section"><div class="section-head"><div><p class="eyebrow" style="color:var(--red)">Belanja terasa mudah</p><h2>Dirancang untuk dekat.</h2></div></div><div class="benefit-grid"><div class="benefit"><div class="benefit-icon">⌕</div><h3>Mudah ditemukan</h3><p>Cari berdasarkan kategori, harga, atau nama produk dengan katalog yang rapi.</p></div><div class="benefit"><div class="benefit-icon">♡</div><h3>Kenal pembuatnya</h3><p>Setiap produk terhubung ke cerita pelaku usaha di baliknya.</p></div><div class="benefit"><div class="benefit-icon">→</div><h3>Siap ditransaksikan</h3><p>Alur keranjang dan checkout dirancang agar mudah dilanjutkan ke pembayaran.</p></div></div></section></div>`;
+      const shopView = () => { let filtered = products.filter(p => (selectedCategory === 'Semua kategori' || p.category === selectedCategory) && `${p.name} ${p.maker} ${p.category}`.toLowerCase().includes(searchTerm.toLowerCase())); if (sortMode === 'Harga terendah') filtered.sort((a,b) => (a.price || 0) - (b.price || 0)); if (sortMode === 'Harga tertinggi') filtered.sort((a,b) => (b.price || 0) - (a.price || 0)); return `<div class="view"><div class="page-head"><div><p class="eyebrow" style="color:var(--red)">Etalase bersama</p><h1>Semua produk Kepuharjo.</h1></div><p>Contoh harga dan produk diambil dari Katalog Produk Forkom UMKM Kepuharjo. Harga final, stok, dan ketersediaan akan divalidasi sebelum transaksi aktif.</p></div><div class="filters"><input class="filter-search" data-shop-search type="search" placeholder="Cari sambal, kopi, kerajinan…" value="${esc(searchTerm)}" /><select class="filter-select" data-category-filter><option>Semua kategori</option>${categories.map(c => `<option ${selectedCategory === c.key ? 'selected' : ''}>${c.key}</option>`).join('')}</select><select class="filter-select" data-sort-filter><option ${sortMode === 'Pilihan kami' ? 'selected' : ''}>Pilihan kami</option><option ${sortMode === 'Harga terendah' ? 'selected' : ''}>Harga terendah</option><option ${sortMode === 'Harga tertinggi' ? 'selected' : ''}>Harga tertinggi</option></select><span class="result-count">${filtered.length} produk</span></div>${productGrid(filtered)}</div>`; };
+      const categoriesView = () => `<div class="view"><div class="page-head"><div><p class="eyebrow" style="color:var(--red)">Empat pintu belanja</p><h1>Temukan yang kamu cari.</h1></div><p>Pilih pintu masukmu. Dari camilan harian sampai karya tangan, semua berangkat dari warga Kepuharjo.</p></div><div class="category-page-grid">${categories.map(c => `<button class="category-feature" data-category-route="${c.key}"><h2>${c.title}</h2><p>${c.count} · ${c.copy}</p></button>`).join('')}</div><section class="section"><div class="section-head"><div><p class="eyebrow" style="color:var(--red)">Rekomendasi pilihan</p><h2>Mulai dari sini.</h2></div><button class="text-link" data-route="shop">Lihat semua produk →</button></div>${productGrid(products.slice(0, 8))}</section></div>`;
+      const umkmView = () => `<div class="view"><div class="page-head"><div><p class="eyebrow" style="color:var(--red)">Cerita pelaku usaha</p><h1>Orang-orang di balik rasa dan karya.</h1></div><p>Setiap UMKM punya ruang untuk memperkenalkan produk, proses, dan semangat yang dibawa dari rumah.</p></div><div class="umkm-grid">${umkm.map(u => `<article class="umkm-card"><img src="${u.image}" alt="${esc(u.name)}" loading="lazy" /><div class="umkm-body"><h3>${esc(u.name)}</h3><p>${esc(u.copy)}</p><button class="text-link" data-maker="${esc(u.name)}">Lihat profil UMKM →</button></div></article>`).join('')}</div><section class="section"><div class="story-panel"><div class="story-copy"><p class="eyebrow" style="color:var(--green-dark)">Satu ekosistem</p><h2>Produk dan cerita berjalan berdampingan.</h2><p>Profil UMKM akan menjadi rumah kecil untuk memperkenalkan usaha, kontak, area layanan, dan daftar produk yang tersedia.</p><button class="btn btn-dark" style="align-self:start" data-route="help">Butuh bantuan belanja?</button></div><div class="story-image"><img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1000&q=85" alt="Ruang kerja" loading="lazy" /></div></div></section></div>`;
+      const aboutView = () => `<div class="view"><div class="about-grid"><div class="about-image"><img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1100&q=85" alt="Lanskap hijau Kepuharjo" /></div><div class="about-copy"><p class="eyebrow" style="color:var(--red)">Tentang Kalurahan</p><h2>Dari lereng Merapi, tumbuh banyak karya.</h2><p>Kalurahan Kepuharjo berada di Kapanewon Cangkringan, Kabupaten Sleman, Daerah Istimewa Yogyakarta. Di tempat ini, pangan, kerajinan, jasa, dan cerita warga bertemu dalam satu ekosistem yang hangat.</p><p>Kepuharjo Market dirancang sebagai rumah digital bersama: memperluas jangkauan produk lokal sekaligus menjaga kedekatan antara pembeli dan pelaku usaha.</p><div class="about-note">Profil wilayah dan tautan informasi resmi Kalurahan Kepuharjo akan dihubungkan di tahap implementasi lanjutan.</div></div></div><section class="section"><div class="benefit-grid"><div class="benefit"><div class="benefit-icon">01</div><h3>Ditemukan</h3><p>Produk mudah dicari melalui kategori, pencarian, dan katalog yang konsisten.</p></div><div class="benefit"><div class="benefit-icon">02</div><h3>Dipercaya</h3><p>Pelaku usaha dapat memperkenalkan produk dan cerita mereka kepada pelanggan.</p></div><div class="benefit"><div class="benefit-icon">03</div><h3>Dibeli</h3><p>Pelanggan mendapat alur pemesanan dan pembayaran yang jelas.</p></div></div></section></div>`;
+      const welcomeView = () => `<div class="view"><div class="quote-panel"><div class="quote-copy"><p class="eyebrow">Kata pengantar</p><h2>Suara Kalurahan memberi makna pada setiap transaksi.</h2><blockquote>“Membeli dan menggunakan produk UMKM Kepuharjo bukan sekadar bertransaksi, melainkan sebuah bentuk gotong royong nyata dalam membangun kesejahteraan bersama.”</blockquote><cite>Heri Suprapto · Lurah Kepuharjo · Juni 2026</cite></div><div class="quote-art"><img src="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1000&q=85" alt="Lanskap Kepuharjo" /></div></div><section class="section"><div class="story-panel"><div class="story-copy"><p class="eyebrow" style="color:var(--green-dark)">Dari katalog menjadi ekosistem</p><h2>Setiap pembelian menghidupkan cerita.</h2><p>Katalog ini bukan sekadar lembaran promosi, melainkan bukti kerja keras, kreativitas, dan ketangguhan pelaku UMKM di wilayah Kepuharjo.</p></div><div class="story-image"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1000&q=85" alt="Kebersamaan warga" /></div></div></section></div>`;
+      const helpView = () => `<div class="view"><div class="page-head"><div><p class="eyebrow" style="color:var(--red)">Pusat bantuan</p><h1>Belanja tanpa bingung.</h1></div><p>Alur checkout, pengiriman, dan jawaban umum disiapkan agar pengalaman belanja tetap nyaman di ponsel maupun desktop.</p></div><div class="help-grid"><div class="faq"><h3>Bagaimana cara memesan?</h3><p>Pilih produk, tentukan varian dan jumlah, lalu tambahkan ke keranjang. Setelah data pesanan lengkap, checkout akan dilanjutkan ke pembayaran.</p></div><div class="faq"><h3>Bagaimana pembayaran dilakukan?</h3><p>Integrasi Xendit akan menyediakan opsi QRIS, virtual account / transfer bank, dan e-wallet sesuai kesiapan akun merchant.</p></div><div class="faq"><h3>Apakah semua produk siap dikirim?</h3><p>Tidak selalu. Produk segar atau frozen dapat memakai opsi pesan dulu, ambil di lokasi, atau pengiriman area terbatas.</p></div><div class="faq"><h3>Bagaimana dengan jasa jahit?</h3><p>Untuk jasa dan harga khusus, pelanggan dapat berkonsultasi terlebih dahulu sebelum menerima penawaran harga.</p></div></div><section class="section"><div class="quote-panel"><div class="quote-copy"><p class="eyebrow">Hubungi Forkom UMKM</p><h2>Perlu bantuan memilih produk?</h2><p style="color:rgba(255,255,255,.72);line-height:1.7">Tim admin akan membantu mengonfirmasi harga, stok, pilihan pengiriman, dan kebutuhan pemesanan.</p><button class="btn btn-primary" data-contact>Hubungi admin</button></div><div class="quote-art"><img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1000&q=85" alt="Tim bekerja" /></div></div></section></div>`;
+      function render() { const views = { home: homeView, shop: shopView, categories: categoriesView, umkm: umkmView, about: aboutView, welcome: welcomeView, help: helpView }; document.querySelector('#app').innerHTML = (views[currentRoute] || homeView)(); document.querySelectorAll('[data-route]').forEach(el => el.classList.toggle('active', el.dataset.route === currentRoute)); window.scrollTo({ top: 0, behavior: 'smooth' }); bindView(); }
+      function bindView() { document.querySelectorAll('[data-route]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); const route = el.dataset.route; if (location.hash !== '#/' + route) location.hash = '#/' + route; else { currentRoute = route; render(); } document.querySelector('[data-nav]')?.classList.remove('open'); })); document.querySelectorAll('[data-category-route]').forEach(el => el.addEventListener('click', () => { selectedCategory = el.dataset.categoryRoute; location.hash = '#/shop'; })); document.querySelectorAll('[data-add]').forEach(el => el.addEventListener('click', e => { e.stopPropagation(); addToCart(Number(el.dataset.add)); })); document.querySelectorAll('.product-card').forEach((card, i) => card.addEventListener('click', e => { if (e.target.closest('[data-add], .like-btn')) return; const list = currentRoute === 'shop' ? filteredProducts() : products.slice(0, 8); openProduct(list[i] || products[i]); })); document.querySelectorAll('[data-shop-search]').forEach(el => el.addEventListener('input', e => { searchTerm = e.target.value; render(); setTimeout(() => { const input = document.querySelector('[data-shop-search]'); input?.focus(); input?.setSelectionRange(searchTerm.length, searchTerm.length); }, 0); })); document.querySelector('[data-category-filter]')?.addEventListener('change', e => { selectedCategory = e.target.value; render(); }); document.querySelector('[data-sort-filter]')?.addEventListener('change', e => { sortMode = e.target.value; render(); }); document.querySelectorAll('[data-maker]').forEach(el => el.addEventListener('click', () => { showToast('Profil UMKM sedang disiapkan untuk tahap konten berikutnya.'); })); document.querySelector('[data-contact]')?.addEventListener('click', () => showToast('Kontak admin akan dihubungkan pada tahap backend.')); }
+      function filteredProducts() { let list = products.filter(p => (selectedCategory === 'Semua kategori' || p.category === selectedCategory) && `${p.name} ${p.maker} ${p.category}`.toLowerCase().includes(searchTerm.toLowerCase())); if (sortMode === 'Harga terendah') list.sort((a,b) => (a.price || 0) - (b.price || 0)); if (sortMode === 'Harga tertinggi') list.sort((a,b) => (b.price || 0) - (a.price || 0)); return list; }
+      function addToCart(id) { const product = products.find(p => p.id === id); if (!product || !product.price) { showToast('Produk ini menggunakan alur konsultasi terlebih dahulu.'); return; } const existing = cart.find(item => item.id === id); existing ? existing.qty++ : cart.push({ id, qty: 1 }); persistCart(); updateCartCount(); showToast(`${product.name} ditambahkan ke keranjang`); }
+      function persistCart() { localStorage.setItem('kepuharjo-cart', JSON.stringify(cart)); }
+      function updateCartCount() { document.querySelector('[data-cart-count]').textContent = cart.reduce((sum, item) => sum + item.qty, 0); }
+      function openProduct(product) { document.querySelector('[data-modal-root]').className = ''; document.querySelector('[data-modal-root]').innerHTML = `<div class="modal-backdrop" data-close-modal><div class="modal product-modal"><div class="modal-visual"><img src="${product.image}" alt="${esc(product.name)}" /></div><div class="modal-content"><button class="close-btn" data-close-modal aria-label="Tutup">×</button><p class="eyebrow" style="color:var(--red)">${esc(product.category)}</p><h2>${esc(product.name)}</h2><p style="font-size:13px;color:var(--ink)">Dibuat oleh <strong>${esc(product.maker)}</strong></p><div class="large-price">${rupiah(product.price)}</div><p>${esc(product.description)}</p><div class="modal-actions">${product.price ? `<button class="btn btn-dark" data-modal-add="${product.id}">+ Tambah ke keranjang</button>` : '<button class="btn btn-dark" data-modal-contact>Mulai konsultasi</button>'}<button class="btn btn-outline" data-close-modal>Tutup</button></div></div></div></div>`; document.querySelector('[data-close-modal]').addEventListener('click', e => { if (e.target === e.currentTarget || e.target.closest('.close-btn')) closeModal(); }); document.querySelector('[data-modal-add]')?.addEventListener('click', () => { addToCart(product.id); closeModal(); }); document.querySelector('[data-modal-contact]')?.addEventListener('click', () => { closeModal(); showToast('Admin akan membantu kebutuhan jasa ini.'); }); }
+      function closeModal() { const root = document.querySelector('[data-modal-root]'); root.className = 'hidden'; root.innerHTML = ''; }
+      function openCart() { const root = document.querySelector('[data-drawer-root]'); root.className = ''; const items = cart.map(item => ({ ...item, product: products.find(p => p.id === item.id) })).filter(item => item.product); const subtotal = items.reduce((sum, item) => sum + (item.product.price * item.qty), 0); root.innerHTML = `<div class="drawer" data-close-drawer><aside class="drawer-panel"><div class="drawer-head"><h2>Keranjang</h2><button class="close-btn" data-close-drawer aria-label="Tutup">×</button></div><div class="cart-list">${items.length ? items.map(item => `<div class="cart-item"><img src="${item.product.image}" alt="${esc(item.product.name)}" /><div><h3>${esc(item.product.name)}</h3><p>${rupiah(item.product.price)}</p><div class="qty-control"><button data-qty="${item.id}" data-delta="-1">−</button><span>${item.qty}</span><button data-qty="${item.id}" data-delta="1">+</button></div></div><button class="text-link" style="font-size:18px" data-remove="${item.id}" aria-label="Hapus">×</button></div>`).join('') : '<div class="empty-state">Keranjangmu masih kosong.<br /><button class="text-link" data-route="shop" style="margin-top:15px">Mulai belanja →</button></div>'}</div>${items.length ? `<div class="cart-summary"><div class="summary-row"><span>Subtotal</span><strong>${rupiah(subtotal)}</strong></div><div class="summary-row"><span>Pengiriman</span><span>Dikonfirmasi admin</span></div><div class="summary-row total"><span>Total sementara</span><span>${rupiah(subtotal)}</span></div><button class="btn btn-dark" style="width:100%;margin-top:14px" data-checkout>Lanjut ke checkout</button><div class="checkout-note">Tahap frontend: alur pembayaran Xendit akan disambungkan setelah backend dan akun merchant siap.</div></div>` : ''}</aside></div>`; root.querySelector('[data-close-drawer]').addEventListener('click', e => { if (e.target === e.currentTarget || e.target.closest('.close-btn')) closeCart(); }); root.querySelectorAll('[data-qty]').forEach(btn => btn.addEventListener('click', () => changeQty(Number(btn.dataset.qty), Number(btn.dataset.delta)))); root.querySelectorAll('[data-remove]').forEach(btn => btn.addEventListener('click', () => removeFromCart(Number(btn.dataset.remove)))); root.querySelector('[data-checkout]')?.addEventListener('click', () => { closeCart(); showToast('Checkout siap dihubungkan ke Xendit pada tahap backend.'); }); root.querySelector('[data-route="shop"]')?.addEventListener('click', () => { closeCart(); location.hash = '#/shop'; }); }
+      function closeCart() { const root = document.querySelector('[data-drawer-root]'); root.className = 'hidden'; root.innerHTML = ''; }
+      function changeQty(id, delta) { const item = cart.find(i => i.id === id); if (!item) return; item.qty += delta; if (item.qty <= 0) cart = cart.filter(i => i.id !== id); persistCart(); updateCartCount(); openCart(); }
+      function removeFromCart(id) { cart = cart.filter(i => i.id !== id); persistCart(); updateCartCount(); openCart(); }
+      function showToast(message) { const el = document.querySelector('[data-toast]'); el.textContent = message; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2600); }
+      document.querySelector('[data-cart]').addEventListener('click', openCart); document.querySelector('[data-menu]').addEventListener('click', () => document.querySelector('[data-nav]').classList.toggle('open')); document.querySelector('[data-focus-search]').addEventListener('click', () => { location.hash = '#/shop'; setTimeout(() => document.querySelector('[data-shop-search]')?.focus(), 100); }); window.addEventListener('hashchange', () => { currentRoute = (location.hash || '#/').replace('#/', '') || 'home'; render(); });
+      updateCartCount(); render();
+    </script>
+  </body>
+</html>
