@@ -1,0 +1,4 @@
+import Link from "next/link";
+import { LockKeyhole } from "lucide-react";
+import { SiteShell } from "@/components/site-shell";
+export default function CheckoutPage() { return <SiteShell><main className="mx-auto max-w-[900px] px-4 py-10 sm:px-6 sm:py-14"><div className="rounded-3xl border border-amber-200 bg-amber-50 p-7 sm:p-12"><LockKeyhole size={28} className="text-amber-700" /><h1 className="mt-5 font-display text-4xl font-bold">Checkout belum dibuka untuk produksi.</h1><p className="mt-4 max-w-2xl text-sm leading-7 text-amber-950">Alur checkout, pembuatan order di server, pembayaran hosted Xendit, dan webhook idempoten membutuhkan konfigurasi Supabase, autentikasi, aturan pengiriman, serta kredensial Xendit. Jangan menganggap redirect browser sebagai bukti pembayaran berhasil.</p><Link href="/bantuan" className="mt-6 inline-flex min-h-10 items-center rounded-lg bg-forest-800 px-4 text-[10px] font-bold text-white">Baca bantuan</Link></div></main></SiteShell>; }

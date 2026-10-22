@@ -1,0 +1,2 @@
+import { SiteShell } from "@/components/site-shell";
+export default function ShippingPage() { return <SiteShell><main className="mx-auto max-w-[900px] px-4 py-10 sm:px-6 sm:py-14"><div className="rounded-3xl bg-white p-7 shadow-card sm:p-12"><h1 className="font-display text-4xl font-bold">Kebijakan Pengiriman</h1><p className="mt-5 text-sm leading-7 text-muted">Area layanan, metode pengiriman, jadwal produk segar, biaya, pilihan ambil sendiri, dan penanggung jawab pemenuhan pesanan masih perlu dikonfirmasi bersama admin Forkom.</p></div></main></SiteShell>; }

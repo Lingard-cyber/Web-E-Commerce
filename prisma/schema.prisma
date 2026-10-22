@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  customer
+  admin
+}
+
+enum ProductType {
+  ready_stock
+  fresh_preorder
+  service
+}
+
+enum PublishStatus {
+  draft
+  pending_verification
+  published
+  archived
+}
+
+enum OrderStatus {
+  pending_payment
+  paid
+  processing
+  shipped
+  completed
+  cancelled
+  expired
+}
+
+model User {
+  id            String      @id @default(cuid())
+  email         String      @unique
+  name          String?
+  role          UserRole    @default(customer)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  orders        Order[]
+  serviceInquiries ServiceInquiry[]
+  auditLogs     AuditLog[]
+}
+
+model Umkm {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  publicContact Json?
+  isPublished Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  sortOrder   Int       @default(0)
+  products    Product[]
+}
+
+model Product {
+  id              String        @id @default(cuid())
+  umkmId          String?
+  categoryId      String
+  name            String
+  slug            String        @unique
+  description     String?
+  productType     ProductType
+  publishStatus   PublishStatus @default(draft)
+  verificationNote String?
+  sourcePdfPage   Int?
+  sourceCatalogEntry Int?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  umkm            Umkm?         @relation(fields: [umkmId], references: [id])
+  category        Category      @relation(fields: [categoryId], references: [id])
+  variants        ProductVariant[]
+  orderItems      OrderItem[]
+  serviceInquiries ServiceInquiry[]
+}
+
+model ProductVariant {
+  id          String   @id @default(cuid())
+  productId   String
+  label       String
+  priceIdr    Int?
+  stockQty    Int?
+  isActive    Boolean  @default(true)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  publicCode      String      @unique
+  userId          String
+  status          OrderStatus @default(pending_payment)
+  subtotalIdr     Int
+  shippingIdr     Int         @default(0)
+  totalIdr        Int
+  shippingAddress Json
+  idempotencyKey  String      @unique
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  user            User        @relation(fields: [userId], references: [id])
+  items           OrderItem[]
+  payment        Payment?
+}
+
+model OrderItem {
+  id           String         @id @default(cuid())
+  orderId      String
+  productId    String
+  variantId    String
+  productName  String
+  variantLabel String
+  quantity     Int
+  unitPriceIdr Int
+  order        Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product      Product        @relation(fields: [productId], references: [id])
+  variant      ProductVariant @relation(fields: [variantId], references: [id])
+}
+
+model Payment {
+  id                 String   @id @default(cuid())
+  orderId            String   @unique
+  provider           String
+  providerPaymentId  String?
+  checkoutUrl        String?
+  status             String
+  rawLastEvent       Json?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  order              Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  events             PaymentEvent[]
+}
+
+model PaymentEvent {
+  id            String   @id @default(cuid())
+  provider      String
+  providerEventId String  @unique
+  eventType     String
+  payload       Json
+  receivedAt    DateTime @default(now())
+  paymentId     String?
+  payment       Payment? @relation(fields: [paymentId], references: [id])
+}
+
+model ServiceInquiry {
+  id          String   @id @default(cuid())
+  productId   String
+  userId      String?
+  name        String
+  contact     String
+  message     String
+  status      String   @default("new")
+  createdAt   DateTime @default(now())
+  product     Product  @relation(fields: [productId], references: [id])
+  user        User?    @relation(fields: [userId], references: [id])
+}
+
+model SiteContent {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       Json
+  isPublished Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+}

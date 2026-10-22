@@ -1,0 +1,2 @@
+import { SiteShell } from "@/components/site-shell";
+export default function TermsPage() { return <SiteShell><main className="mx-auto max-w-[900px] px-4 py-10 sm:px-6 sm:py-14"><div className="rounded-3xl bg-white p-7 shadow-card sm:p-12"><h1 className="font-display text-4xl font-bold">Syarat &amp; Ketentuan</h1><p className="mt-5 text-sm leading-7 text-muted">Syarat final perlu disetujui pengelola sebelum produksi, termasuk aturan akun, harga, pembatalan, pembayaran, produk segar, jasa, pengiriman, retur, dan penyelesaian sengketa.</p></div></main></SiteShell>; }

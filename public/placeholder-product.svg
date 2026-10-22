@@ -1,0 +1,10 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" fill="#EAF0E7"/>
+  <circle cx="940" cy="120" r="260" fill="#D7E6D8"/>
+  <circle cx="140" cy="820" r="320" fill="#DCEBDC"/>
+  <path d="M0 630C220 500 360 560 540 650C730 745 925 770 1200 615V900H0V630Z" fill="#214B35" opacity="0.12"/>
+  <rect x="430" y="250" width="340" height="300" rx="28" fill="#214B35" opacity="0.9"/>
+  <path d="M495 330H705M495 390H705M495 450H625" stroke="#FAF8F2" stroke-width="18" stroke-linecap="round" opacity="0.82"/>
+  <text x="600" y="635" text-anchor="middle" fill="#214B35" font-family="Arial, sans-serif" font-size="30" font-weight="700">FOTO PRODUK MENUNGGU</text>
+  <text x="600" y="680" text-anchor="middle" fill="#746E64" font-family="Arial, sans-serif" font-size="22">Aset resmi belum diverifikasi</text>
+</svg>

@@ -1,0 +1,8 @@
+import Link from "next/link";
+import { ArrowRight, Mountain, Store } from "lucide-react";
+import { PageHeading } from "@/components/page-heading";
+import { SiteShell } from "@/components/site-shell";
+
+export default function TentangKepuharjoPage() {
+  return <SiteShell><main className="mx-auto max-w-[1180px] px-4 py-10 sm:px-6 sm:py-14"><PageHeading eyebrow="Tentang Kepuharjo Market" title="Dari Kepuharjo, untuk lebih banyak rumah." description="Kepuharjo Market adalah etalase digital terpusat untuk memperluas jangkauan produk lokal dan jasa UMKM Kalurahan Kepuharjo." /><div className="grid gap-4 md:grid-cols-2"><article className="rounded-3xl bg-forest-900 p-7 text-white sm:p-10"><Mountain className="mb-8 text-accent" size={28} /><h2 className="font-display text-3xl font-bold">Produk lokal, pasar lebih luas.</h2><p className="mt-4 text-sm leading-7 text-white/70">Platform ini dirancang sebagai kanal bersama yang dikelola admin Forkom UMKM pada fase awal. Setiap data produk perlu melalui proses verifikasi sebelum dapat ditransaksikan.</p></article><article className="rounded-3xl border border-slate-100 bg-white p-7 shadow-card sm:p-10"><Store className="mb-8 text-forest-700" size={28} /><h2 className="font-display text-3xl font-bold">Etalase yang rapi dan mudah dipahami.</h2><p className="mt-4 text-sm leading-7 text-muted">Pengunjung dapat menelusuri kategori, membaca informasi produk, mengenali pelaku usaha, lalu mengikuti alur checkout yang aman ketika data operasional sudah siap.</p><Link href="/belanja" className="mt-6 inline-flex items-center text-[11px] font-bold text-forest-800">Lihat katalog <ArrowRight size={13} className="ml-2" /></Link></article></div></main></SiteShell>;
+}
