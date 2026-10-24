@@ -1,0 +1,3 @@
+export default function Loading() {
+  return <main className="mx-auto min-h-[60vh] max-w-[1180px] px-4 py-10 sm:px-6 sm:py-14" aria-busy="true" aria-label="Memuat halaman"><div className="animate-pulse space-y-5"><div className="h-5 w-36 rounded-full bg-slate-200" /><div className="h-12 max-w-xl rounded-2xl bg-slate-200" /><div className="h-4 max-w-2xl rounded-full bg-slate-200" /><div className="grid grid-cols-2 gap-4 pt-6 sm:grid-cols-3 lg:grid-cols-4">{Array.from({ length: 8 }).map((_, index) => <div key={index} className="h-64 rounded-2xl bg-white shadow-sm ring-1 ring-slate-100" />)}</div></div></main>;
+}

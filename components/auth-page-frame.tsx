@@ -4,21 +4,21 @@ import type { ReactNode } from "react";
 
 export function AuthPageFrame({ children }: { children: ReactNode }) {
   return (
-    <main className="min-h-screen bg-[#f5f8f4] px-4 py-5 sm:px-6 sm:py-8">
-      <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2 text-[11px] font-extrabold tracking-wide text-forest-900 sm:text-xs">
+    <main className="flex min-h-screen flex-col bg-[#f5f8f4] px-4 py-5 sm:px-6 sm:py-8">
+      <header className="mx-auto flex w-full max-w-[1180px] flex-col items-center">
+        <Link href="/" className="flex items-center gap-2 text-center text-[11px] font-extrabold tracking-wide text-forest-900 sm:text-xs">
           <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-full border-2 border-accent bg-white">
             <img src="/forkom-umkm-kepuharjo.jpg" alt="Logo FORKOM UMKM KEPUHARJO" className="h-full w-full object-cover" />
           </span>
           <span>FORKOM UMKM KEPUHARJO</span>
         </Link>
-        <Link href="/" className="inline-flex items-center gap-1.5 rounded-full border border-forest-200 bg-white px-3 py-2 text-[10px] font-bold text-forest-800 transition hover:border-forest-700 hover:bg-green-50">
+        <Link href="/" className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-forest-200 bg-white px-3 py-2 text-[10px] font-bold text-forest-800 transition hover:border-forest-700 hover:bg-green-50">
           <ArrowLeft size={13} />
           Kembali ke beranda
         </Link>
-      </div>
+      </header>
 
-      <div className="flex min-h-[calc(100vh-142px)] items-center justify-center py-8 sm:py-10">
+      <div className="flex flex-1 items-center justify-center py-8 sm:py-10">
         {children}
       </div>
 

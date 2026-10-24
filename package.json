@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:admin": "next dev admin -p 3001",
     "build": "next build",
+    "build:admin": "next build admin",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
@@ -26,5 +29,8 @@
     "prisma": "^6.19.3",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }

@@ -2,6 +2,13 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  if (process.env.NODE_ENV !== "production" && request.nextUrl.pathname.startsWith("/admin")) {
+    const adminUrl = process.env.ADMIN_APP_URL || "http://localhost:3001";
+    const destination = new URL(request.nextUrl.pathname.replace(/^\/admin/, "") || "/", adminUrl);
+    destination.search = request.nextUrl.search;
+    return NextResponse.redirect(destination);
+  }
+
   let response = NextResponse.next({ request });
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

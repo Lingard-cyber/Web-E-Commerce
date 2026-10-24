@@ -60,6 +60,11 @@ enum ServiceInquiryStatus {
   cancelled
 }
 
+enum ServiceBookingMode {
+  direct_booking
+  quotation
+}
+
 model User {
   id                String             @id @default(cuid())
   authId            String?            @unique // ID dari Supabase Auth
@@ -74,6 +79,8 @@ model User {
   orders            Order[]
   serviceInquiries  ServiceInquiry[]
   auditLogs         AuditLog[]
+
+  @@map("pengguna")
 }
 
 model Address {
@@ -94,6 +101,8 @@ model Address {
   orders          Order[]
 
   @@index([userId])
+
+  @@map("alamat")
 }
 
 model Umkm {
@@ -106,6 +115,8 @@ model Umkm {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   products       Product[]
+
+  @@map("umkm")
 }
 
 model Category {
@@ -115,6 +126,8 @@ model Category {
   description String?
   sortOrder   Int       @default(0)
   products    Product[]
+
+  @@map("kategori")
 }
 
 model Product {
@@ -127,6 +140,10 @@ model Product {
   productType        ProductType
   publishStatus      PublishStatus  @default(draft)
   verificationNote   String?
+  serviceBookingMode ServiceBookingMode?
+  serviceRequirements String?
+  serviceAvailability String?
+  serviceDuration    String?
   sourcePdfPage      Int?
   sourceCatalogEntry Int?
   createdAt          DateTime       @default(now())
@@ -141,6 +158,8 @@ model Product {
   @@index([umkmId])
   @@index([categoryId])
   @@index([publishStatus])
+
+  @@map("produk")
 }
 
 model ProductVariant {
@@ -158,6 +177,8 @@ model ProductVariant {
   stockMovements StockMovement[]
 
   @@index([productId])
+
+  @@map("varian_produk")
 }
 
 model ProductImage {
@@ -171,6 +192,8 @@ model ProductImage {
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
+
+  @@map("gambar_produk")
 }
 
 model StockMovement {
@@ -183,6 +206,8 @@ model StockMovement {
   variant     ProductVariant @relation(fields: [variantId], references: [id])
 
   @@index([variantId, createdAt])
+
+  @@map("pergerakan_stok")
 }
 
 model Cart {
@@ -192,6 +217,8 @@ model Cart {
   updatedAt DateTime   @updatedAt
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items     CartItem[]
+
+  @@map("keranjang")
 }
 
 model CartItem {
@@ -206,6 +233,8 @@ model CartItem {
 
   @@unique([cartId, variantId])
   @@index([variantId])
+
+  @@map("item_keranjang")
 }
 
 model Order {
@@ -230,6 +259,8 @@ model Order {
 
   @@index([userId, createdAt])
   @@index([status])
+
+  @@map("pesanan")
 }
 
 model OrderItem {
@@ -248,6 +279,8 @@ model OrderItem {
 
   @@index([orderId])
   @@index([productId])
+
+  @@map("item_pesanan")
 }
 
 model Payment {
@@ -263,6 +296,8 @@ model Payment {
   updatedAt          DateTime       @updatedAt
   order              Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   events             PaymentEvent[]
+
+  @@map("pembayaran")
 }
 
 model PaymentEvent {
@@ -276,6 +311,8 @@ model PaymentEvent {
   payment         Payment?  @relation(fields: [paymentId], references: [id], onDelete: SetNull)
 
   @@index([paymentId])
+
+  @@map("peristiwa_pembayaran")
 }
 
 model Shipment {
@@ -289,6 +326,8 @@ model Shipment {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   order          Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("pengiriman")
 }
 
 model ServiceInquiry {
@@ -307,6 +346,8 @@ model ServiceInquiry {
   @@index([productId])
   @@index([userId])
   @@index([status])
+
+  @@map("permintaan_jasa")
 }
 
 model SiteContent {
@@ -315,6 +356,8 @@ model SiteContent {
   value       Json
   isPublished Boolean  @default(false)
   updatedAt   DateTime @updatedAt
+
+  @@map("konten_situs")
 }
 
 model AuditLog {
@@ -329,4 +372,6 @@ model AuditLog {
 
   @@index([userId, createdAt])
   @@index([entity, entityId])
+
+  @@map("log_audit")
 }

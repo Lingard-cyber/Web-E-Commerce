@@ -9,6 +9,12 @@ export type ProductVariant = {
   active: boolean;
 };
 
+export type CatalogImage = {
+  id: string;
+  imageUrl: string;
+  altText?: string;
+};
+
 export type CatalogEntry = {
   id: string;
   slug: string;
@@ -25,9 +31,10 @@ export type CatalogEntry = {
   verificationNote?: string;
   imageAlt: string;
   imageSrc?: string;
+  images?: CatalogImage[];
 };
 
-const pending = "Data katalog menunggu verifikasi harga, stok, foto, dan izin tayang admin Forkom.";
+const pending = "Informasi produk sedang dilengkapi agar harga, stok, foto, dan cara pemesanannya jelas bagi pembeli.";
 
 const variant = (id: string, label: string, priceIdr: number | null): ProductVariant => ({
   id,

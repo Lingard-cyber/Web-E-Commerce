@@ -1,7 +1,17 @@
+import Link from "next/link";
+import { ArrowLeft, ArrowUpRight, Instagram, MapPin, MessageCircle, Package } from "lucide-react";
 import { notFound } from "next/navigation";
 import { SiteShell } from "@/components/site-shell";
+import { getPublicUmkmBySlug } from "@/lib/umkm-db";
 
-export default function UmkmDetailPage({ params }: { params: { slug: string } }) {
-  if (!params.slug) notFound();
-  return <SiteShell><main className="mx-auto max-w-[900px] px-4 py-10 sm:px-6 sm:py-14"><div className="rounded-3xl border border-slate-100 bg-white p-7 shadow-card sm:p-12"><p className="text-[10px] font-bold uppercase tracking-widest text-forest-700">Profil UMKM</p><h1 className="mt-3 font-display text-4xl font-bold">Profil ini belum dipublikasikan.</h1><p className="mt-4 max-w-2xl text-sm leading-7 text-muted">Data pelaku usaha dan kontak publik perlu disetujui admin Forkom sebelum tampil kepada pengunjung.</p></div></main></SiteShell>;
+export const dynamic = "force-dynamic";
+
+export default async function UmkmDetailPage({ params }: { params: { slug: string } }) {
+  const umkm = await getPublicUmkmBySlug(params.slug);
+  if (!umkm) notFound();
+
+  return <SiteShell><main className="mx-auto max-w-[1040px] px-4 py-8 sm:px-6 sm:py-14">
+    <Link href="/umkm" className="mb-5 inline-flex items-center gap-2 text-[10px] font-bold text-forest-800 hover:underline"><ArrowLeft size={13} />Kembali ke daftar UMKM</Link>
+    <section className="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-card"><div className="bg-forest-900 p-7 text-white sm:p-10"><p className="text-[10px] font-bold uppercase tracking-[.18em] text-accent">Profil UMKM Kepuharjo</p><h1 className="mt-3 font-display text-[clamp(2.2rem,5vw,4rem)] font-bold leading-none">{umkm.name}</h1><p className="mt-5 max-w-2xl text-sm leading-7 text-white/70">{umkm.description}</p><div className="mt-6 flex flex-wrap gap-3 text-[10px] text-white/75">{umkm.contact.address && <span className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-2"><MapPin size={13} className="text-accent" />{umkm.contact.address}</span>}{umkm.contact.whatsapp && <span className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-2"><MessageCircle size={13} className="text-accent" />{umkm.contact.whatsapp}</span>}{umkm.contact.instagram && <span className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-2"><Instagram size={13} className="text-accent" />{umkm.contact.instagram}</span>}</div></div><div className="p-6 sm:p-10"><div className="flex items-end justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-forest-700">Etalase usaha</p><h2 className="mt-2 font-display text-3xl font-bold">Produk dan layanan</h2></div><span className="inline-flex items-center gap-2 text-[10px] font-bold text-muted"><Package size={14} />{umkm.productCount} pilihan</span></div>{umkm.products.length === 0 ? <p className="mt-6 rounded-2xl bg-slate-50 p-5 text-center text-xs text-muted">Belum ada produk atau layanan yang ditayangkan.</p> : <div className="mt-6 grid gap-4 sm:grid-cols-2">{umkm.products.map((product) => <Link href={`/produk/${product.slug}`} key={product.id} className="group flex gap-4 rounded-2xl border border-slate-100 p-3 transition hover:-translate-y-0.5 hover:border-forest-200 hover:shadow-md"><img src={product.imageUrl || "/placeholder-product.svg"} alt={product.name} className="h-24 w-24 shrink-0 rounded-xl bg-[#e8f1eb] object-cover" /><span className="min-w-0 py-1"><span className="block text-[9px] font-bold uppercase tracking-wide text-forest-700">{product.category}</span><strong className="mt-1 block text-sm leading-5 text-ink group-hover:text-forest-800">{product.name}</strong><span className="mt-3 inline-flex items-center gap-1 text-[10px] font-bold text-forest-800">Lihat detail <ArrowUpRight size={12} /></span></span></Link>)}</div>}</div></section>
+  </main></SiteShell>;
 }
