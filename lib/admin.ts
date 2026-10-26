@@ -10,8 +10,11 @@ export type AdminContext = {
   databaseUserId?: string;
 };
 
-function configuredAdminEmail() {
-  return (process.env.ADMIN_LOGIN_EMAIL || "la.rayan0203@gmai.com").trim().toLowerCase();
+function configuredAdminEmails() {
+  return Array.from(new Set([
+    process.env.ADMIN_LOGIN_EMAIL || "la.rayan0203@gmail.com",
+    ...(process.env.ADMIN_EMAILS || "").split(/[;,\s]+/),
+  ].map((email) => email.trim().toLowerCase()).filter(Boolean)));
 }
 
 export async function getAdminContext(): Promise<AdminContext | null> {
@@ -32,7 +35,7 @@ export async function getAdminContext(): Promise<AdminContext | null> {
   }
 
   const email = user.email.toLowerCase();
-  const isAdmin = email === configuredAdminEmail();
+  const isAdmin = configuredAdminEmails().includes(email);
   if (!isAdmin) return null;
 
   return {
@@ -45,6 +48,6 @@ export async function getAdminContext(): Promise<AdminContext | null> {
 
 export async function requireAdmin() {
   const context = await getAdminContext();
-  if (!context) redirect(process.env.ADMIN_LOGIN_URL || "/akun/login?next=/admin");
+  if (!context) redirect(process.env.ADMIN_LOGIN_URL || process.env.NEXT_PUBLIC_ADMIN_LOGIN_URL || "/admin/login");
   return context;
 }

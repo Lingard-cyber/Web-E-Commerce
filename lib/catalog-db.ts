@@ -53,6 +53,10 @@ const readPublishedCatalog = unstable_cache(
       imageAlt: product.images[0]?.altText || product.name,
       imageSrc: product.images[0]?.imageUrl,
       images: product.images.map((image) => ({ id: image.id, imageUrl: image.imageUrl, altText: image.altText || product.name })),
+      serviceBookingMode: product.serviceBookingMode || undefined,
+      serviceRequirements: product.serviceRequirements || undefined,
+      serviceAvailability: product.serviceAvailability || undefined,
+      serviceDuration: product.serviceDuration || undefined,
     }));
 
     const publicCategories: CatalogCategory[] = categoryRows.map((category) => ({

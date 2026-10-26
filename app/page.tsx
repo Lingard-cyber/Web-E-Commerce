@@ -30,13 +30,14 @@ export default async function HomePage() {
           </div>
           <div className="relative min-h-[390px] animate-fade-up [animation-delay:180ms] sm:min-h-[500px]">
             <div className="absolute left-[8%] top-[8%] h-32 w-32 rounded-full bg-accent/10 blur-2xl" />
-            <HomeHeroCarousel entries={entries} />
+            <HomeHeroCarousel />
           </div>
         </div>
       </div>
     </section>
 
     <section className="relative z-10 mx-auto -mt-4 max-w-[1160px] px-4 sm:-mt-5 sm:px-6"><div className="grid grid-cols-2 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_12px_30px_rgba(24,66,45,.09)] sm:grid-cols-4">{benefits.map(([Icon, title, copy], index) => <div key={title} className={(index < 3 ? "border-b border-slate-100 sm:border-b-0 sm:border-r " : "") + "flex gap-3 px-4 py-4 sm:px-5 sm:py-5"}><span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-green-50 text-forest-700"><Icon size={16} /></span><span><strong className="block text-[10px] text-forest-800 sm:text-[11px]">{title}</strong><small className="mt-1 block text-[9px] leading-4 text-muted">{copy}</small></span></div>)}</div></section>
+
 
     <section className="mx-auto max-w-[1240px] px-4 py-16 sm:px-6 sm:py-20"><div className="mb-7 flex items-end justify-between gap-4"><div><p className="mb-2 text-[10px] font-bold uppercase tracking-[.18em] text-forest-700">Belanja lebih terarah</p><h2 className="font-display text-[clamp(2rem,4vw,3.2rem)] font-bold leading-none">Cari sesuai kebutuhan.</h2><p className="mt-3 max-w-xl text-xs leading-6 text-muted">Pilih kategori untuk menemukan produk dan jasa dari katalog awal Kepuharjo.</p></div><Link href="/kategori" className="hidden items-center text-[11px] font-bold text-forest-800 sm:flex">Semua kategori <ArrowRight size={13} className="ml-2" /></Link></div><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{categories.map((category, index) => <Link href={`/kategori/${category.slug}`} key={category.slug} className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 product-card-shadow hover:-translate-y-1 hover:shadow-xl"><div className="absolute right-0 top-0 h-24 w-24 rounded-bl-[80px] bg-green-50 transition group-hover:bg-accent/20" /><div className="relative mb-7 flex items-center justify-between"><span className={index % 2 ? "grid h-10 w-10 place-items-center rounded-xl bg-amber-50 text-amber-700" : "grid h-10 w-10 place-items-center rounded-xl bg-green-50 text-forest-700"}><Package size={17} /></span><ArrowUpRight size={16} className="text-muted transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-forest-800" /></div><h3 className="relative font-display text-xl font-bold">{category.name}</h3><p className="relative mt-2 text-[10px] leading-5 text-muted">{category.description}</p><p className="relative mt-4 text-[9px] font-bold uppercase tracking-widest text-forest-700">{category.count} entri</p></Link>)}</div></section>
 

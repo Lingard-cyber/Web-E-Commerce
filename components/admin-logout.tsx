@@ -4,7 +4,7 @@ import { LogOut } from "lucide-react";
 
 export function AdminLogout() {
   const logout = async () => {
-    const loginUrl = process.env.NEXT_PUBLIC_ADMIN_LOGIN_URL || "/login";
+    const loginUrl = process.env.NEXT_PUBLIC_ADMIN_LOGIN_URL || "/admin/login";
     const response = await fetch("/api/auth/admin-logout", { method: "POST" });
     if (!response.ok) return window.alert("Sesi admin belum dapat diputus. Silakan coba lagi.");
     window.location.replace(loginUrl);

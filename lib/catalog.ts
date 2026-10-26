@@ -32,6 +32,10 @@ export type CatalogEntry = {
   imageAlt: string;
   imageSrc?: string;
   images?: CatalogImage[];
+  serviceBookingMode?: "direct_booking" | "quotation";
+  serviceRequirements?: string;
+  serviceAvailability?: string;
+  serviceDuration?: string;
 };
 
 const pending = "Informasi produk sedang dilengkapi agar harga, stok, foto, dan cara pemesanannya jelas bagi pembeli.";
