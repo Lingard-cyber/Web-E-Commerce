@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   title: "Kepuharjo Market | Produk Lokal, Pasar Lebih Luas",
   description: "Etalase digital produk lokal dan jasa UMKM Kalurahan Kepuharjo.",
   icons: {
-    icon: "/forkom-favicon.svg",
-    shortcut: "/forkom-favicon.svg",
-    apple: "/forkom-favicon.svg",
+    icon: "/forkom-favicon-small.png",
+    shortcut: "/forkom-favicon-small.png",
+    apple: "/forkom-favicon-small.png",
   },
 };
 
