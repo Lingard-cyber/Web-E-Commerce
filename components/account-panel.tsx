@@ -60,21 +60,18 @@ export function AccountPanel({ initialMode = "login" }: { initialMode?: "login" 
 
     setIsSubmitting(true);
     try {
-      const supabase = createClient();
-      const result = mode === "register"
-        ? await supabase.auth.signUp({ email: email.trim().toLowerCase(), password, options: { data: { name: name.trim() } } })
-        : await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
-
-      if (result.error) return setMessage(getAuthErrorMessage(result.error.message));
       if (mode === "register") {
-        if (result.data.session) {
-          const syncResponse = await fetch("/api/auth/sync", { method: "POST" });
-          if (!syncResponse.ok) return setMessage("Akun dibuat, tetapi profil belum tersinkron. Silakan coba login ulang.");
-          await supabase.auth.signOut({ scope: "local" });
-        }
-        router.push("/akun/login?registered=1");
+        const response = await fetch("/api/auth/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase(), password }) });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) return setMessage(result.error || "Registrasi belum dapat diproses. Silakan coba lagi.");
+        setMode("login");
+        setPassword("");
+        setMessage("Registrasi berhasil. Silakan masuk dengan email dan kata sandi Anda.");
         return;
       }
+
+      const result = await createClient().auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
+      if (result.error) return setMessage(getAuthErrorMessage(result.error.message));
 
       const syncResponse = await fetch("/api/auth/sync", { method: "POST" });
       if (!syncResponse.ok) return setMessage("Login berhasil, tetapi profil belum tersinkron. Silakan coba lagi.");
