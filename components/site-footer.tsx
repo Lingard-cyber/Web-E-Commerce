@@ -8,12 +8,12 @@ const officialLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="relative min-h-[460px] overflow-hidden bg-forest-950 text-white sm:min-h-[520px]">
+    <footer className="relative min-h-[400px] overflow-hidden bg-forest-950 text-white sm:min-h-[440px]">
       <img src="/kepuharjo-footer.jpg" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-[1.08] object-cover object-[center_24%] opacity-85" />
       <div className="absolute inset-0 bg-forest-950/52" />
 
       <div className="relative z-10">
-        <div className="mx-auto grid max-w-[1180px] gap-10 px-6 py-12 md:grid-cols-[.85fr_1.15fr] md:items-center md:gap-16 md:py-16">
+        <div className="mx-auto grid max-w-[1180px] gap-8 px-6 py-10 md:grid-cols-[.85fr_1.15fr] md:items-center md:gap-14 md:py-12">
           <div className="flex items-center gap-4">
             <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl border-2 border-white bg-white shadow-lg"><img src="/forkom-umkm-kepuharjo.jpg" alt="Logo FORKOM UMKM KEPUHARJO" className="h-full w-full object-cover" /></span>
             <div><p className="text-sm font-bold text-white">FORKOM UMKM KEPUHARJO</p><p className="mt-1 text-xs text-white/75">Media sosial dan website resmi Kepuharjo</p></div>
