@@ -25,7 +25,7 @@ export default async function HomePage() {
           </div>
           <div className="relative min-h-[390px] animate-fade-up [animation-delay:180ms] sm:min-h-[500px]">
             <div className="absolute left-[8%] top-[8%] h-32 w-32 rounded-full bg-accent/10 blur-2xl" />
-            <HomeHeroCarousel />
+            <HomeHeroCarousel images={galleryImages} />
           </div>
         </div>
       </div>
