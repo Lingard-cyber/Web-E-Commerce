@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdminApi, slugValue, textValue, validationError } from "@/lib/admin-api";
 
@@ -41,5 +42,10 @@ export async function POST(request: Request) {
     if (admin?.databaseUserId) await tx.auditLog.create({ data: { userId: admin.databaseUserId, action: "create", entity: "product", entityId: created.id, metadata: { productType } } });
     return created;
   });
+  revalidatePath("/");
+  revalidatePath("/produk");
+  revalidatePath("/jasa");
+  revalidatePath("/kategori");
+  revalidatePath(`/produk/${slug}`);
   return NextResponse.json({ id: product.id }, { status: 201 });
 }

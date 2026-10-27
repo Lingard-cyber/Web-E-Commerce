@@ -1,0 +1,10 @@
+node_modules
+.next
+admin/.next
+.git
+.gitignore
+.env
+.env.*
+outputs
+tsconfig.tsbuildinfo
+npm-debug.log*

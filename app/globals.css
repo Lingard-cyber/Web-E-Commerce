@@ -108,6 +108,81 @@ a {
   isolation: isolate;
 }
 
+.admin-interface {
+  font-size: 15px;
+}
+
+.admin-interface [class~="text-xs"] {
+  font-size: .875rem;
+}
+
+.admin-interface [class~="text-[10px]"] {
+  font-size: .75rem;
+}
+
+.admin-interface [class~="text-[9px]"] {
+  font-size: .6875rem;
+}
+
+.admin-theme-dark {
+  color: #f5f5f5;
+  background: #070707;
+}
+
+.admin-theme-dark::before {
+  opacity: .12;
+  filter: brightness(.18) saturate(.2) grayscale(.55);
+}
+
+.admin-theme-dark::after {
+  opacity: .2;
+}
+
+.admin-theme-dark aside,
+.admin-theme-dark header {
+  border-color: rgba(255,255,255,.1) !important;
+  background-color: rgba(12, 12, 12, .96) !important;
+  color: #f5f5f5;
+}
+
+.admin-theme-dark [class*="bg-white"] {
+  background-color: #111111 !important;
+}
+
+.admin-theme-dark [class*="bg-slate-50"] {
+  background-color: #1a1a1a !important;
+}
+
+.admin-theme-dark [class*="bg-green-50"],
+.admin-theme-dark [class*="bg-forest-50"],
+.admin-theme-dark [class*="bg-[#f5f8f4]"],
+.admin-theme-dark [class*="bg-[#e8f1eb]"] {
+  background-color: #181818 !important;
+}
+
+.admin-theme-dark [class*="border-slate-100"],
+.admin-theme-dark [class*="border-slate-200"] {
+  border-color: rgba(255, 255, 255, .12) !important;
+}
+
+.admin-theme-dark [class*="text-ink"],
+.admin-theme-dark [class*="text-forest-950"] {
+  color: #f5f5f5 !important;
+}
+
+.admin-theme-dark [class*="text-slate-600"],
+.admin-theme-dark [class*="text-muted"] {
+  color: #b0b0b0 !important;
+}
+
+.admin-theme-dark input,
+.admin-theme-dark textarea,
+.admin-theme-dark select {
+  border-color: rgba(255, 255, 255, .18);
+  background-color: #111111;
+  color: #f5f5f5;
+}
+
 .admin-backdrop::before {
   content: "";
   position: absolute;
@@ -130,6 +205,16 @@ a {
   pointer-events: none;
 }
 
+.admin-theme-dark.admin-backdrop::before {
+  opacity: .12;
+  filter: brightness(.18) saturate(.2) grayscale(.55);
+}
+
+.admin-theme-dark.admin-backdrop::after {
+  opacity: .2;
+  background: #070707;
+}
+
 .admin-hero {
   position: relative;
   isolation: isolate;
@@ -146,6 +231,17 @@ a {
   background: linear-gradient(90deg, #073f2f 0%, rgba(7,63,47,.86) 25%, rgba(7,63,47,.18) 100%), url('/admin-umkm-illustration.jpg') center / cover;
   opacity: .94;
   animation: admin-pan 18s ease-in-out infinite alternate;
+}
+
+/* The admin night mode stays neutral black/gray instead of inheriting the brand green. */
+.admin-theme-dark .admin-hero {
+  background: #0b0b0b;
+  box-shadow: 0 24px 65px rgba(0, 0, 0, .42);
+}
+
+.admin-theme-dark .admin-hero::before {
+  opacity: .2;
+  filter: grayscale(1) brightness(.35);
 }
 
 .admin-backdrop .overflow-x-auto {

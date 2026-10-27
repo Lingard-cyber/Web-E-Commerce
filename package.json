@@ -9,7 +9,8 @@
     "build:admin": "next build admin",
     "start": "next start",
     "lint": "next lint",
-    "db:seed": "node prisma/seed.js"
+    "db:seed": "node prisma/seed.js",
+    "db:seed-admin": "node prisma/seed-admin.js"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",

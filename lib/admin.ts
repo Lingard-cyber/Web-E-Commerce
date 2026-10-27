@@ -1,48 +1,36 @@
 import { redirect } from "next/navigation";
-import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { prisma } from "@/lib/prisma";
-import { createAdminAuthServerClient } from "@/lib/supabase/admin-auth";
+import { hasAdminSession } from "@/lib/admin-session";
 
 export type AdminContext = {
-  authUser: SupabaseUser;
+  authUser?: never;
   email: string;
   name: string;
   databaseUserId?: string;
 };
 
-function configuredAdminEmails() {
-  return Array.from(new Set([
-    process.env.ADMIN_LOGIN_EMAIL || "la.rayan0203@gmail.com",
-    ...(process.env.ADMIN_EMAILS || "").split(/[;,\s]+/),
-  ].map((email) => email.trim().toLowerCase()).filter(Boolean)));
-}
-
 export async function getAdminContext(): Promise<AdminContext | null> {
-  const supabase = createAdminAuthServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user?.email) return null;
+  if (!hasAdminSession()) return null;
 
+  let adminName = process.env.ADMIN_LOGIN_NAME || "Admin Forkom";
   let databaseUser: { id: string; role: "customer" | "admin" } | null = null;
   if (process.env.DATABASE_URL) {
     try {
+      const databaseAdmin = await prisma.adminUser.findFirst({ where: { isActive: true }, orderBy: { createdAt: "asc" }, select: { email: true } });
+      if (databaseAdmin?.email && !process.env.ADMIN_LOGIN_NAME) adminName = databaseAdmin.email.split("@")[0];
       databaseUser = await prisma.user.findUnique({
-        where: { authId: user.id },
+        where: { email: databaseAdmin?.email || "" },
         select: { id: true, role: true },
       });
     } catch {
-      // The page renders a configuration warning when the database is unavailable.
+      databaseUser = null;
     }
   }
 
-  const email = user.email.toLowerCase();
-  const isAdmin = configuredAdminEmails().includes(email);
-  if (!isAdmin) return null;
-
   return {
-    authUser: user,
-    email,
-    name: String(user.user_metadata?.name || user.email.split("@")[0]),
-    databaseUserId: databaseUser?.id,
+    email: "",
+    name: adminName,
+    databaseUserId: databaseUser?.role === "admin" ? databaseUser.id : undefined,
   };
 }
 

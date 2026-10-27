@@ -22,6 +22,13 @@ export type PublicUmkm = {
   }>;
 };
 
+export function formatUmkmDescription(name: string, description: string | null | undefined, productCount = 0) {
+  const clean = description?.trim() || "Pelaku usaha lokal yang menghadirkan produk dan layanan untuk masyarakat Kepuharjo.";
+  if (clean.toLowerCase().includes(name.trim().toLowerCase())) return clean;
+  const offer = productCount > 0 ? `melayani pilihan produk atau jasa yang dapat dilihat pada etalase usaha` : "sedang menyiapkan produk dan layanan untuk ditampilkan";
+  return `${name} merupakan salah satu UMKM lokal Kepuharjo yang ${offer}. ${clean}`;
+}
+
 const fallbackUmkm: PublicUmkm[] = [
   { id: "dummy-umkm-egi-ds", name: "EGI DS", slug: "egi-ds", description: "Produsen keripik rumahan dengan bahan pilihan dari sekitar Kepuharjo.", contact: { whatsapp: "081234567890", instagram: "@egids.kepuharjo", address: "Kepuharjo, Cangkringan" }, productCount: 4, products: [{ id: "dummy-product-egi-jamur", name: "Keripik Jamur EGI DS", slug: "keripik-jamur-egi-ds", productType: "ready_stock", category: "Makanan & Camilan", imageUrl: "/catalog/egi-ds/keripik-jamur.jpeg" }, { id: "dummy-product-manggleng", name: "Manggleng Pedas Manis", slug: "manggleng-pedas-manis", productType: "ready_stock", category: "Makanan & Camilan", imageUrl: "/catalog/egi-ds/manggleng.jpeg" }] },
   { id: "dummy-umkm-griya-snack", name: "Griya Snack", slug: "griya-snack", description: "Aneka kue kering dan camilan untuk keluarga maupun acara.", contact: { whatsapp: "081298765432", instagram: "@griyasnack", address: "Kepuharjo, Cangkringan" }, productCount: 2, products: [{ id: "dummy-product-cookies", name: "Cookies Griya Snack", slug: "cookies-griya-snack", productType: "ready_stock", category: "Makanan & Camilan", imageUrl: "/catalog/griya-snack/mixed-cookies.jpeg" }, { id: "dummy-product-nastar", name: "Nastar Griya Snack", slug: "nastar-griya-snack", productType: "ready_stock", category: "Oleh-oleh Kepuharjo", imageUrl: "/catalog/griya-snack/nastar.jpeg" }] },
@@ -29,6 +36,8 @@ const fallbackUmkm: PublicUmkm[] = [
   { id: "dummy-umkm-arga", name: "Arga Cookies", slug: "arga-cookies", description: "Kue kering rumahan dengan pilihan rasa untuk hantaran dan acara.", contact: { whatsapp: "081223344556", instagram: "@argacookies", address: "Pakem, Sleman" }, productCount: 2, products: [{ id: "dummy-product-kastengel", name: "Kastengel Arga Cookies", slug: "kastengel-arga", productType: "ready_stock", category: "Oleh-oleh Kepuharjo", imageUrl: "/catalog/arga/kastengel.jpeg" }, { id: "dummy-product-almond", name: "Almond Cookies Arga", slug: "almond-cookies-arga", productType: "ready_stock", category: "Makanan & Camilan", imageUrl: "/catalog/arga/almond-cookies.jpeg" }] },
   { id: "dummy-umkm-alif", name: "Camilan Alif", slug: "camilan-alif", description: "Camilan sehat berbahan kelor dan hasil kebun lokal.", contact: { whatsapp: "081277788899", instagram: "@camilanalif", address: "Kepuharjo, Cangkringan" }, productCount: 1, products: [{ id: "dummy-product-stik-kelor", name: "Stik Kelor Camilan Alif", slug: "stik-kelor-camilan-alif", productType: "ready_stock", category: "Makanan & Camilan", imageUrl: "/catalog/camilan-alif/stik-kelor.jpeg" }] },
 ];
+
+const enrichedFallbackUmkm = fallbackUmkm.map((item) => ({ ...item, description: formatUmkmDescription(item.name, item.description, item.productCount) }));
 
 function readContact(value: unknown): PublicUmkm["contact"] {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
@@ -63,7 +72,7 @@ const readPublishedUmkm = unstable_cache(
       id: umkm.id,
       name: umkm.name,
       slug: umkm.slug,
-      description: umkm.description || "Pelaku usaha lokal dari Kepuharjo.",
+      description: formatUmkmDescription(umkm.name, umkm.description, umkm._count.products),
       contact: readContact(umkm.publicContact),
       productCount: umkm._count.products,
       products: umkm.products.map((product) => ({
@@ -81,12 +90,12 @@ const readPublishedUmkm = unstable_cache(
 );
 
 export async function getPublicUmkm() {
-  if (!process.env.DATABASE_URL) return fallbackUmkm;
+  if (!process.env.DATABASE_URL) return enrichedFallbackUmkm;
   try {
     const result = await readPublishedUmkm();
-    return result.length > 0 ? result : fallbackUmkm;
+    return result.length > 0 ? result : enrichedFallbackUmkm;
   } catch {
-    return fallbackUmkm;
+    return enrichedFallbackUmkm;
   }
 }
 

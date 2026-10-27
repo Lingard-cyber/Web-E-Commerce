@@ -1,21 +1,23 @@
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { catalogEntries, categories, type CatalogEntry, type ProductType } from "@/lib/catalog";
-
-export type CatalogCategory = {
-  slug: string;
-  name: string;
-  count: number;
-  description: string;
-};
+import { catalogEntries, categories, type CatalogCategory, type CatalogEntry, type ProductType } from "@/lib/catalog";
 
 const fallbackCategories: CatalogCategory[] = categories.map((category) => ({ ...category }));
+const catalogCategorySlugs = categories.filter((category) => !category.comingSoon).map((category) => category.slug);
+const publicCategorySlugs = categories.map((category) => category.slug);
 
 const readPublishedCatalog = unstable_cache(
   async () => {
     const [products, categoryRows] = await Promise.all([
       prisma.product.findMany({
-        where: { publishStatus: "published" },
+        where: {
+          publishStatus: "published",
+          category: { slug: { in: catalogCategorySlugs } },
+          OR: [
+            { verificationNote: null },
+            { verificationNote: { not: { contains: "dummy" } } },
+          ],
+        },
         orderBy: [{ updatedAt: "desc" }, { name: "asc" }],
         include: {
           category: true,
@@ -25,6 +27,7 @@ const readPublishedCatalog = unstable_cache(
         },
       }),
       prisma.category.findMany({
+        where: { slug: { in: publicCategorySlugs } },
         orderBy: { sortOrder: "asc" },
         include: { _count: { select: { products: { where: { publishStatus: "published" } } } } },
       }),
@@ -65,6 +68,11 @@ const readPublishedCatalog = unstable_cache(
       count: category._count.products,
       description: category.description || "Produk pilihan dari pelaku usaha lokal.",
     }));
+
+    const existingSlugs = new Set(publicCategories.map((category) => category.slug));
+    for (const category of categories.filter((item) => item.comingSoon && !existingSlugs.has(item.slug))) {
+      publicCategories.push({ ...category });
+    }
 
     return { entries, categories: publicCategories };
   },

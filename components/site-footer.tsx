@@ -1,29 +1,31 @@
-import Link from "next/link";
+import { ExternalLink, Facebook, Globe2, Instagram } from "lucide-react";
+
+const officialLinks = [
+  { label: "Instagram · Halo Kepuharjo", href: "https://www.instagram.com/halokepuharjo/", icon: Instagram },
+  { label: "Facebook · Halo Kepuharjo", href: "https://www.facebook.com/halokepuharjo/", icon: Facebook },
+  { label: "Website resmi Kalurahan", href: "https://kepuharjosid.slemankab.go.id/home/", icon: Globe2 },
+];
 
 export function SiteFooter() {
   return (
-    <footer className="bg-forest-950 text-white">
-      <div className="border-b border-white/10 px-6 py-3 text-center text-[9px] font-bold tracking-[.12em] text-white/70 sm:text-[10px]">
-        DUKUNG UMKM LOKAL · PRODUK KEPUHARJO, PASAR LEBIH LUAS
-      </div>
-      <div className="mx-auto grid max-w-[1180px] gap-8 px-6 py-10 md:grid-cols-[1.4fr_.8fr_.9fr] md:gap-16">
-        <div>
-          <div className="mb-3 flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-lg border border-white/80 bg-white"><img src="/forkom-umkm-kepuharjo.jpg" alt="Logo FORKOM UMKM KEPUHARJO" className="h-full w-full object-cover" /></span>
-            <span className="text-[10px] font-bold">FORKOM UMKM KEPUHARJO</span>
+    <footer className="relative min-h-[460px] overflow-hidden bg-forest-950 text-white sm:min-h-[520px]">
+      <img src="/kepuharjo-footer.jpg" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-[1.08] object-cover object-[center_24%] opacity-85" />
+      <div className="absolute inset-0 bg-forest-950/52" />
+
+      <div className="relative z-10">
+        <div className="mx-auto grid max-w-[1180px] gap-10 px-6 py-12 md:grid-cols-[.85fr_1.15fr] md:items-center md:gap-16 md:py-16">
+          <div className="flex items-center gap-4">
+            <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl border-2 border-white bg-white shadow-lg"><img src="/forkom-umkm-kepuharjo.jpg" alt="Logo FORKOM UMKM KEPUHARJO" className="h-full w-full object-cover" /></span>
+            <div><p className="text-sm font-bold text-white">FORKOM UMKM KEPUHARJO</p><p className="mt-1 text-xs text-white/75">Media sosial dan website resmi Kepuharjo</p></div>
           </div>
-          <p className="max-w-xs text-[10px] leading-5 text-white/55">Etalase digital produk lokal dan jasa UMKM Kalurahan Kepuharjo, Cangkringan, Sleman, DIY.</p>
+
+          <div>
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-[.16em] text-black">Ikuti informasi Kepuharjo</h2>
+            <div className="grid gap-3 sm:grid-cols-3">{officialLinks.map(({ label, href, icon: Icon }) => <a key={href} href={href} target="_blank" rel="noreferrer" className="group flex min-h-12 items-center gap-3 rounded-2xl border border-white/20 bg-forest-950/55 px-4 text-xs font-semibold text-white/90 transition hover:-translate-y-1 hover:border-accent hover:bg-forest-950/80 hover:text-accent"><Icon size={18} className="shrink-0" /><span className="min-w-0 flex-1">{label}</span><ExternalLink size={13} className="shrink-0 opacity-60 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" /></a>)}</div>
+          </div>
         </div>
-        <div>
-          <h3 className="mb-3 text-[9px] font-bold uppercase tracking-wider text-accent">Belanja</h3>
-          <div className="grid gap-2 text-[10px] text-white/55"><Link href="/belanja">Katalog produk</Link><Link href="/jasa">Jasa & layanan</Link><Link href="/kategori">Kategori</Link><Link href="/keranjang">Keranjang belanja</Link><Link href="/lacak-pesanan">Lacak pesanan</Link></div>
-        </div>
-        <div>
-          <h3 className="mb-3 text-[9px] font-bold uppercase tracking-wider text-accent">Bantuan &amp; legal</h3>
-          <div className="grid gap-2 text-[10px] text-white/55"><Link href="/bantuan">Pusat bantuan</Link><Link href="/kontak">Kontak</Link><Link href="/kebijakan-privasi">Kebijakan privasi</Link><Link href="/syarat-ketentuan">Syarat &amp; ketentuan</Link><Link href="/kebijakan-pengiriman">Kebijakan pengiriman</Link></div>
-        </div>
+        <div className="border-t border-white/20 px-6 py-4 text-center text-[10px] text-white/70"><span>FORKOM UMKM KEPUHARJO · Kanal resmi dan informasi warga</span></div>
       </div>
-      <div className="border-t border-white/10 px-6 py-4 text-[9px] text-white/35"><span>© 2026 FORKOM UMKM KEPUHARJO · Marketplace produk dan layanan lokal</span></div>
     </footer>
   );
 }

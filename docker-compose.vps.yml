@@ -1,0 +1,37 @@
+services:
+  storefront:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        NEXT_PUBLIC_STORE_URL: ${NEXT_PUBLIC_STORE_URL}
+        NEXT_PUBLIC_ADMIN_LOGIN_URL: ${NEXT_PUBLIC_ADMIN_LOGIN_URL}
+        ADMIN_LOGIN_URL: ${ADMIN_LOGIN_URL}
+    env_file:
+      - .env.deploy
+    environment:
+      ADMIN_LOGIN_PASSWORD: ${ADMIN_LOGIN_PASSWORD}
+      ADMIN_LOGIN_NAME: ${ADMIN_LOGIN_NAME:-Admin Forkom}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3010:3000"
+
+  admin:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        NEXT_PUBLIC_STORE_URL: ${NEXT_PUBLIC_STORE_URL}
+        NEXT_PUBLIC_ADMIN_LOGIN_URL: ${NEXT_PUBLIC_ADMIN_LOGIN_URL}
+        ADMIN_LOGIN_URL: ${ADMIN_LOGIN_URL}
+    env_file:
+      - .env.deploy
+    environment:
+      ADMIN_LOGIN_PASSWORD: ${ADMIN_LOGIN_PASSWORD}
+      ADMIN_LOGIN_NAME: ${ADMIN_LOGIN_NAME:-Admin Forkom}
+    command: ["npx", "next", "start", "admin", "-p", "3001"]
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3011:3001"

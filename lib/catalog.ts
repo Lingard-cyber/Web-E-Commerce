@@ -38,6 +38,14 @@ export type CatalogEntry = {
   serviceDuration?: string;
 };
 
+export type CatalogCategory = {
+  slug: string;
+  name: string;
+  count: number;
+  description: string;
+  comingSoon?: boolean;
+};
+
 const pending = "Informasi produk sedang dilengkapi agar harga, stok, foto, dan cara pemesanannya jelas bagi pembeli.";
 
 const variant = (id: string, label: string, priceIdr: number | null): ProductVariant => ({
@@ -48,12 +56,14 @@ const variant = (id: string, label: string, priceIdr: number | null): ProductVar
   active: true,
 });
 
-export const categories = [
+export const categories: CatalogCategory[] = [
   { slug: "makanan-camilan", name: "Makanan & camilan", count: 10, description: "Apem, criping, keripik, sambal, dan olahan siap saji." },
   { slug: "minuman-herbal", name: "Minuman & herbal", count: 8, description: "Kopi, jahe, madu, susu, dan minuman olahan warga." },
   { slug: "kerajinan-souvenir", name: "Kerajinan & souvenir", count: 3, description: "Souvenir, tas rajut, dan dekorasi dari potensi lokal." },
   { slug: "fashion-jasa-jahit", name: "Fashion & jasa jahit", count: 2, description: "Rumah Jahit Masruroh dan Yuni Taylor." },
-] as const;
+  { slug: "pertanian-hasil-bumi", name: "Pertanian & hasil bumi", count: 0, description: "Produk pertanian dan hasil bumi Kepuharjo akan segera hadir.", comingSoon: true },
+  { slug: "jasa-lainnya", name: "Jasa lainnya", count: 0, description: "Pilihan jasa warga lainnya sedang kami siapkan.", comingSoon: true },
+];
 
 export const catalogEntries: CatalogEntry[] = [
   { id: "cat-01", slug: "apem-merapi", name: "Apem Merapi", category: "Makanan & camilan", categorySlug: "makanan-camilan", productType: "fresh_preorder", description: "Apem Merapi dari katalog produk Forkom UMKM Kepuharjo.", variants: [variant("apem-satuan", "Apem Merapi", 1500)], sourcePdfPage: 5, sourceCatalogEntry: 1, status: "pending_verification", verificationNote: "Satuan produk perlu dikonfirmasi.", imageAlt: "Foto produk Apem Merapi belum tersedia" },

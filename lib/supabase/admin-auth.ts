@@ -3,18 +3,27 @@ import { cookies } from "next/headers";
 
 export const ADMIN_AUTH_COOKIE = "sb-admin-auth-token";
 
-function getPublicKey() {
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!key) throw new Error("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY is missing.");
-  return key;
+export function getAdminAuthConfig() {
+  const hasDedicatedConfig = Boolean(
+    process.env.ADMIN_SUPABASE_URL ||
+    process.env.ADMIN_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.ADMIN_SUPABASE_ANON_KEY,
+  );
+  const url = hasDedicatedConfig ? process.env.ADMIN_SUPABASE_URL : process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = hasDedicatedConfig
+    ? process.env.ADMIN_SUPABASE_PUBLISHABLE_KEY || process.env.ADMIN_SUPABASE_ANON_KEY
+    : process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  return { url: url || "", key: key || "", isDedicated: hasDedicatedConfig };
 }
 
 export function createAdminAuthServerClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!url) throw new Error("NEXT_PUBLIC_SUPABASE_URL is missing.");
+  const { url, key } = getAdminAuthConfig();
+  if (!url) throw new Error("ADMIN_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_URL is missing.");
+  if (!key) throw new Error("ADMIN_SUPABASE_PUBLISHABLE_KEY/ANON_KEY or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY/ANON_KEY is missing.");
   const cookieStore = cookies();
 
-  return createServerClient(url, getPublicKey(), {
+  return createServerClient(url, key, {
     cookieOptions: { name: ADMIN_AUTH_COOKIE },
     cookies: {
       getAll() {

@@ -32,7 +32,8 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
     try {
       const result = await createClient().auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
       if (result.error) return setMessage(getAuthErrorMessage(result.error.message));
-      await fetch("/api/auth/sync", { method: "POST" });
+      const syncResponse = await fetch("/api/auth/sync", { method: "POST" });
+      if (!syncResponse.ok) return setMessage("Login berhasil, tetapi profil belum tersinkron. Silakan coba lagi.");
       onClose();
       router.refresh();
     } catch {

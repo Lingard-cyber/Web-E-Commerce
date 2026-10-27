@@ -27,10 +27,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     if (params.get("callback_error") === "1") {
       setMessage("Link konfirmasi email tidak valid atau sudah kedaluwarsa. Silakan daftar ulang jika diperlukan.");
     } else if (params.get("registered") === "1") {
-      const needsEmailConfirmation = params.get("verify") === "1";
-      setMessage(needsEmailConfirmation
-        ? "Akun berhasil dibuat. Silakan cek email untuk mengonfirmasi akun sebelum masuk."
-        : "Registrasi berhasil. Silakan masuk menggunakan akun Anda.");
+      setMessage("Registrasi berhasil. Silakan masuk menggunakan email dan kata sandi Anda.");
     }
   }, [isRegister]);
 
@@ -57,18 +54,17 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
       if (result.error) return setMessage(getAuthErrorMessage(result.error.message));
       if (isRegister) {
-        const needsEmailConfirmation = !result.data.session;
         if (result.data.session) {
-          await fetch("/api/auth/sync", { method: "POST" });
+          const syncResponse = await fetch("/api/auth/sync", { method: "POST" });
+          if (!syncResponse.ok) return setMessage("Akun dibuat, tetapi profil belum tersinkron. Silakan coba login ulang.");
           await supabase.auth.signOut({ scope: "local" });
         }
-        const params = new URLSearchParams({ registered: "1" });
-        if (needsEmailConfirmation) params.set("verify", "1");
-        router.push(`/akun/login?${params.toString()}`);
+        router.push("/akun/login?registered=1");
         return;
       }
 
-      await fetch("/api/auth/sync", { method: "POST" });
+      const syncResponse = await fetch("/api/auth/sync", { method: "POST" });
+      if (!syncResponse.ok) return setMessage("Login berhasil, tetapi profil belum tersinkron. Silakan coba lagi.");
       const next = new URLSearchParams(window.location.search).get("next");
       router.push(next && next.startsWith("/") ? next : "/");
     } catch {

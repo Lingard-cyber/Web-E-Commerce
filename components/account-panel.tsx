@@ -67,20 +67,17 @@ export function AccountPanel({ initialMode = "login" }: { initialMode?: "login" 
 
       if (result.error) return setMessage(getAuthErrorMessage(result.error.message));
       if (mode === "register") {
-        const needsEmailConfirmation = !result.data.session;
         if (result.data.session) {
-          await fetch("/api/auth/sync", { method: "POST" });
+          const syncResponse = await fetch("/api/auth/sync", { method: "POST" });
+          if (!syncResponse.ok) return setMessage("Akun dibuat, tetapi profil belum tersinkron. Silakan coba login ulang.");
           await supabase.auth.signOut({ scope: "local" });
         }
-        setMessage(needsEmailConfirmation
-          ? "Akun berhasil dibuat. Silakan cek email untuk mengonfirmasi akun."
-          : "Akun berhasil dibuat. Silakan masuk menggunakan akun Anda.");
-        setMode("login");
-        setPassword("");
+        router.push("/akun/login?registered=1");
         return;
       }
 
-      await fetch("/api/auth/sync", { method: "POST" });
+      const syncResponse = await fetch("/api/auth/sync", { method: "POST" });
+      if (!syncResponse.ok) return setMessage("Login berhasil, tetapi profil belum tersinkron. Silakan coba lagi.");
       fillUserData(result.data.user);
       router.push("/");
     } catch {

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
 
-export function AuthPageFrame({ children }: { children: ReactNode }) {
+export function AuthPageFrame({ children, showBack = true }: { children: ReactNode; showBack?: boolean }) {
   return (
     <main className="flex min-h-screen flex-col bg-[#f5f8f4] px-4 py-5 sm:px-6 sm:py-8">
       <header className="mx-auto flex w-full max-w-[1180px] flex-col items-center">
@@ -12,10 +12,10 @@ export function AuthPageFrame({ children }: { children: ReactNode }) {
           </span>
           <span>FORKOM UMKM KEPUHARJO</span>
         </Link>
-        <Link href="/" className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-forest-200 bg-white px-3 py-2 text-[10px] font-bold text-forest-800 transition hover:border-forest-700 hover:bg-green-50">
+        {showBack && <Link href="/" className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-forest-200 bg-white px-3 py-2 text-[10px] font-bold text-forest-800 transition hover:border-forest-700 hover:bg-green-50">
           <ArrowLeft size={13} />
           Kembali ke beranda
-        </Link>
+        </Link>}
       </header>
 
       <div className="flex flex-1 items-center justify-center py-8 sm:py-10">

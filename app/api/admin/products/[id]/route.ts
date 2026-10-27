@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdminApi, slugValue, textValue, validationError } from "@/lib/admin-api";
 
@@ -42,17 +43,27 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     }
     if (admin?.databaseUserId) await tx.auditLog.create({ data: { userId: admin.databaseUserId, action: "update", entity: "product", entityId: params.id, metadata: { productType, publishStatus } } });
   });
+  revalidatePath("/");
+  revalidatePath("/produk");
+  revalidatePath("/jasa");
+  revalidatePath("/kategori");
+  revalidatePath(`/produk/${slug}`);
   return NextResponse.json({ ok: true });
 }
 
 export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
   const { admin, response } = await requireAdminApi();
   if (response) return response;
-  const product = await prisma.product.findUnique({ where: { id: params.id }, select: { id: true } });
+  const product = await prisma.product.findUnique({ where: { id: params.id }, select: { id: true, slug: true } });
   if (!product) return NextResponse.json({ error: "Produk atau jasa tidak ditemukan." }, { status: 404 });
   await prisma.$transaction(async (tx) => {
     await tx.product.update({ where: { id: params.id }, data: { publishStatus: "archived", variants: { updateMany: { where: {}, data: { isActive: false } } } } });
     if (admin?.databaseUserId) await tx.auditLog.create({ data: { userId: admin.databaseUserId, action: "archive", entity: "product", entityId: params.id } });
   });
+  revalidatePath("/");
+  revalidatePath("/produk");
+  revalidatePath("/jasa");
+  revalidatePath("/kategori");
+  revalidatePath(`/produk/${product.slug}`);
   return NextResponse.json({ ok: true });
 }

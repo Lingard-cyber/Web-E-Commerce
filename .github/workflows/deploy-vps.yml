@@ -1,0 +1,71 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  VPS_HOST: ${{ secrets.VPS_HOST }}
+  VPS_USER: ${{ secrets.VPS_USER }}
+  VPS_APP_DIR: /home/jogjacreativepro/umkmkepuharjo
+  COMPOSE_FILE: docker-compose.vps.yml
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          set -eu
+          install -m 700 -d "$HOME/.ssh"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$HOME/.ssh/id_ed25519"
+          chmod 600 "$HOME/.ssh/id_ed25519"
+          ssh-keyscan -H "$VPS_HOST" >> "$HOME/.ssh/known_hosts"
+
+      - name: Upload source to VPS
+        run: |
+          set -eu
+          ssh "$VPS_USER@$VPS_HOST" "mkdir -p '$VPS_APP_DIR'"
+          rsync -az --delete \
+            --exclude '.env' \
+            --exclude '.env.*' \
+            --exclude '.git/' \
+            --exclude 'node_modules/' \
+            --exclude '.next/' \
+            --exclude 'admin/.next/' \
+            --exclude 'coverage/' \
+            ./ "$VPS_USER@$VPS_HOST:$VPS_APP_DIR/"
+
+      - name: Build, migrate, and restart application
+        run: |
+          set -eu
+          ssh "$VPS_USER@$VPS_HOST" "
+            set -eu
+            cd '$VPS_APP_DIR'
+            test -f .env.deploy
+            docker compose --env-file .env.deploy -f '$COMPOSE_FILE' build
+            docker compose --env-file .env.deploy -f '$COMPOSE_FILE' run --rm storefront npx prisma migrate deploy
+            docker compose --env-file .env.deploy -f '$COMPOSE_FILE' up -d --remove-orphans
+            docker compose --env-file .env.deploy -f '$COMPOSE_FILE' ps
+            curl --fail --silent --show-error --max-time 30 http://127.0.0.1:3010/ > /dev/null
+          "
+
+      - name: Verify public HTTPS endpoint
+        run: |
+          set -eu
+          curl --fail --silent --show-error --max-time 30 \
+            https://umkmkepuharjo.duckdns.org/ > /dev/null
+          curl --fail --silent --show-error --max-time 30 \
+            https://umkmkepuharjo.duckdns.org/admin/login > /dev/null
