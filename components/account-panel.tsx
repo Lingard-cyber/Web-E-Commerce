@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Eye, EyeOff, KeyRound, LockKeyhole, LogOut, Mail, MapPin, Package, Phone, Save, UserRound } from "lucide-react";
+import { CheckCircle2, Eye, EyeOff, KeyRound, LockKeyhole, LogOut, Mail, MapPin, Phone, Save, UserRound } from "lucide-react";
 import { type User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -132,7 +132,6 @@ export function AccountPanel({ initialMode = "login" }: { initialMode?: "login" 
               <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-accent text-xl font-bold text-forest-950">{displayName.slice(0, 1).toUpperCase()}</span>
               <div><p className="text-[10px] uppercase tracking-widest text-white/55">Profil pelanggan</p><h2 className="mt-1 font-display text-2xl font-bold">Halo, {displayName}.</h2><p className="mt-1 text-[10px] text-white/60">{user.email}</p></div>
             </div>
-            <Link href="/lacak-pesanan" className="flex items-center gap-2 rounded-xl border border-white/20 px-3 py-2 text-[10px] font-bold text-white hover:bg-white/10"><Package size={15} />Lacak pesanan</Link>
           </div>
         </div>
 

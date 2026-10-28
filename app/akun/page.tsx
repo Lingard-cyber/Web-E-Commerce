@@ -9,7 +9,7 @@ export default async function AccountPage({ searchParams }: { searchParams: { mo
   const initialMode = searchParams.mode === "register" ? "register" : "login";
 
   return (
-    <AuthPageFrame>
+    <AuthPageFrame showBack={false} showFooter>
       <div className="w-full max-w-[900px]">
         <div className="mb-8 text-center">
           <p className="text-[10px] font-bold uppercase tracking-widest text-forest-700">Profil pelanggan</p>

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
+import { SiteFooter } from "./site-footer";
 
-export function AuthPageFrame({ children, showBack = true, modal = false }: { children: ReactNode; showBack?: boolean; modal?: boolean }) {
+export function AuthPageFrame({ children, showBack = true, showFooter = false, modal = false }: { children: ReactNode; showBack?: boolean; showFooter?: boolean; modal?: boolean }) {
   if (modal) return <main className="relative grid min-h-screen place-items-center bg-slate-950/65 px-4 py-6 backdrop-blur-[2px]">
     <Link href="/" className="absolute left-4 top-4 flex items-center gap-2 text-[10px] font-bold text-white/85 transition hover:text-white sm:left-6 sm:top-6"><span className="grid h-8 w-8 place-items-center overflow-hidden rounded-full border border-accent bg-white"><img src="/forkom-umkm-kepuharjo.jpg" alt="Logo FORKOM UMKM KEPUHARJO" className="h-full w-full object-cover" /></span><span className="hidden sm:inline">FORKOM UMKM KEPUHARJO</span></Link>
     <div className="w-full max-w-[390px]">{children}</div>
@@ -27,7 +28,7 @@ export function AuthPageFrame({ children, showBack = true, modal = false }: { ch
         {children}
       </div>
 
-      <p className="text-center text-[9px] text-muted">© 2026 Kepuharjo Market · Halaman autentikasi</p>
+      {showFooter ? <SiteFooter /> : <p className="text-center text-[9px] text-muted">© 2026 Kepuharjo Market · Halaman autentikasi</p>}
     </main>
   );
 }
