@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { breakAuthSession } from "@/lib/auth-logout";
 import { getAuthErrorMessage } from "@/lib/auth-errors";
 import { AccountCommercePanel } from "@/components/account-commerce-panel";
+import { LogoutDialog } from "@/components/logout-dialog";
 
 export function AccountPanel({ initialMode = "login" }: { initialMode?: "login" | "register" }) {
   const router = useRouter();
@@ -27,6 +28,8 @@ export function AccountPanel({ initialMode = "login" }: { initialMode?: "login" 
   const [savingProfile, setSavingProfile] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const fillUserData = (currentUser: User | null) => {
     setUser(currentUser);
@@ -118,7 +121,9 @@ export function AccountPanel({ initialMode = "login" }: { initialMode?: "login" 
   };
 
   const logout = async () => {
+    setLoggingOut(true);
     const error = await breakAuthSession("/");
+    setLoggingOut(false);
     if (error) setMessage(error.message);
   };
 
@@ -158,7 +163,8 @@ export function AccountPanel({ initialMode = "login" }: { initialMode?: "login" 
         </div>
 
         {message && <p className="mx-6 mb-5 rounded-xl bg-green-50 p-3 text-[10px] leading-5 text-forest-800 sm:mx-8">{message}</p>}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-6 py-5 sm:px-8"><Link href="/produk" className="text-[10px] font-bold text-forest-800 hover:underline">Kembali belanja</Link><button onClick={logout} className="flex items-center gap-2 rounded-xl border border-red-100 px-3 py-2 text-[10px] font-bold text-red-600 hover:bg-red-50"><LogOut size={15} />Keluar</button></div>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-6 py-5 sm:px-8"><Link href="/produk" className="text-[10px] font-bold text-forest-800 hover:underline">Kembali belanja</Link><button onClick={() => setLogoutOpen(true)} disabled={loggingOut} className="flex items-center gap-2 rounded-xl border border-red-100 px-3 py-2 text-[10px] font-bold text-red-600 hover:bg-red-50 disabled:opacity-50"><LogOut size={15} />Keluar</button></div>
+        <LogoutDialog open={logoutOpen} loading={loggingOut} onCancel={() => setLogoutOpen(false)} onConfirm={logout} />
       </div>
     );
   }
