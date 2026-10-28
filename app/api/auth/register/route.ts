@@ -23,13 +23,13 @@ export async function POST(request: Request) {
     const { data, error } = await supabase.auth.admin.createUser({ email, password, email_confirm: true, user_metadata: { name, phone } });
     if (error) return authError(error.message);
     await syncCreatedUser(data.user);
-    return NextResponse.json({ ok: true, requiresEmailConfirmation: false }, { status: 201 });
+    return NextResponse.json({ ok: true }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Registrasi belum dapat diproses.";
     if (!message.includes("Supabase server credentials are missing")) return NextResponse.json({ error: "Registrasi belum dapat diproses. Silakan coba lagi." }, { status: 500 });
 
-    // The public Supabase key is sufficient for normal sign-up. The service
-    // role key is only needed to confirm the email automatically on the server.
+    // Keep a public-key fallback for local development. Production uses the
+    // service-role path above so newly created accounts are already confirmed.
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const publicKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     if (!url || !publicKey) return NextResponse.json({ error: "Layanan autentikasi belum dikonfigurasi di server." }, { status: 503 });
@@ -37,8 +37,9 @@ export async function POST(request: Request) {
     const supabase = createSupabaseClient(url, publicKey, { auth: { autoRefreshToken: false, persistSession: false } });
     const { data, error: signUpError } = await supabase.auth.signUp({ email, password, options: { data: { name, phone } } });
     if (signUpError) return authError(signUpError.message);
+    if (!data.session) return NextResponse.json({ error: "Registrasi belum dapat diselesaikan karena server masih meminta konfirmasi email." }, { status: 503 });
     await syncCreatedUser(data.user);
-    return NextResponse.json({ ok: true, requiresEmailConfirmation: !data.session }, { status: 201 });
+    return NextResponse.json({ ok: true }, { status: 201 });
   }
 }
 
