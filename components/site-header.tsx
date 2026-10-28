@@ -38,7 +38,6 @@ const searchablePages = [
   { label: "Bantuan", description: "Pusat bantuan dan pertanyaan umum", href: "/bantuan" },
   { label: "Galeri", description: "Foto kegiatan dan kebersamaan UMKM", href: "/galeri" },
   { label: "Keranjang belanja", description: "Lihat produk yang disimpan", href: "/keranjang" },
-  { label: "Lacak pesanan", description: "Pantau perkembangan pesanan", href: "/lacak-pesanan" },
   { label: "Masuk", description: "Masuk ke akun pelanggan", href: "/akun/login" },
   { label: "Daftar", description: "Buat akun pelanggan baru", href: "/akun/daftar" },
 ];
