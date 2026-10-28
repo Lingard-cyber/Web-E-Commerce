@@ -143,6 +143,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
       </form>
 
       {message && <p className="mt-4 rounded-lg bg-amber-50 p-3 text-center text-[10px] leading-5 text-amber-900">{message}</p>}
+      {!isRegister && <div className="mt-4 text-center"><Link href="/akun/lupa-password" className="text-[10px] font-bold text-forest-800 underline underline-offset-2">Lupa kata sandi?</Link></div>}
       <div className="my-5 border-t border-slate-200" />
       <p className="text-center text-[11px] text-muted">
         {isRegister ? "Sudah memiliki akun?" : "Belum memiliki akun?"}{" "}

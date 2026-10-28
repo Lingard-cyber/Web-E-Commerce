@@ -21,5 +21,6 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(new URL("/", url.origin));
+  const next = url.searchParams.get("next");
+  return NextResponse.redirect(new URL(next && next.startsWith("/") && !next.startsWith("//") ? next : "/", url.origin));
 }
