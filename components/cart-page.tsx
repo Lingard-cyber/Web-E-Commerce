@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { CartItem, persistCartToDatabase, readCart, writeCart } from "@/lib/cart";
 import { catalogImagePlaceholder, formatRupiah } from "@/lib/catalog";
@@ -19,7 +19,7 @@ export function CartPage() {
   const update = (next: CartItem[]) => { setItems(next); writeCart(next); void persistCartToDatabase(next); };
 
   if (!items.length) return <div className="rounded-3xl border border-dashed border-forest-700/30 bg-white p-10 text-center shadow-card sm:p-16">
-    <span className="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-green-50 text-forest-700"><ShoppingBag size={28} /></span>
+      <span className="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-green-50 text-forest-700"><ShoppingCart size={29} /></span>
     <h2 className="mt-6 font-display text-3xl font-bold">Keranjang masih kosong.</h2>
     <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted">Pilih produk dari katalog untuk menyimpannya di keranjang.</p>
     <Link href="/belanja" className="mt-7 inline-flex min-h-11 items-center rounded-xl bg-forest-800 px-5 text-[10px] font-bold text-white">Jelajahi katalog <ArrowRight size={13} className="ml-2" /></Link>

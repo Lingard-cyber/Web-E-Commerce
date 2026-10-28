@@ -1,7 +1,7 @@
 import { MessageCircle } from "lucide-react";
 
-const demoPhone = "628138732976";
-const displayPhone = "+62 813-8732-976";
+const demoPhone = "6285600604388";
+const displayPhone = "+62 856-0060-4388";
 const message = encodeURIComponent("Halo Kepuharjo Market, saya ingin bertanya tentang produk.");
 
 export function WhatsAppFloat() {

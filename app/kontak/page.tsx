@@ -7,6 +7,9 @@ const orderingContacts = [
   { label: "CP 1", number: "628138732976", display: "+62 813-8732-976", message: "Halo, saya ingin memesan produk dari Kepuharjo Market." },
   { label: "CP 2", number: "6285647357039", display: "+62 856-4735-7039", message: "Halo, saya ingin memesan produk atau jasa dari Kepuharjo Market." },
 ] as const;
+const adminWhatsappNumber = "6285600604388";
+const adminWhatsappDisplay = "+62 856-0060-4388";
+const adminWhatsappMessage = encodeURIComponent("Halo admin Kepuharjo Market, saya ingin bertanya.");
 const mapUrl = "https://www.google.com/maps?q=-7.6250023,110.4530898&z=17&hl=en";
 const embeddedMapUrl = `${mapUrl}&output=embed`;
 
@@ -27,6 +30,7 @@ export default function KontakPage() {
             <div className="mt-5 space-y-2">
               {orderingContacts.map((contact) => <a key={contact.number} href={`https://wa.me/${contact.number}?text=${encodeURIComponent(contact.message)}`} target="_blank" rel="noreferrer" className="group flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-3 transition hover:bg-white/10"><span><span className="block text-[10px] font-bold text-accent">{contact.label}</span><span className="mt-1 block text-xs font-semibold">{contact.display}</span></span><ArrowRight size={14} className="text-white/50 transition group-hover:translate-x-1 group-hover:text-accent" /></a>)}
             </div>
+            <a href={`https://wa.me/${adminWhatsappNumber}?text=${adminWhatsappMessage}`} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center text-[10px] font-bold text-white/75 transition hover:text-accent">Hubungi admin ({adminWhatsappDisplay}) <ArrowRight size={13} className="ml-2" /></a>
           </div>
           <a href={mapUrl} target="_blank" rel="noreferrer" className="group rounded-3xl border border-slate-100 bg-white p-6 shadow-card transition hover:-translate-y-1 hover:shadow-xl sm:p-7">
             <span className="grid h-11 w-11 place-items-center rounded-2xl bg-green-50 text-forest-700"><MapPin size={21} /></span>
