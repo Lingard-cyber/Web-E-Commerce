@@ -3,7 +3,7 @@ import { NavigationProgress } from "@/components/navigation-progress";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Kepuharjo Market | Produk Lokal, Pasar Lebih Luas",
+  title: "Forkom UMKM Kepuharjo | Produk Lokal, Pasar Lebih Luas",
   description: "Etalase digital produk lokal dan jasa UMKM Kalurahan Kepuharjo.",
   icons: {
     icon: "/forkom-favicon-small.png",
