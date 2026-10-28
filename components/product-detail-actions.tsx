@@ -7,6 +7,7 @@ import { CatalogEntry, formatRupiah } from "@/lib/catalog";
 import { persistCartToDatabase, readCart, writeCart } from "@/lib/cart";
 import { createClient } from "@/lib/supabase/client";
 import { orderingContacts, orderingWhatsappUrl } from "@/lib/ordering-contacts";
+import { Notification } from "@/components/notification";
 
 export function ProductDetailActions({ entry }: { entry: CatalogEntry }) {
   const router = useRouter();
@@ -72,6 +73,6 @@ export function ProductDetailActions({ entry }: { entry: CatalogEntry }) {
       <div className="mt-4 flex items-center justify-center gap-5 border-t border-slate-100 pt-3 text-[10px] text-muted"><a href="#informasi-produk" className="inline-flex items-center gap-1.5 hover:text-forest-800"><FileText size={13} />Deskripsi</a><button type="button" onClick={() => show("Wishlist akan tersedia setelah akun aktif.")} className="inline-flex items-center gap-1.5 hover:text-forest-800"><Heart size={13} />Wishlist</button><button type="button" onClick={share} className="inline-flex items-center gap-1.5 hover:text-forest-800"><Share2 size={13} />Bagikan</button></div>
     </div>
     <p className="mt-3 flex items-start gap-1.5 text-[10px] leading-5 text-muted"><ChevronDown size={13} className="mt-1 shrink-0 text-forest-700" />Harga dan stok akan dicek kembali saat checkout untuk memastikan pesanan dapat diproses.</p>
-    {notice && <div className="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-full bg-forest-950 px-4 py-3 text-[11px] text-white shadow-xl">{notice}</div>}
+    {notice && <Notification message={notice} tone="info" onClose={() => setNotice("")} />}
   </>;
 }

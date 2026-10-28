@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { Pencil, Plus, Save, Trash2, X } from "lucide-react";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 type Category = { id: string; name: string; slug: string; description: string | null; sortOrder: number; status: "coming_soon" | "published"; productCount: number };
 type CategoryForm = { name: string; slug: string; description: string; sortOrder: string; status: Category["status"] };
@@ -22,6 +23,7 @@ export function AdminCategoryManager({ initialCategories }: { initialCategories:
   const [saving, setSaving] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<Category | null>(null);
   const [message, setMessage] = useState("");
 
   const setField = <K extends keyof CategoryForm>(field: K, value: CategoryForm[K]) => setForm((current) => ({ ...current, [field]: value }));
@@ -102,7 +104,13 @@ export function AdminCategoryManager({ initialCategories }: { initialCategories:
   }
 
   async function removeCategory(category: Category) {
-    if (!window.confirm(`Hapus kategori “${category.name}”? Kategori hanya bisa dihapus jika belum dipakai produk atau jasa.`)) return;
+    setPendingDelete(category);
+  }
+
+  async function confirmRemoveCategory() {
+    const category = pendingDelete;
+    if (!category) return;
+    setPendingDelete(null);
     setDeletingId(category.id);
     setMessage("");
     try {
@@ -152,5 +160,6 @@ export function AdminCategoryManager({ initialCategories }: { initialCategories:
       <div className="flex items-start justify-between gap-3"><div><h2 className="font-display text-xl font-bold">Daftar kategori</h2><p className="mt-1 text-xs text-muted">Atur status, edit data, atau hapus kategori yang belum dipakai.</p></div><span className="rounded-full bg-green-50 px-3 py-1.5 text-[10px] font-bold text-forest-800">{categories.length} kategori</span></div>
       <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[760px] text-left text-xs"><thead className="border-b border-slate-100 uppercase tracking-wide text-muted"><tr><th className="pb-3">Kategori</th><th className="pb-3">Status tampil</th><th className="pb-3">Urutan</th><th className="pb-3">Entri</th><th className="pb-3">Aksi</th></tr></thead><tbody className="divide-y divide-slate-100">{categories.length === 0 ? <tr><td colSpan={5} className="py-8 text-center text-muted">Belum ada kategori.</td></tr> : categories.map((category) => <tr key={category.id}><td className="py-3 pr-3"><strong className="block">{category.name}</strong><span className="text-[10px] text-muted">{category.slug}</span>{category.description && <p className="mt-1 max-w-md text-[11px] text-muted">{category.description}</p>}</td><td className="py-3"><select value={category.status} disabled={updatingId === category.id} onChange={(event) => void updateStatus(category, event.target.value as Category["status"])} className={`rounded-lg border px-2.5 py-2 text-[10px] font-bold outline-none ${category.status === "published" ? "border-green-200 bg-green-50 text-forest-800" : "border-amber-200 bg-amber-50 text-amber-800"}`} aria-label={`Status tampil kategori ${category.name}`}><option value="coming_soon">Coming soon</option><option value="published">Dipublikasikan</option></select></td><td className="py-3">{category.sortOrder}</td><td className="py-3">{category.productCount}</td><td className="py-3"><div className="flex gap-2"><button type="button" onClick={() => startEdit(category)} className="inline-flex items-center rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-bold hover:border-forest-700 hover:text-forest-800"><Pencil size={12} className="mr-1" />Edit</button><button type="button" disabled={deletingId === category.id} onClick={() => void removeCategory(category)} className="inline-flex items-center rounded-lg border border-red-200 px-2.5 py-2 text-[10px] font-bold text-red-700 hover:bg-red-50 disabled:opacity-50"><Trash2 size={12} className="mr-1" />{deletingId === category.id ? "Menghapus..." : "Hapus"}</button></div></td></tr>)}</tbody></table></div>
     </section>
+    <ConfirmDialog open={Boolean(pendingDelete)} title="Hapus kategori?" description={pendingDelete ? `Kategori “${pendingDelete.name}” akan dihapus. Kategori yang sudah dipakai produk atau jasa tidak dapat dihapus.` : ""} confirmLabel="Hapus kategori" loading={Boolean(deletingId)} onCancel={() => setPendingDelete(null)} onConfirm={() => void confirmRemoveCategory()} />
   </div>;
 }
