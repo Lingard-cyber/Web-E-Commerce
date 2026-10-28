@@ -3,7 +3,7 @@ import { ArrowRight, HelpCircle, MapPin, MessageCircle } from "lucide-react";
 import { InteriorHero } from "@/components/interior-hero";
 import { SiteShell } from "@/components/site-shell";
 
-const whatsappNumber = "6281234567890";
+const whatsappNumber = "6285600604388";
 const whatsappMessage = encodeURIComponent("Halo Kepuharjo Market, saya ingin bertanya tentang produk.");
 const mapUrl = "https://www.google.com/maps?q=-7.6250023,110.4530898&z=17&hl=en";
 const embeddedMapUrl = `${mapUrl}&output=embed`;
