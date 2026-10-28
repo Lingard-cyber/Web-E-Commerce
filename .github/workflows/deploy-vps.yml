@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  VPS_HOST: ${{ secrets.VPS_HOST }}
-  VPS_USER: ${{ secrets.VPS_USER }}
+  VPS_HOST: 103.103.23.46
+  VPS_USER: jogjacreativepro
   VPS_APP_DIR: /home/jogjacreativepro/umkmkepuharjo
   COMPOSE_FILE: docker-compose.vps.yml
 
