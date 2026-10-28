@@ -37,17 +37,17 @@ export default function KontakPage() {
             <Link href="/bantuan" className="mt-6 inline-flex items-center text-[10px] font-bold text-forest-800">Lihat bantuan <ArrowRight size={14} className="ml-2" /></Link>
           </div>
         </section>
-        <section id="lokasi" className="mt-6 overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-card">
-          <div className="grid lg:grid-cols-[.8fr_1.2fr]">
-            <div className="flex flex-col justify-center bg-forest-950 p-7 text-white sm:p-10">
-              <MapPin size={28} className="text-accent" />
-              <p className="mt-6 text-[10px] font-bold uppercase tracking-[.18em] text-accent">Lokasi Forkom UMKM Kepuharjo</p>
-              <h2 className="mt-3 font-display text-3xl font-bold leading-tight">Temukan kami di peta.</h2>
-              <p className="mt-4 text-sm leading-7 text-white/65">Lihat titik lokasi dan petunjuk menuju Kalurahan Kepuharjo melalui peta interaktif.</p>
-              <a href={mapUrl} target="_blank" rel="noreferrer" className="mt-6 inline-flex min-h-11 w-fit items-center rounded-xl bg-accent px-4 text-[10px] font-bold text-forest-950">Buka di Google Maps <ArrowRight size={14} className="ml-2" /></a>
-            </div>
-            <div className="min-h-[360px] bg-[#e8f1eb] sm:min-h-[440px]">
-              <iframe src={embeddedMapUrl} title="Peta lokasi Forkom UMKM Kepuharjo" loading="lazy" className="h-full min-h-[360px] w-full border-0 sm:min-h-[440px]" referrerPolicy="no-referrer-when-downgrade" />
+        <section id="lokasi" className="mt-8">
+          <div className="rounded-3xl bg-forest-950 px-6 py-7 text-white sm:px-10 sm:py-9">
+            <p className="text-[10px] font-bold uppercase tracking-[.18em] text-accent">Lokasi Forkom UMKM Kepuharjo</p>
+            <h2 className="mt-3 font-display text-3xl font-bold leading-tight sm:text-4xl">Dusun Pagerjurang, Kalurahan Kepuharjo, Kapanewon Cangkringan, Kabupaten Sleman.</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-white/65">Lihat titik lokasi dan petunjuk menuju sekretariat komunitas melalui peta interaktif di bawah ini.</p>
+          </div>
+          <div className="relative mt-4 min-h-[430px] overflow-hidden rounded-3xl border border-slate-100 bg-[#e8f1eb] shadow-card sm:min-h-[500px]">
+            <iframe src={embeddedMapUrl} title="Peta lokasi Forkom UMKM Kepuharjo" loading="lazy" className="absolute inset-0 h-full w-full border-0" referrerPolicy="no-referrer-when-downgrade" />
+            <div className="absolute left-4 top-4 z-10 w-[min(300px,calc(100%-2rem))] rounded-2xl border border-slate-200 bg-white p-4 text-ink shadow-xl sm:left-6 sm:top-6 sm:p-5">
+              <div className="flex items-start gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-green-50 text-forest-700"><MapPin size={19} /></span><div><p className="text-xs font-bold text-forest-950">FORKOM UMKM KEPUHARJO</p><p className="mt-1 text-[10px] leading-5 text-muted">Dusun Pagerjurang, Kalurahan Kepuharjo, Cangkringan, Sleman, Yogyakarta 55583.</p></div></div>
+              <a href={mapUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex min-h-10 items-center rounded-xl bg-[#1a73e8] px-4 text-[10px] font-bold text-white">Buka di Maps <ArrowRight size={13} className="ml-2" /></a>
             </div>
           </div>
         </section>
