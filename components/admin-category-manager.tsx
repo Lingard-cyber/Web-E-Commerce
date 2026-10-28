@@ -15,7 +15,29 @@ export function AdminCategoryManager({ initialCategories }: { initialCategories:
   const [sortOrder, setSortOrder] = useState("0");
   const [status, setStatus] = useState<Category["status"]>("coming_soon");
   const [saving, setSaving] = useState(false);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
+
+  async function updateStatus(category: Category, nextStatus: Category["status"]) {
+    if (category.status === nextStatus) return;
+    setUpdatingId(category.id);
+    setMessage("");
+    try {
+      const response = await fetch(`/api/admin/categories/${category.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: nextStatus }) });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setMessage(result.error || "Status kategori belum dapat diperbarui.");
+        return;
+      }
+      setCategories((current) => current.map((item) => item.id === category.id ? { ...item, status: nextStatus } : item));
+      setMessage(`Status ${category.name} diubah menjadi ${nextStatus === "published" ? "Dipublikasikan" : "Coming soon"}.`);
+      router.refresh();
+    } catch {
+      setMessage("Koneksi ke server gagal. Coba lagi.");
+    } finally {
+      setUpdatingId(null);
+    }
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,7 +84,7 @@ export function AdminCategoryManager({ initialCategories }: { initialCategories:
     </section>
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <h2 className="font-display text-xl font-bold">Daftar kategori</h2>
-      <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[620px] text-left text-xs"><thead className="border-b border-slate-100 uppercase tracking-wide text-muted"><tr><th className="pb-3">Kategori</th><th className="pb-3">Status</th><th className="pb-3">Urutan</th><th className="pb-3">Entri</th></tr></thead><tbody className="divide-y divide-slate-100">{categories.length === 0 ? <tr><td colSpan={4} className="py-8 text-center text-muted">Belum ada kategori.</td></tr> : categories.map((category) => <tr key={category.id}><td className="py-3 pr-3"><strong className="block">{category.name}</strong><span className="text-[10px] text-muted">{category.slug}</span>{category.description && <p className="mt-1 max-w-md text-[11px] text-muted">{category.description}</p>}</td><td className="py-3"><span className={`inline-flex rounded-full px-2.5 py-1 text-[9px] font-bold ${category.status === "published" ? "bg-green-100 text-forest-800" : "bg-amber-100 text-amber-800"}`}>{category.status === "published" ? "Dipublikasikan" : "Coming soon"}</span></td><td className="py-3">{category.sortOrder}</td><td className="py-3">{category.productCount}</td></tr>)}</tbody></table></div>
+      <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[620px] text-left text-xs"><thead className="border-b border-slate-100 uppercase tracking-wide text-muted"><tr><th className="pb-3">Kategori</th><th className="pb-3">Status tampil</th><th className="pb-3">Urutan</th><th className="pb-3">Entri</th></tr></thead><tbody className="divide-y divide-slate-100">{categories.length === 0 ? <tr><td colSpan={4} className="py-8 text-center text-muted">Belum ada kategori.</td></tr> : categories.map((category) => <tr key={category.id}><td className="py-3 pr-3"><strong className="block">{category.name}</strong><span className="text-[10px] text-muted">{category.slug}</span>{category.description && <p className="mt-1 max-w-md text-[11px] text-muted">{category.description}</p>}</td><td className="py-3"><select value={category.status} disabled={updatingId === category.id} onChange={(event) => void updateStatus(category, event.target.value as Category["status"])} className={`rounded-lg border px-2.5 py-2 text-[10px] font-bold outline-none ${category.status === "published" ? "border-green-200 bg-green-50 text-forest-800" : "border-amber-200 bg-amber-50 text-amber-800"}`} aria-label={`Status tampil kategori ${category.name}`}><option value="coming_soon">Coming soon</option><option value="published">Dipublikasikan</option></select></td><td className="py-3">{category.sortOrder}</td><td className="py-3">{category.productCount}</td></tr>)}</tbody></table></div>
     </section>
   </div>;
 }

@@ -75,7 +75,7 @@ const readPublishedCatalog = unstable_cache(
     return { entries, categories: publicCategories };
   },
   ["public-catalog"],
-  { revalidate: 30 },
+  { revalidate: 30, tags: ["public-catalog"] },
 );
 
 export async function getPublicCatalog() {

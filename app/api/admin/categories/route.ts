@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { requireAdminApi, slugValue, textValue, validationError } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
@@ -24,6 +24,8 @@ export async function POST(request: Request) {
       if (admin?.databaseUserId) await tx.auditLog.create({ data: { userId: admin.databaseUserId, action: "create", entity: "category", entityId: category.id } });
       return category;
     });
+    revalidateTag("public-catalog");
+    revalidatePath("/");
     revalidatePath("/kategori");
     revalidatePath("/produk");
     revalidatePath("/jasa");
