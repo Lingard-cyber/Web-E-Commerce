@@ -18,6 +18,7 @@ export function AdminCategoryManager({ initialCategories }: { initialCategories:
   const [categories, setCategories] = useState(initialCategories);
   const [form, setForm] = useState<CategoryForm>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -28,11 +29,20 @@ export function AdminCategoryManager({ initialCategories }: { initialCategories:
   const resetForm = (clearMessage = true) => {
     setForm(emptyForm);
     setEditingId(null);
+    setShowForm(false);
     if (clearMessage) setMessage("");
+  };
+
+  const openCreate = () => {
+    setForm(emptyForm);
+    setEditingId(null);
+    setMessage("");
+    setShowForm(true);
   };
 
   const startEdit = (category: Category) => {
     setEditingId(category.id);
+    setShowForm(true);
     setForm({ name: category.name, slug: category.slug, description: category.description || "", sortOrder: String(category.sortOrder), status: category.status });
     setMessage("");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -113,18 +123,30 @@ export function AdminCategoryManager({ initialCategories }: { initialCategories:
     }
   }
 
-  return <div className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,420px)_1fr]">
+  return <div className="mt-6 space-y-5">
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="flex items-center gap-2 font-display text-xl font-bold">{editingId ? <Pencil size={18} /> : <Plus size={18} />}{editingId ? "Edit kategori" : "Tambah kategori"}</h2>
-      <form onSubmit={submit} className="mt-5 space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[.16em] text-forest-700">Pengelolaan database</p>
+          <h2 className="mt-1 font-display text-xl font-bold">Kategori katalog</h2>
+          <p className="mt-1 text-xs text-muted">Data di bawah terhubung langsung dengan database dan dipakai untuk produk serta jasa.</p>
+        </div>
+        <button type="button" onClick={() => showForm ? resetForm() : openCreate()} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-forest-800 px-4 text-xs font-bold text-white transition hover:bg-forest-700">
+          {showForm ? <X size={16} /> : <Plus size={16} />}{showForm ? "Tutup form" : "Tambah kategori"}
+        </button>
+      </div>
+      <div className={`overflow-hidden transition-all duration-300 ease-out ${showForm ? "mt-5 max-h-[1100px] opacity-100" : "max-h-0 opacity-0"}`}>
+      <form onSubmit={submit} className="space-y-4 border-t border-slate-100 pt-5">
+        <h3 className="flex items-center gap-2 font-display text-lg font-bold">{editingId ? <Pencil size={18} /> : <Plus size={18} />}{editingId ? "Edit kategori" : "Tambah kategori"}</h3>
         <label className="block text-xs font-bold">Nama kategori<input required maxLength={120} value={form.name} onChange={(event) => setField("name", event.target.value)} placeholder="Contoh: Kerajinan bambu" className="mt-1.5 h-11 w-full rounded-xl border border-slate-200 px-3 text-sm font-normal outline-none focus:border-forest-700" /></label>
         <label className="block text-xs font-bold">Slug (opsional)<input maxLength={120} value={form.slug} onChange={(event) => setField("slug", event.target.value)} placeholder="Otomatis dari nama" className="mt-1.5 h-11 w-full rounded-xl border border-slate-200 px-3 text-sm font-normal outline-none focus:border-forest-700" /></label>
         <label className="block text-xs font-bold">Deskripsi<textarea maxLength={1000} rows={4} value={form.description} onChange={(event) => setField("description", event.target.value)} placeholder="Jelaskan isi kategori" className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-normal outline-none focus:border-forest-700" /></label>
         <label className="block text-xs font-bold">Urutan tampil<input required min={0} max={9999} type="number" value={form.sortOrder} onChange={(event) => setField("sortOrder", event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-slate-200 px-3 text-sm font-normal outline-none focus:border-forest-700" /></label>
         <label className="block text-xs font-bold">Status kategori<select value={form.status} onChange={(event) => setField("status", event.target.value as Category["status"])} className="mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-normal outline-none focus:border-forest-700"><option value="coming_soon">Coming soon</option><option value="published">Publikasikan sekarang</option></select><span className="mt-1.5 block text-[10px] font-normal leading-4 text-muted">Coming soon tetap terlihat sebagai kartu informasi, tetapi katalog belum bisa dibuka pelanggan.</span></label>
         <div className="flex flex-wrap gap-2"><button disabled={saving} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-forest-800 px-4 text-xs font-bold text-white hover:bg-forest-700 disabled:opacity-50"><Save size={15} />{saving ? "Menyimpan..." : editingId ? "Simpan perubahan" : "Simpan kategori"}</button>{editingId && <button type="button" onClick={() => resetForm()} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold"><X size={15} />Batal edit</button>}</div>
-        {message && <p role="status" className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900">{message}</p>}
       </form>
+      </div>
+      {message && <p role="status" className="mt-4 rounded-xl bg-amber-50 p-3 text-xs text-amber-900">{message}</p>}
     </section>
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-start justify-between gap-3"><div><h2 className="font-display text-xl font-bold">Daftar kategori</h2><p className="mt-1 text-xs text-muted">Atur status, edit data, atau hapus kategori yang belum dipakai.</p></div><span className="rounded-full bg-green-50 px-3 py-1.5 text-[10px] font-bold text-forest-800">{categories.length} kategori</span></div>
