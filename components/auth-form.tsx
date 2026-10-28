@@ -30,7 +30,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     if (params.get("callback_error") === "1") {
       setMessage("Link konfirmasi email tidak valid atau sudah kedaluwarsa. Silakan daftar ulang jika diperlukan.");
     } else if (params.get("registered") === "1") {
-      setMessage("Registrasi berhasil. Silakan masuk menggunakan email dan kata sandi Anda.");
+      setMessage(params.get("confirm") === "1" ? "Registrasi berhasil. Cek email Anda untuk konfirmasi sebelum masuk." : "Registrasi berhasil. Silakan masuk menggunakan email dan kata sandi Anda.");
     }
   }, [isRegister]);
 
@@ -48,7 +48,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         const response = await fetch("/api/auth/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), password }) });
         const result = await response.json().catch(() => ({}));
         if (!response.ok) return setMessage(result.error || "Registrasi belum dapat diproses. Silakan coba lagi.");
-        router.push(`/akun/login?registered=1${nextPath ? `&next=${encodeURIComponent(nextPath)}` : ""}`);
+        router.push(`/akun/login?registered=1${result.requiresEmailConfirmation ? "&confirm=1" : ""}${nextPath ? `&next=${encodeURIComponent(nextPath)}` : ""}`);
         return;
       }
 
