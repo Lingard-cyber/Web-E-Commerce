@@ -5,6 +5,8 @@ import { syncAuthUser } from "@/lib/auth-profile";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
+  const configuredOrigin = process.env.NEXT_PUBLIC_STORE_URL || process.env.NEXT_PUBLIC_SITE_URL;
+  const redirectOrigin = configuredOrigin ? new URL(configuredOrigin).origin : url.origin;
   const code = url.searchParams.get("code");
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type") as EmailOtpType | null;
@@ -14,7 +16,7 @@ export async function GET(request: Request) {
     const { error } = code
       ? await supabase.auth.exchangeCodeForSession(code)
       : await supabase.auth.verifyOtp({ token_hash: tokenHash as string, type: type as EmailOtpType });
-    if (error) return NextResponse.redirect(new URL("/akun/login?callback_error=1", url.origin));
+    if (error) return NextResponse.redirect(new URL("/akun/login?callback_error=1", redirectOrigin));
 
     const { data: { user } } = await supabase.auth.getUser();
     if (user && process.env.DATABASE_URL) {
@@ -27,5 +29,5 @@ export async function GET(request: Request) {
   }
 
   const next = url.searchParams.get("next") || (type === "recovery" ? "/akun/reset-password" : null);
-  return NextResponse.redirect(new URL(next && next.startsWith("/") && !next.startsWith("//") ? next : "/", url.origin));
+  return NextResponse.redirect(new URL(next && next.startsWith("/") && !next.startsWith("//") ? next : "/", redirectOrigin));
 }
