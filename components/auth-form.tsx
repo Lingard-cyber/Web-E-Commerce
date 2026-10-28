@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, LockKeyhole, Mail, Phone, UserRound } from "lucide-react";
+import { Eye, EyeOff, LockKeyhole, Mail, Phone, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { getAuthErrorMessage } from "@/lib/auth-errors";
@@ -66,17 +66,18 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   };
 
   return (
-    <div className="w-full max-w-[440px] rounded-[22px] border border-slate-200 bg-white p-5 shadow-[0_18px_50px_rgba(24,66,45,.08)] sm:p-7">
-      <div className="text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-1.5 text-[10px] font-bold text-forest-800">
-          • {isRegister ? "Registrasi Customer" : "Area Customer"}
+    <div className={isRegister ? "w-full max-w-[440px] rounded-[22px] border border-slate-200 bg-white p-5 shadow-[0_18px_50px_rgba(24,66,45,.08)] sm:p-7" : "animate-modal-in relative w-full rounded-2xl bg-white p-6 text-ink shadow-2xl sm:p-7"}>
+      {!isRegister && <Link href="/" className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full text-muted transition hover:bg-slate-100 hover:text-ink" aria-label="Tutup login"><X size={19} /></Link>}
+      <div className={isRegister ? "text-center" : "text-left"}>
+        <span className={isRegister ? "inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-1.5 text-[10px] font-bold text-forest-800" : "pr-8 text-[10px] font-bold uppercase tracking-[.16em] text-forest-700"}>
+          {isRegister ? "Registrasi Customer" : "Akun Kepuharjo Market"}
         </span>
         <h1 className="mt-4 font-display text-[clamp(1.8rem,4vw,2.2rem)] font-bold leading-tight text-forest-900">
-          {isRegister ? "Daftar Akun Baru" : "Masuk ke Akun"}
+          {isRegister ? "Daftar Akun Baru" : "Masuk"}
         </h1>
         {!isRegister && (
-          <p className="mx-auto mt-2 max-w-[430px] text-xs leading-5 text-muted">
-            Silakan masukkan email dan kata sandi Anda untuk mengakses profil dan memantau riwayat pesanan.
+          <p className="mt-2 text-left text-xs leading-5 text-muted">
+            Masuk untuk menyimpan keranjang dan melihat pesanan Anda.
           </p>
         )}
       </div>
