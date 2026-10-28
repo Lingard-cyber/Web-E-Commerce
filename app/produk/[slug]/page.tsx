@@ -27,7 +27,7 @@ function buildDetailedDescription(entry: Awaited<ReturnType<typeof getPublicProd
   const handling = entry.productType === "service"
     ? "Detail kebutuhan, ruang lingkup pekerjaan, dan harga akan disesuaikan melalui konsultasi dengan penyedia layanan."
     : entry.productType === "fresh_preorder"
-      ? "Produk disiapkan berdasarkan pesanan sehingga ketersediaan, waktu produksi, dan jadwal pengiriman perlu dikonfirmasi sebelum checkout."
+      ? "Produk disiapkan berdasarkan pesanan. Ketersediaan, waktu produksi, dan jadwal pengiriman perlu dikonfirmasi sebelum checkout dibuka."
       : "Ketersediaan produk dan jumlah stok mengikuti varian yang dipilih serta konfirmasi pemenuhan dari pengelola.";
   return { intro, source, handling };
 }
@@ -39,7 +39,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
   const images = entry.images?.length ? entry.images : [{ id: `${entry.id}-primary`, imageUrl: entry.imageSrc || catalogImagePlaceholder, altText: entry.imageAlt }];
   const activeVariants = entry.variants.filter((variant) => variant.active);
   const lowestPrice = activeVariants.reduce<number | null>((lowest, variant) => variant.priceIdr !== null && (lowest === null || variant.priceIdr < lowest) ? variant.priceIdr : lowest, null);
-  const typeLabel = isService ? "Jasa / layanan" : entry.productType === "fresh_preorder" ? "Produk segar / pre-order" : "Produk siap kirim";
+  const typeLabel = isService ? "Jasa / layanan" : entry.productType === "fresh_preorder" ? "Produk segar / pre-order" : "Produk kemasan";
   const detailedDescription = buildDetailedDescription(entry, typeLabel);
 
   return <SiteShell><main className="mx-auto max-w-[1120px] px-4 py-8 sm:px-6 sm:py-14">

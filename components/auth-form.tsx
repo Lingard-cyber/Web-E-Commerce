@@ -20,10 +20,13 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [nextPath, setNextPath] = useState("");
 
   useEffect(() => {
-    if (isRegister) return;
     const params = new URLSearchParams(window.location.search);
+    const next = params.get("next");
+    setNextPath(next && next.startsWith("/") && !next.startsWith("//") ? next : "");
+    if (isRegister) return;
     if (params.get("callback_error") === "1") {
       setMessage("Link konfirmasi email tidak valid atau sudah kedaluwarsa. Silakan daftar ulang jika diperlukan.");
     } else if (params.get("registered") === "1") {
@@ -45,7 +48,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         const response = await fetch("/api/auth/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), password }) });
         const result = await response.json().catch(() => ({}));
         if (!response.ok) return setMessage(result.error || "Registrasi belum dapat diproses. Silakan coba lagi.");
-        router.push("/akun/login?registered=1");
+        router.push(`/akun/login?registered=1${nextPath ? `&next=${encodeURIComponent(nextPath)}` : ""}`);
         return;
       }
 
@@ -54,8 +57,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
       const syncResponse = await fetch("/api/auth/sync", { method: "POST" });
       if (!syncResponse.ok) return setMessage("Login berhasil, tetapi profil belum tersinkron. Silakan coba lagi.");
-      const next = new URLSearchParams(window.location.search).get("next");
-      router.push(next && next.startsWith("/") ? next : "/");
+      router.push(nextPath || "/");
     } catch {
       setMessage("Koneksi ke layanan autentikasi gagal. Periksa koneksi internet lalu coba lagi.");
     } finally {
@@ -145,7 +147,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
       <div className="my-5 border-t border-slate-200" />
       <p className="text-center text-[11px] text-muted">
         {isRegister ? "Sudah memiliki akun?" : "Belum memiliki akun?"}{" "}
-        {isRegister ? <Link href="/akun/login" className="font-bold text-forest-800 underline underline-offset-2">Masuk di sini</Link> : <Link href="/akun/daftar" className="font-bold text-forest-800 underline underline-offset-2">Daftar sekarang</Link>}
+        {isRegister ? <Link href={`/akun/login${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ""}`} className="font-bold text-forest-800 underline underline-offset-2">Masuk di sini</Link> : <Link href={`/akun/daftar${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ""}`} className="font-bold text-forest-800 underline underline-offset-2">Daftar sekarang</Link>}
       </p>
     </div>
   );

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Boxes, ClipboardList, CreditCard, Images, LayoutDashboard, Menu, MessageSquareText, Moon, PackageCheck, Store, Sun, UsersRound, X } from "lucide-react";
+import { BarChart3, Boxes, ClipboardList, CreditCard, Images, LayoutDashboard, Menu, MessageSquareText, Moon, PackageCheck, Sun, Tags, UsersRound, X } from "lucide-react";
 import { ReactNode, useEffect, useState } from "react";
 import { AdminLogout } from "@/components/admin-logout";
 
 const nav = [
   ["Dashboard", "/admin", LayoutDashboard],
   ["Manajemen Produk", "/admin/produk", Boxes],
+  ["Kategori", "/admin/kategori", Tags],
   ["Manajemen Jasa", "/admin/jasa", MessageSquareText],
   ["Data UMKM", "/admin/umkm", UsersRound],
   ["Galeri", "/admin/galeri", Images],

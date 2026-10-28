@@ -56,9 +56,9 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
     startOfPeriod.setMonth(startOfPeriod.getMonth() - 5);
 
     const [products, services, umkm, orders, pendingOrders, processingOrders, completedOrders, inquiries, revenue, monthlyOrders, recentOrders, recentInquiries] = await Promise.all([
-      prisma.product.count({ where: { productType: { not: "service" } } }),
-      prisma.product.count({ where: { productType: "service" } }),
-      prisma.umkm.count(),
+      prisma.product.count({ where: { productType: { not: "service" }, publishStatus: { not: "archived" } } }),
+      prisma.product.count({ where: { productType: "service", publishStatus: { not: "archived" } } }),
+      prisma.umkm.count({ where: { isPublished: true } }),
       prisma.order.count(),
       prisma.order.count({ where: { status: { in: ["pending_payment", "paid"] } } }),
       prisma.order.count({ where: { status: "processing" } }),

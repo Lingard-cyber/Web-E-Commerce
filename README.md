@@ -1,13 +1,15 @@
 # Kepuharjo Market
 
-Website e-commerce terpusat untuk Forkom UMKM Kalurahan Kepuharjo. Implementasi frontend menggunakan Next.js App Router, TypeScript, Tailwind CSS, dan katalog awal yang diturunkan dari `Kepuharjo_Market_Master_Brief_Lengkap.md`.
+Website katalog Forkom UMKM Kalurahan Kepuharjo. Implementasi menggunakan Next.js App Router, TypeScript, Tailwind CSS, Prisma, dan katalog dari `KATALOG PRODUK FORKOM UMKM KEPUHARJO-MERAH.pdf`.
 
 ## Status saat ini
 
-- Seluruh 23 entri katalog telah dimasukkan dengan nama, kategori, varian, dan harga referensi dari brief.
-- Semua entri berstatus `pending_verification`; harga adalah referensi historis dan stok sengaja `null` karena belum ada data operasional resmi.
-- Belanja, filter, kategori, detail produk, keranjang lokal, akun demo, chat bantuan, lacak pesanan, halaman admin, dan route legal tersedia sebagai fondasi frontend.
-- Checkout dan webhook Xendit sengaja mengembalikan status belum siap sampai kredensial dan aturan bisnis dikonfigurasi.
+- Seluruh 23 entri katalog PDF disimpan sebagai produk/jasa aktif dengan varian, harga yang tercetak pada PDF, sumber halaman, dan foto PDF pada tabel `gambar_produk`.
+- Sebanyak 26 foto tambahan dari pengguna dicocokkan ke produk. Empat produk di luar PDF (Griya Snack, Onde-ondé Ketawa, Stik Kelor, dan Keripik Usus) ditambahkan tanpa harga sampai admin melengkapinya.
+- Stok tetap `null` karena PDF tidak mencantumkan stok. Harga PDF perlu dikonfirmasi sebelum checkout dibuka.
+- Keranjang dapat dipakai oleh tamu di browser dan disinkronkan ke database saat pengguna masuk. Tombol Beli membawa tamu ke halaman login baru setelah menyimpan pilihannya.
+- Checkout dinonaktifkan sampai data harga, stok, pengiriman, dan pembayaran siap.
+- Data uji lama yang bertanda `KPH-DUMMY-*`, penyedia pembayaran `dummy`, dan akun `demo@kepuharjomarket.test` dibersihkan saat seed. Produk contoh di luar katalog kemudian dihapus.
 
 ## Menjalankan lokal
 
@@ -30,9 +32,10 @@ Salin `.env.example` menjadi `.env`, lalu isi koneksi Supabase PostgreSQL, Supab
 ```powershell
 npx prisma generate
 npx prisma migrate dev --name init
+npm run db:seed
 ```
 
-Sebelum mengubah status produk menjadi `published`, admin Forkom perlu mengisi harga terbaru, stok per varian, foto dan izin penggunaannya, data UMKM/PIC, aturan produk segar, fulfillment, ongkir, dokumen legal, serta role admin. Integrasi order harus memvalidasi ulang harga/stok di server, menggunakan idempotency key, dan memperbarui status hanya dari webhook terautentikasi Xendit.
+Sebelum mengaktifkan checkout, admin Forkom perlu memeriksa harga terbaru, stok per varian, izin penggunaan foto katalog, data UMKM/PIC, aturan produk segar, fulfillment, ongkir, dan dokumen legal. Checkout API hanya aktif jika `ENABLE_CHECKOUT=true` dan konfigurasi pembayaran tersedia.
 
 ## Arsitektur singkat
 

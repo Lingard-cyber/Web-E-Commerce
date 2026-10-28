@@ -1,7 +1,11 @@
 import { AccountPanel } from "@/components/account-panel";
 import { AuthPageFrame } from "@/components/auth-page-frame";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 
-export default function AccountPage({ searchParams }: { searchParams: { mode?: string } }) {
+export default async function AccountPage({ searchParams }: { searchParams: { mode?: string } }) {
+  const { data: { user } } = await createClient().auth.getUser();
+  if (!user) redirect(searchParams.mode === "register" ? "/akun/daftar" : "/akun/login?next=/akun");
   const initialMode = searchParams.mode === "register" ? "register" : "login";
 
   return (

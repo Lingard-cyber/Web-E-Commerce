@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CatalogEntry, catalogEntries, catalogImagePlaceholder, categories, formatRupiah, ProductType } from "@/lib/catalog";
 
 function typeLabel(type: ProductType) {
-  if (type === "ready_stock") return "Siap dikirim";
+  if (type === "ready_stock") return "Produk kemasan";
   if (type === "fresh_preorder") return "Pre-order segar";
   return "Konsultasi jasa";
 }

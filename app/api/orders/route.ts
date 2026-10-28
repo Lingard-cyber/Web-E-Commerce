@@ -7,6 +7,7 @@ import { createXenditPaymentSession } from "@/lib/xendit";
 type OrderBody = { idempotencyKey?: string; items?: Array<{ variantId?: string; quantity?: number }>; address?: { recipientName?: string; phone?: string; address?: string; village?: string; district?: string; regency?: string; postalCode?: string } };
 
 export async function POST(request: Request) {
+  if (process.env.ENABLE_CHECKOUT !== "true") return NextResponse.json({ error: "Checkout belum tersedia." }, { status: 503 });
   if (!process.env.DATABASE_URL) return NextResponse.json({ error: "Database belum dikonfigurasi." }, { status: 503 });
   if (!process.env.XENDIT_SECRET_KEY) return NextResponse.json({ error: "Pembayaran belum dikonfigurasi oleh admin." }, { status: 503 });
   const { data: { user: authUser } } = await createClient().auth.getUser();

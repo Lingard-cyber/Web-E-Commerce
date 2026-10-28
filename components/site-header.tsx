@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { LogOut, Menu, Search, UserRound, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { CartDrawer } from "@/components/cart-drawer";
-import { LoginModal } from "@/components/login-modal";
 import { breakAuthSession } from "@/lib/auth-logout";
 import { catalogEntries } from "@/lib/catalog";
 import { createClient } from "@/lib/supabase/client";
@@ -55,7 +54,6 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [userName, setUserName] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
@@ -127,7 +125,7 @@ export function SiteHeader() {
           </form>
           <div className="ml-auto flex items-center gap-3 sm:ml-0">
             <form onSubmit={submitSearch} className={`relative flex h-12 shrink-0 items-center overflow-visible rounded-full border border-slate-200 bg-white text-forest-950 shadow-sm transition-all duration-300 xl:hidden ${searchOpen ? "w-48 sm:w-60 px-2" : "w-12 justify-center"}`}><input autoFocus={searchOpen} value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} className={`${searchOpen ? "block" : "hidden"} min-w-0 flex-1 bg-transparent px-2 text-xs outline-none`} placeholder="Cari..." aria-label="Cari produk" /><button type="button" onClick={() => searchOpen ? closeSearch() : setSearchOpen(true)} className="grid h-10 w-10 shrink-0 place-items-center rounded-full hover:bg-green-50" aria-label={searchOpen ? "Tutup pencarian" : "Buka pencarian"}><Search size={20} /></button>{searchOpen && searchQuery.trim() && <SearchResultPanel results={searchResults} onSelect={selectSearchResult} />}</form><CartDrawer /><span className="hidden h-8 w-px bg-slate-200 sm:block" />
-            {userName ? <Link href={accountHref} title={`Akun ${userName}`} className="group grid h-12 w-12 place-items-center rounded-full border border-slate-200 bg-white text-forest-950 shadow-sm transition hover:-translate-y-0.5 hover:border-forest-700"><UserRound size={20} className="transition group-hover:scale-110" /></Link> : <div className="hidden items-center gap-2 sm:flex"><button type="button" onClick={() => setLoginOpen(true)} className="inline-flex h-11 items-center rounded-full border border-forest-800 bg-white px-4 text-[12px] font-bold text-forest-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-forest-800 hover:text-white">Masuk</button><Link href="/akun/daftar" className="inline-flex h-11 items-center rounded-full bg-forest-800 px-4 text-[12px] font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-forest-700">Daftar</Link></div>}
+            {userName ? <Link href={accountHref} title={`Akun ${userName}`} className="group grid h-12 w-12 place-items-center rounded-full border border-slate-200 bg-white text-forest-950 shadow-sm transition hover:-translate-y-0.5 hover:border-forest-700"><UserRound size={20} className="transition group-hover:scale-110" /></Link> : <div className="hidden items-center gap-2 sm:flex"><Link href="/akun/login" className="inline-flex h-11 items-center rounded-full border border-forest-800 bg-white px-4 text-[12px] font-bold text-forest-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-forest-800 hover:text-white">Masuk</Link><Link href="/akun/daftar" className="inline-flex h-11 items-center rounded-full bg-forest-800 px-4 text-[12px] font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-forest-700">Daftar</Link></div>}
             {userName && <button type="button" onClick={logout} disabled={loggingOut} title="Keluar dari akun" aria-label="Keluar dari akun" className="hidden h-11 items-center gap-2 rounded-full border border-red-100 bg-white px-4 text-[12px] font-bold text-red-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-red-50 disabled:cursor-wait disabled:opacity-60 sm:flex"><LogOut size={16} />{loggingOut ? "Keluar..." : "Keluar"}</button>}
           </div>
         </div>
@@ -136,11 +134,10 @@ export function SiteHeader() {
           {primaryLinks.map((item) => <Link key={item.href} href={item.href} onClick={closeMenu} className={`${isActive(item.href) ? "bg-forest-950 text-white" : "text-forest-950 hover:bg-green-50"} flex items-center justify-between rounded-xl px-3 py-3 text-[13px] font-bold transition`}>{item.label}</Link>)}
           <p className="mt-2 border-t border-slate-100 px-3 pb-2 pt-4 text-[10px] font-bold uppercase tracking-[.16em] text-muted">Informasi</p>
           {utilityLinks.map((item) => <Link key={item.href} href={item.href} onClick={closeMenu} className={`${isActive(item.href) ? "bg-forest-950 text-white" : "text-forest-950 hover:bg-green-50"} flex items-center justify-between rounded-xl px-3 py-3 text-[13px] font-bold transition`}>{item.label}</Link>)}
-          <div className="mt-2 grid gap-2 border-t border-slate-100 pt-3">{userName ? <Link href="/akun" onClick={closeMenu} className="flex items-center gap-2 rounded-xl bg-forest-950 px-3 py-3 text-[13px] font-bold text-white"><UserRound size={17} />Akun {userName}</Link> : <div className="grid grid-cols-2 gap-2"><button type="button" onClick={() => { closeMenu(); setLoginOpen(true); }} className="flex items-center justify-center rounded-xl border border-forest-800 px-3 py-3 text-[13px] font-bold text-forest-800">Masuk</button><Link href="/akun/daftar" onClick={closeMenu} className="flex items-center justify-center rounded-xl bg-forest-800 px-3 py-3 text-[13px] font-bold text-white">Daftar</Link></div>}</div>
+          <div className="mt-2 grid gap-2 border-t border-slate-100 pt-3">{userName ? <Link href="/akun" onClick={closeMenu} className="flex items-center gap-2 rounded-xl bg-forest-950 px-3 py-3 text-[13px] font-bold text-white"><UserRound size={17} />Akun {userName}</Link> : <div className="grid grid-cols-2 gap-2"><Link href="/akun/login" onClick={closeMenu} className="flex items-center justify-center rounded-xl border border-forest-800 px-3 py-3 text-[13px] font-bold text-forest-800">Masuk</Link><Link href="/akun/daftar" onClick={closeMenu} className="flex items-center justify-center rounded-xl bg-forest-800 px-3 py-3 text-[13px] font-bold text-white">Daftar</Link></div>}</div>
           {userName && <button type="button" onClick={logout} disabled={loggingOut} className="mt-2 flex items-center gap-2 rounded-xl border border-red-100 px-3 py-3 text-left text-[13px] font-bold text-red-600 disabled:cursor-wait disabled:opacity-60"><LogOut size={17} />{loggingOut ? "Keluar..." : "Keluar dari akun"}</button>}
         </nav>
       </div>
     </header>
-    <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
   </>;
 }

@@ -3,10 +3,10 @@ import { InteriorHero } from "@/components/interior-hero";
 import { SiteShell } from "@/components/site-shell";
 
 const questions = [
-  ["Bagaimana cara membeli produk?", "Pilih produk dari katalog, buka halaman detail untuk melihat foto, varian, harga, dan ketersediaan, lalu pilih Tambah ke keranjang atau Beli sekarang. Setelah itu masuk ke akun, lengkapi alamat, dan ikuti langkah pembayaran."],
-  ["Apakah saya harus membuat akun?", "Ya, akun diperlukan saat checkout agar alamat, riwayat pesanan, dan status pembayaran dapat tersimpan dengan benar. Anda tetap dapat melihat-lihat katalog tanpa masuk."],
-  ["Bagaimana saya tahu produk siap dipesan?", "Produk yang siap dibeli ditandai dengan status Tersedia. Produk yang masih dilengkapi informasinya akan diberi keterangan di halaman detail dan belum dapat diproses sampai data harga, stok, serta pemenuhannya jelas."],
-  ["Bagaimana pembayaran dan konfirmasi pesanan dilakukan?", "Setelah alamat dan isi keranjang diperiksa, Anda akan diarahkan ke halaman pembayaran yang aman. Pesanan dianggap berhasil setelah pembayaran terkonfirmasi. Simpan kode pesanan untuk melihat perkembangannya."],
+  ["Bagaimana cara memilih produk?", "Buka detail produk untuk melihat foto, varian, dan harga. Pilih Tambah ke keranjang untuk menyimpan pilihan. Tombol Beli mengarahkan pengunjung yang belum masuk ke halaman login baru. Checkout akan tersedia menyusul."],
+  ["Apakah saya harus membuat akun?", "Anda dapat melihat katalog dan menyimpan keranjang tanpa akun. Untuk melanjutkan pembelian, masuk melalui halaman login pelanggan atau buat akun baru."],
+  ["Bagaimana jika harga belum tersedia?", "Beberapa produk tambahan dari foto belum memiliki harga. Admin perlu melengkapi harga dan ukuran kemasan sebelum produk tersebut dapat ditambahkan ke keranjang."],
+  ["Kapan pembayaran tersedia?", "Pembayaran dan checkout belum dibuka. Pilihan produk yang sudah memiliki harga dapat disimpan di keranjang sambil menunggu tahap berikutnya."],
   ["Bagaimana cara melacak pesanan?", "Buka menu Lacak pesanan, lalu masukkan kode pesanan yang Anda terima setelah checkout. Anda juga dapat melihat riwayat pesanan dari halaman akun."],
   ["Bagaimana jika barang yang diterima rusak atau tidak sesuai?", "Segera simpan foto kondisi barang dan hubungi pengelola melalui halaman Kontak dengan menyertakan kode pesanan. Tim akan membantu memeriksa masalah dan menentukan solusi bersama penjual."],
   ["Bagaimana cara memesan jasa atau layanan?", "Buka menu Jasa & Layanan, pilih layanan yang sesuai, lalu ceritakan kebutuhan, ukuran, jadwal, dan lokasi Anda pada formulir konsultasi. Harga dan jadwal akan dibicarakan terlebih dahulu sebelum Anda menyetujui pesanan."],

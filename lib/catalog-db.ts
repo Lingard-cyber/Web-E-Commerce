@@ -3,8 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { catalogEntries, categories, type CatalogCategory, type CatalogEntry, type ProductType } from "@/lib/catalog";
 
 const fallbackCategories: CatalogCategory[] = categories.map((category) => ({ ...category }));
-const catalogCategorySlugs = categories.filter((category) => !category.comingSoon).map((category) => category.slug);
-const publicCategorySlugs = categories.map((category) => category.slug);
 
 const readPublishedCatalog = unstable_cache(
   async () => {
@@ -12,7 +10,6 @@ const readPublishedCatalog = unstable_cache(
       prisma.product.findMany({
         where: {
           publishStatus: "published",
-          category: { slug: { in: catalogCategorySlugs } },
           OR: [
             { verificationNote: null },
             { verificationNote: { not: { contains: "dummy" } } },
@@ -27,7 +24,6 @@ const readPublishedCatalog = unstable_cache(
         },
       }),
       prisma.category.findMany({
-        where: { slug: { in: publicCategorySlugs } },
         orderBy: { sortOrder: "asc" },
         include: { _count: { select: { products: { where: { publishStatus: "published" } } } } },
       }),

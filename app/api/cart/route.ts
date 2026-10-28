@@ -12,15 +12,15 @@ async function getDatabaseUser() {
   return prisma.user.findUnique({ where: { authId: user.id }, select: { id: true } });
 }
 
-function serializeCart(cart: { items: Array<{ variantId: string; quantity: number; variant: { label: string; priceIdr: number | null; product: { slug: string; name: string } } }> }) {
-  return cart.items.filter((item) => item.variant.priceIdr !== null).map((item) => ({ variantId: item.variantId, productSlug: item.variant.product.slug, productName: item.variant.product.name, variantLabel: item.variant.label, unitPrice: item.variant.priceIdr as number, quantity: item.quantity }));
+function serializeCart(cart: { items: Array<{ variantId: string; quantity: number; variant: { label: string; priceIdr: number | null; product: { slug: string; name: string; images: Array<{ imageUrl: string }> } } }> }) {
+  return cart.items.filter((item) => item.variant.priceIdr !== null).map((item) => ({ variantId: item.variantId, productSlug: item.variant.product.slug, productName: item.variant.product.name, variantLabel: item.variant.label, unitPrice: item.variant.priceIdr as number, quantity: item.quantity, imageSrc: item.variant.product.images[0]?.imageUrl }));
 }
 
 export async function GET() {
   if (!process.env.DATABASE_URL) return NextResponse.json({ items: [] });
   const user = await getDatabaseUser();
   if (!user) return NextResponse.json({ error: "Silakan masuk." }, { status: 401 });
-  const cart = await prisma.cart.findUnique({ where: { userId: user.id }, include: { items: { where: { variant: { isActive: true, product: { publishStatus: "published", productType: { not: "service" } } } }, include: { variant: { include: { product: true } } }, orderBy: { createdAt: "asc" } } } });
+  const cart = await prisma.cart.findUnique({ where: { userId: user.id }, include: { items: { where: { variant: { isActive: true, product: { publishStatus: "published", productType: { not: "service" } } } }, include: { variant: { include: { product: { include: { images: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }], take: 1 } } } } } }, orderBy: { createdAt: "asc" } } } });
   return NextResponse.json({ items: cart ? serializeCart(cart) : [] });
 }
 
@@ -40,7 +40,7 @@ export async function PUT(request: Request) {
     if (items.length) await tx.cartItem.deleteMany({ where: { cartId: current.id, variantId: { notIn: items.map((item) => item.variantId) } } });
     else await tx.cartItem.deleteMany({ where: { cartId: current.id } });
     for (const item of items) await tx.cartItem.upsert({ where: { cartId_variantId: { cartId: current.id, variantId: item.variantId } }, update: { quantity: item.quantity }, create: { cartId: current.id, variantId: item.variantId, quantity: item.quantity } });
-    return tx.cart.findUniqueOrThrow({ where: { id: current.id }, include: { items: { include: { variant: { include: { product: true } } }, orderBy: { createdAt: "asc" } } } });
+    return tx.cart.findUniqueOrThrow({ where: { id: current.id }, include: { items: { include: { variant: { include: { product: { include: { images: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }], take: 1 } } } } } }, orderBy: { createdAt: "asc" } } } });
   });
   return NextResponse.json({ items: serializeCart(cart) });
 }

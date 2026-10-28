@@ -1,6 +1,6 @@
-export type CartItem = { productSlug: string; productName: string; variantId: string; variantLabel: string; unitPrice: number; quantity: number };
+export type CartItem = { productSlug: string; productName: string; variantId: string; variantLabel: string; unitPrice: number; quantity: number; imageSrc?: string };
 
-export const CART_KEY = "kepuharjo-cart";
+export const CART_KEY = "kepuharjo-cart-catalog-v2";
 
 export function readCart(): CartItem[] {
   if (typeof window === "undefined") return [];
@@ -32,7 +32,7 @@ export async function hydrateCartFromDatabase(localItems: CartItem[]) {
     const merged = new Map(serverItems.map((item) => [item.variantId, item]));
     for (const item of localItems) {
       const existing = merged.get(item.variantId);
-      merged.set(item.variantId, existing ? { ...item, quantity: Math.max(existing.quantity, item.quantity) } : item);
+      merged.set(item.variantId, existing ? { ...existing, quantity: Math.max(existing.quantity, item.quantity) } : item);
     }
     return persistCartToDatabase(Array.from(merged.values()));
   } catch {
