@@ -16,7 +16,7 @@ export function PasswordResetRequestForm() {
     setLoading(true);
     setMessage("");
     const { error } = await createClient().auth.resetPasswordForEmail(email.trim().toLowerCase(), {
-      redirectTo: `${window.location.origin}/auth/callback?next=/akun/reset-password`,
+      redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/akun/reset-password")}`,
     });
     setLoading(false);
     if (error) return setMessage("Email belum dapat diproses. Periksa alamat email lalu coba lagi.");
