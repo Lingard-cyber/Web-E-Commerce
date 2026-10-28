@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Mail, Send } from "lucide-react";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { getAuthErrorMessage } from "@/lib/auth-errors";
 
 export function PasswordResetRequestForm() {
   const [email, setEmail] = useState("");
@@ -15,13 +16,21 @@ export function PasswordResetRequestForm() {
     event.preventDefault();
     setLoading(true);
     setMessage("");
-    const { error } = await createClient().auth.resetPasswordForEmail(email.trim().toLowerCase(), {
-      redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/akun/reset-password")}`,
-    });
-    setLoading(false);
-    if (error) return setMessage("Email belum dapat diproses. Periksa alamat email lalu coba lagi.");
-    setSent(true);
-    setMessage("Jika email terdaftar, tautan untuk membuat kata sandi baru sudah dikirim. Periksa inbox atau folder spam.");
+    try {
+      const siteOrigin = process.env.NEXT_PUBLIC_STORE_URL || window.location.origin;
+      const redirectTo = `${new URL("/auth/callback", siteOrigin).toString()}?next=${encodeURIComponent("/akun/reset-password")}`;
+      const { error } = await createClient().auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo });
+      if (error) {
+        setMessage(getAuthErrorMessage(error.message));
+        return;
+      }
+      setSent(true);
+      setMessage("Jika email terdaftar, tautan untuk membuat kata sandi baru sudah dikirim. Periksa inbox atau folder spam.");
+    } catch {
+      setMessage("Koneksi ke layanan autentikasi gagal. Periksa koneksi internet lalu coba lagi.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,7 +47,8 @@ export function PasswordResetRequestForm() {
         </label>
         <button type="submit" disabled={loading || sent} className="flex h-11 w-full items-center justify-center rounded-lg bg-forest-800 text-[11px] font-bold text-white shadow-[0_8px_16px_rgba(3,61,45,.18)] transition hover:-translate-y-0.5 hover:bg-forest-700 disabled:cursor-wait disabled:opacity-60"><Send size={14} className="mr-2" />{loading ? "Mengirim..." : sent ? "Tautan sudah dikirim" : "Kirim tautan reset"}</button>
       </form>
-      {message && <p className={`mt-4 rounded-lg p-3 text-center text-[10px] leading-5 ${sent ? "bg-green-50 text-forest-800" : "bg-amber-50 text-amber-900"}`}>{message}</p>}
+      {message && <p role="status" className={`mt-4 rounded-lg p-3 text-center text-[10px] leading-5 ${sent ? "bg-green-50 text-forest-800" : "bg-amber-50 text-amber-900"}`}>{message}</p>}
+      {sent && <button type="button" onClick={() => { setSent(false); setMessage(""); }} className="mt-3 block w-full text-center text-[10px] font-bold text-forest-800 underline underline-offset-2">Gunakan email lain atau kirim ulang</button>}
       <div className="my-5 border-t border-slate-200" />
       <p className="text-center text-[11px] text-muted">Ingat kata sandi? <Link href="/akun/login" className="font-bold text-forest-800 underline underline-offset-2">Kembali ke login</Link></p>
     </div>

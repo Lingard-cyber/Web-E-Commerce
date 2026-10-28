@@ -30,6 +30,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     if (params.get("callback_error") === "1") {
       setMessage("Link konfirmasi email tidak valid atau sudah kedaluwarsa. Silakan daftar ulang jika diperlukan.");
     } else if (params.get("registered") === "1") setMessage("Registrasi berhasil. Silakan masuk menggunakan email dan kata sandi Anda.");
+    else if (params.get("reset") === "1") setMessage("Kata sandi berhasil diperbarui. Silakan masuk dengan kata sandi baru.");
   }, [isRegister]);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
