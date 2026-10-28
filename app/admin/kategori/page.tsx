@@ -11,7 +11,7 @@ export default async function AdminCategoriesPage() {
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     include: { _count: { select: { products: true } } },
   }).catch(() => []) : [];
-  const items = categories.map(({ id, name, slug, description, sortOrder, _count }) => ({ id, name, slug, description, sortOrder, productCount: _count.products }));
+  const items = categories.map(({ id, name, slug, description, sortOrder, status, _count }) => ({ id, name, slug, description, sortOrder, status, productCount: _count.products }));
   return <AdminShell name={admin.name} email={admin.email}>
     <p className="text-[10px] font-bold uppercase tracking-[.18em] text-forest-700">Katalog</p>
     <h1 className="mt-2 font-display text-3xl font-bold">Kategori</h1>

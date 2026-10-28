@@ -19,6 +19,11 @@ enum ProductType {
   service
 }
 
+enum CategoryStatus {
+  coming_soon
+  published
+}
+
 enum PublishStatus {
   draft
   pending_verification
@@ -149,6 +154,7 @@ model Category {
   slug        String    @unique
   description String?
   sortOrder   Int       @default(0)
+  status      CategoryStatus @default(published)
   products    Product[]
 
   @@map("kategori")

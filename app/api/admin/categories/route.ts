@@ -12,12 +12,15 @@ export async function POST(request: Request) {
   const slug = slugValue(body?.slug || name);
   const description = textValue(body?.description, 1000) || null;
   const sortOrder = Number(body?.sortOrder ?? 0);
+  const requestedStatus = textValue(body?.status, 20) || "published";
+  const status = requestedStatus as "coming_soon" | "published";
   if (!name || !slug) return validationError("Nama dan slug kategori wajib diisi.");
   if (!Number.isInteger(sortOrder) || sortOrder < 0 || sortOrder > 9999) return validationError("Urutan harus berupa angka 0 sampai 9999.");
+  if (status !== "coming_soon" && status !== "published") return validationError("Status kategori tidak valid.");
 
   try {
     const created = await prisma.$transaction(async (tx) => {
-      const category = await tx.category.create({ data: { name, slug, description, sortOrder } });
+      const category = await tx.category.create({ data: { name, slug, description, sortOrder, status } });
       if (admin?.databaseUserId) await tx.auditLog.create({ data: { userId: admin.databaseUserId, action: "create", entity: "category", entityId: category.id } });
       return category;
     });

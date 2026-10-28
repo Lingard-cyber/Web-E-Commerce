@@ -10,6 +10,7 @@ const readPublishedCatalog = unstable_cache(
       prisma.product.findMany({
         where: {
           publishStatus: "published",
+          category: { status: "published" },
           OR: [
             { verificationNote: null },
             { verificationNote: { not: { contains: "dummy" } } },
@@ -61,8 +62,9 @@ const readPublishedCatalog = unstable_cache(
     const publicCategories: CatalogCategory[] = categoryRows.map((category) => ({
       slug: category.slug,
       name: category.name,
-      count: category._count.products,
+      count: category.status === "published" ? category._count.products : 0,
       description: category.description || "Produk pilihan dari pelaku usaha lokal.",
+      comingSoon: category.status === "coming_soon",
     }));
 
     const existingSlugs = new Set(publicCategories.map((category) => category.slug));
