@@ -90,7 +90,7 @@ export function PasswordResetForm() {
       }
       setState("updated");
       setMessage("Kata sandi berhasil diperbarui. Anda akan diarahkan ke akun.");
-      window.setTimeout(() => router.replace("/akun"), 900);
+      window.setTimeout(() => router.replace("/akun/login?reset=1"), 900);
     } catch {
       setMessage("Koneksi ke layanan autentikasi gagal. Coba lagi atau minta tautan reset baru.");
     } finally {

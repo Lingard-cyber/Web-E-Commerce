@@ -17,7 +17,7 @@ export async function GET(request: Request) {
       ? await supabase.auth.exchangeCodeForSession(code)
       : await supabase.auth.verifyOtp({ token_hash: tokenHash as string, type: type as EmailOtpType });
     if (error) {
-      const destination = type === "recovery" ? "/akun/reset-password?error=expired" : "/akun/login?callback_error=1";
+      const destination = type === "recovery" ? "/reset/password?error=expired" : "/akun/login?callback_error=1";
       return NextResponse.redirect(new URL(destination, redirectOrigin));
     }
 
@@ -31,6 +31,6 @@ export async function GET(request: Request) {
     }
   }
 
-  const next = url.searchParams.get("next") || (type === "recovery" ? "/akun/reset-password" : null);
+  const next = url.searchParams.get("next") || (type === "recovery" ? "/reset/password" : null);
   return NextResponse.redirect(new URL(next && next.startsWith("/") && !next.startsWith("//") ? next : "/", redirectOrigin));
 }

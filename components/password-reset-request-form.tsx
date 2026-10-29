@@ -17,10 +17,13 @@ export function PasswordResetRequestForm() {
     setLoading(true);
     setMessage("");
     try {
-      // Use the host currently open in the browser so localhost and production
-      // each generate a reset callback for their own configured Supabase URL.
-      const siteOrigin = window.location.origin;
-      const redirectTo = `${new URL("/auth/callback", siteOrigin).toString()}?next=${encodeURIComponent("/akun/reset-password")}`;
+      // Prefer the configured production origin so reset links always return to
+      // the live storefront domain, while localhost remains usable in local dev.
+      const configuredOrigin = process.env.NEXT_PUBLIC_STORE_URL || process.env.NEXT_PUBLIC_SITE_URL || "";
+      const siteOrigin = configuredOrigin && !/localhost|127\.0\.0\.1/i.test(configuredOrigin)
+        ? configuredOrigin
+        : "https://umkmkepuharjo.my.id";
+      const redirectTo = `${new URL("/auth/callback", siteOrigin).toString()}?next=${encodeURIComponent("/reset/password")}`;
       const { error } = await createClient().auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo });
       if (error) {
         setMessage(getAuthErrorMessage(error.message));
