@@ -19,13 +19,12 @@ const primaryLinks = [
 ];
 
 const utilityLinks = [
-  { label: "Tentang Kepuharjo", href: "/tentang-kepuharjo" },
   { label: "Sambutan Lurah", href: "/sambutan-lurah" },
   { label: "Kontak", href: "/#kontak" },
   { label: "Bantuan", href: "/bantuan" },
 ];
 
-const topUtilityLinks = utilityLinks.filter((item) => ["/sambutan-lurah", "/#kontak", "/bantuan"].includes(item.href));
+const topUtilityLinks = utilityLinks;
 
 const searchablePages = [
   { label: "Beranda", description: "Halaman utama storefront Kepuharjo", href: "/" },
@@ -125,13 +124,13 @@ export function SiteHeader() {
             <span className="min-w-0 leading-none"><span className="block text-[11px] font-extrabold leading-[.98] tracking-[-.02em] text-forest-950 sm:text-[12px] lg:text-[12px]">FORKOM UMKM<br />KEPUHARJO</span><span className="mt-1 hidden text-[8px] text-muted sm:block">Produk lokal, pasar lebih luas</span></span>
           </Link>
           <nav className="scrollbar-hide hidden min-w-0 flex-1 items-center justify-start gap-0 overflow-x-auto lg:flex">{primaryLinks.map((item) => <Link key={item.href} href={item.href} className={linkClass(item.href)}>{item.label}</Link>)}<span className="mx-1 h-6 w-px shrink-0 bg-slate-200 xl:mx-1.5" aria-hidden="true" />{topUtilityLinks.map((item) => <Link key={item.href} href={item.href} className={linkClass(item.href)}>{item.label}</Link>)}</nav>
-          <form onSubmit={submitSearch} className="relative ml-1 hidden h-11 w-64 shrink-0 items-center overflow-visible rounded-full border border-slate-200 bg-white px-3 text-forest-950 shadow-sm xl:flex">
-            <input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent px-2 text-xs outline-none" placeholder="Cari produk atau halaman..." aria-label="Cari produk atau halaman" />
-            <button type="submit" className="grid h-9 w-9 shrink-0 place-items-center rounded-full hover:bg-green-50" aria-label="Cari"><Search size={17} /></button>
+          {searchOpen ? <form onSubmit={submitSearch} className="relative ml-1 hidden h-11 w-64 shrink-0 items-center overflow-visible rounded-full border border-slate-200 bg-white px-3 text-forest-950 shadow-sm xl:flex">
+            <input autoFocus value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent px-2 text-xs outline-none" placeholder="Cari produk atau halaman..." aria-label="Cari produk atau halaman" />
+            <button type="button" onClick={closeSearch} className="grid h-9 w-9 shrink-0 place-items-center rounded-full hover:bg-green-50" aria-label="Tutup pencarian"><X size={17} /></button>
             {searchQuery.trim() && <SearchResultPanel results={searchResults} onSelect={selectSearchResult} />}
-          </form>
+          </form> : <button type="button" onClick={() => setSearchOpen(true)} className="ml-1 hidden h-11 w-11 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-forest-950 shadow-sm hover:bg-green-50 xl:grid" aria-label="Buka pencarian"><Search size={18} /></button>}
           <div className="ml-auto flex items-center gap-3 sm:ml-0">
-            <form onSubmit={submitSearch} className={`relative flex h-12 shrink-0 items-center overflow-visible rounded-full border border-slate-200 bg-white text-forest-950 shadow-sm transition-all duration-300 xl:hidden ${searchOpen ? "w-48 sm:w-60 px-2" : "w-12 justify-center"}`}><input autoFocus={searchOpen} value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} className={`${searchOpen ? "block" : "hidden"} min-w-0 flex-1 bg-transparent px-2 text-xs outline-none`} placeholder="Cari..." aria-label="Cari produk" /><button type="button" onClick={() => searchOpen ? closeSearch() : setSearchOpen(true)} className="grid h-10 w-10 shrink-0 place-items-center rounded-full hover:bg-green-50" aria-label={searchOpen ? "Tutup pencarian" : "Buka pencarian"}><Search size={20} /></button>{searchOpen && searchQuery.trim() && <SearchResultPanel results={searchResults} onSelect={selectSearchResult} />}</form><CartDrawer /><span className="hidden h-8 w-px bg-slate-200 sm:block" />
+            {searchOpen ? <form onSubmit={submitSearch} className="relative flex h-12 w-48 shrink-0 items-center overflow-visible rounded-full border border-slate-200 bg-white px-2 text-forest-950 shadow-sm transition-all duration-300 sm:w-60 xl:hidden"><input autoFocus value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent px-2 text-xs outline-none" placeholder="Cari..." aria-label="Cari produk" /><button type="button" onClick={closeSearch} className="grid h-10 w-10 shrink-0 place-items-center rounded-full hover:bg-green-50" aria-label="Tutup pencarian"><X size={20} /></button>{searchQuery.trim() && <SearchResultPanel results={searchResults} onSelect={selectSearchResult} />}</form> : <button type="button" onClick={() => setSearchOpen(true)} className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-forest-950 shadow-sm hover:bg-green-50 xl:hidden" aria-label="Buka pencarian"><Search size={20} /></button>}<CartDrawer /><span className="hidden h-8 w-px bg-slate-200 sm:block" />
             {userName ? <Link href={accountHref} title={`Akun ${userName}`} className="group grid h-12 w-12 place-items-center rounded-full border border-slate-200 bg-white text-forest-950 shadow-sm transition hover:-translate-y-0.5 hover:border-forest-700"><UserRound size={20} className="transition group-hover:scale-110" /></Link> : <div className="hidden items-center gap-2 sm:flex"><Link href="/akun/login" className="inline-flex h-11 items-center rounded-full border border-forest-800 bg-white px-4 text-[12px] font-bold text-forest-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-forest-800 hover:text-white">Masuk</Link><Link href="/akun/daftar" className="inline-flex h-11 items-center rounded-full bg-forest-800 px-4 text-[12px] font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-forest-700">Daftar</Link></div>}
             {userName && <button type="button" onClick={openLogoutDialog} disabled={loggingOut} title="Keluar dari akun" aria-label="Keluar dari akun" className="hidden h-11 items-center gap-2 rounded-full border border-red-100 bg-white px-4 text-[12px] font-bold text-red-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-red-50 disabled:cursor-wait disabled:opacity-60 sm:flex"><LogOut size={16} />Keluar</button>}
           </div>

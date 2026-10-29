@@ -83,9 +83,9 @@ export async function getPublicCatalog() {
 
   try {
     const result = await readPublishedCatalog();
-    // Keep the storefront useful before the first seed/publication, while all
-    // published database records are present this path is fully database-backed.
-    return result.entries.length > 0 ? result : { entries: catalogEntries, categories: fallbackCategories };
+    // Keep the storefront useful before the first published product, but retain
+    // database categories so newly created categories are still visible.
+    return result.entries.length > 0 ? result : { entries: catalogEntries, categories: result.categories };
   } catch {
     return { entries: catalogEntries, categories: fallbackCategories };
   }

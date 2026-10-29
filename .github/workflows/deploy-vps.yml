@@ -89,6 +89,6 @@ jobs:
         run: |
           set -eu
           curl --fail --silent --show-error --max-time 30 \
-            https://umkmkepuharjo.duckdns.org/ > /dev/null
+            https://umkmkepuharjo.my.id/ > /dev/null
           curl --fail --silent --show-error --max-time 30 \
-            https://umkmkepuharjo.duckdns.org/admin/login > /dev/null
+            https://umkmkepuharjo.my.id/admin/login > /dev/null

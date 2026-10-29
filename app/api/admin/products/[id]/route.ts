@@ -6,11 +6,31 @@ import { requireAdminApi, slugValue, textValue, validationError } from "@/lib/ad
 const productTypes = ["ready_stock", "fresh_preorder", "service"] as const;
 const publishStatuses = ["draft", "pending_verification", "published", "archived"] as const;
 const bookingModes = ["direct_booking", "quotation"] as const;
+const MAX_UPLOAD_BYTES = 6 * 1024 * 1024;
+const MAX_SOURCE_LENGTH = 9 * 1024 * 1024;
+const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+
+async function readBody(request: Request) {
+  const contentType = request.headers.get("content-type") || "";
+  if (!contentType.includes("multipart/form-data")) return await request.json().catch(() => null) as Record<string, unknown> | null;
+  const form = await request.formData();
+  const body: Record<string, unknown> = {};
+  form.forEach((value, key) => { if (typeof value === "string") body[key] = value; });
+  const file = form.get("file");
+  if (file && typeof file !== "string") {
+    if (!allowedImageTypes.has(file.type)) return { error: "Format foto harus JPG, PNG, WEBP, atau GIF." };
+    if (file.size <= 0) return { error: "File foto yang dipilih kosong." };
+    if (file.size > MAX_UPLOAD_BYTES) return { error: "Ukuran foto maksimal 6 MB." };
+    body.imageUrl = `data:${file.type};base64,${Buffer.from(await file.arrayBuffer()).toString("base64")}`;
+  }
+  return body;
+}
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   const { admin, response } = await requireAdminApi();
   if (response) return response;
-  const body = await request.json().catch(() => null) as Record<string, unknown> | null;
+  const body = await readBody(request);
+  if (body && "error" in body && typeof body.error === "string") return validationError(body.error);
   const current = await prisma.product.findUnique({ where: { id: params.id }, include: { variants: { where: { isActive: true }, take: 1 }, images: { where: { isPrimary: true }, take: 1 } } });
   if (!current) return NextResponse.json({ error: "Produk atau jasa tidak ditemukan." }, { status: 404 });
   const name = textValue(body?.name, 160) || current.name;
@@ -30,7 +50,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   if (!Number.isInteger(price) || price < 0 || !Number.isInteger(stock) || stock < 0) return validationError("Harga dan stok harus berupa angka nol atau lebih.");
   const serviceBookingMode: typeof bookingModes[number] | null = productType === "service" ? (textValue(body?.serviceBookingMode, 40) as typeof bookingModes[number] || current.serviceBookingMode || "quotation") : null;
   if (productType === "service" && (!serviceBookingMode || !bookingModes.includes(serviceBookingMode))) return validationError("Mode pemesanan jasa tidak valid.");
-  const imageUrl = body && "imageUrl" in body ? textValue(body.imageUrl, 500) : undefined;
+  const imageUrl = body && "imageUrl" in body ? textValue(body.imageUrl, MAX_SOURCE_LENGTH) : undefined;
 
   await prisma.$transaction(async (tx) => {
     await tx.product.update({ where: { id: params.id }, data: { name, slug, description: body && "description" in body ? textValue(body.description, 5000) || null : current.description, categoryId, umkmId, productType, publishStatus, serviceBookingMode, serviceRequirements: productType === "service" ? textValue(body?.serviceRequirements, 3000) || current.serviceRequirements : null, serviceAvailability: productType === "service" ? textValue(body?.serviceAvailability, 500) || current.serviceAvailability : null, serviceDuration: productType === "service" ? textValue(body?.serviceDuration, 200) || current.serviceDuration : null } });
