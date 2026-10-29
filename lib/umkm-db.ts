@@ -44,7 +44,7 @@ function readContact(value: unknown): PublicUmkm["contact"] {
 
 const readPublishedUmkm = unstable_cache(async () => {
   const rows = await prisma.umkm.findMany({
-    where: { isPublished: true, products: { some: { publishStatus: "published", sourceCatalogEntry: { not: null } } } },
+    where: { isPublished: true },
     orderBy: { name: "asc" },
     include: {
       _count: { select: { products: { where: { publishStatus: "published" } } } },
@@ -65,7 +65,7 @@ const readPublishedUmkm = unstable_cache(async () => {
     productCount: umkm._count.products,
     products: umkm.products.map((product) => ({ id: product.id, name: product.name, slug: product.slug, productType: product.productType, category: product.category.name, imageUrl: product.images[0]?.imageUrl })),
   } satisfies PublicUmkm));
-}, ["public-umkm"], { revalidate: 30 });
+}, ["public-umkm"], { revalidate: 30, tags: ["public-umkm"] });
 
 export async function getPublicUmkm() {
   if (!process.env.DATABASE_URL) return fallbackUmkm;

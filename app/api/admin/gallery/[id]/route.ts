@@ -33,6 +33,7 @@ async function readBody(request: Request) {
     alt: form.get("alt"),
     sortOrder: form.get("sortOrder"),
     isPublished: form.get("isPublished"),
+    isHero: form.get("isHero"),
   } as Record<string, unknown>;
 }
 
@@ -48,7 +49,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   if (!title) return validationError("Judul foto wajib diisi.");
   if (!alt) return validationError("Teks alternatif foto wajib diisi.");
   const sortOrder = Number.isFinite(Number(body?.sortOrder)) ? Math.max(0, Math.round(Number(body?.sortOrder))) : 0;
-  const updated = await prisma.galleryImage.update({ where: { id: params.id }, data: { src, title, alt, sortOrder, isPublished: body?.isPublished !== false && body?.isPublished !== "false" } });
+  const updated = await prisma.galleryImage.update({ where: { id: params.id }, data: { src, title, alt, sortOrder, isPublished: body?.isPublished !== false && body?.isPublished !== "false", isHero: body?.isHero !== false && body?.isHero !== "false" } });
   revalidatePath("/");
   revalidatePath("/galeri");
   return NextResponse.json({ id: updated.id });

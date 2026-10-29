@@ -7,6 +7,7 @@ export type GalleryImageRecord = {
   alt: string;
   title: string;
   isPublished: boolean;
+  isHero: boolean;
   sortOrder: number;
 };
 
@@ -16,16 +17,18 @@ const fallbackGallery: GalleryImageRecord[] = galleryImages.map((image, index) =
   alt: image.alt,
   title: image.title,
   isPublished: true,
+  isHero: true,
   sortOrder: index + 1,
 }));
 
-function toRecord(item: { id: string; src: string; alt: string; title: string; isPublished: boolean; sortOrder: number }): GalleryImageRecord {
+function toRecord(item: { id: string; src: string; alt: string; title: string; isPublished: boolean; isHero: boolean; sortOrder: number }): GalleryImageRecord {
   return {
     id: item.id,
     src: item.src,
     alt: item.alt,
     title: item.title,
     isPublished: item.isPublished,
+    isHero: item.isHero,
     sortOrder: item.sortOrder,
   };
 }

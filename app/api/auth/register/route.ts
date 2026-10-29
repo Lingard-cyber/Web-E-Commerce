@@ -35,9 +35,20 @@ export async function POST(request: Request) {
     if (!url || !publicKey) return NextResponse.json({ error: "Layanan autentikasi belum dikonfigurasi di server." }, { status: 503 });
 
     const supabase = createSupabaseClient(url, publicKey, { auth: { autoRefreshToken: false, persistSession: false } });
-    const { data, error: signUpError } = await supabase.auth.signUp({ email, password, options: { data: { name, phone } } });
+    const configuredOrigin = process.env.NEXT_PUBLIC_STORE_URL || process.env.NEXT_PUBLIC_SITE_URL;
+    const redirectOrigin = configuredOrigin ? new URL(configuredOrigin).origin : new URL(request.url).origin;
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name, phone },
+        emailRedirectTo: new URL("/auth/callback", redirectOrigin).toString(),
+      },
+    });
     if (signUpError) return authError(signUpError.message);
-    if (!data.session) return NextResponse.json({ error: "Registrasi belum dapat diselesaikan karena server masih meminta konfirmasi email." }, { status: 503 });
+    if (!data.session) {
+      return NextResponse.json({ ok: true, confirmationRequired: true }, { status: 201 });
+    }
     await syncCreatedUser(data.user);
     return NextResponse.json({ ok: true }, { status: 201 });
   }

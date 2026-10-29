@@ -1,0 +1,1 @@
+ALTER TABLE "galeri_foto" ADD COLUMN "isHero" BOOLEAN NOT NULL DEFAULT true;

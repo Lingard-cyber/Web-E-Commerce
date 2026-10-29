@@ -112,6 +112,9 @@ a {
   font-size: 15px;
 }
 
+.admin-interface .admin-animate-in { animation-duration: .2s; }
+.admin-interface .animate-modal-in { animation-duration: .14s; }
+
 .admin-interface [class~="text-xs"] {
   font-size: .875rem;
 }

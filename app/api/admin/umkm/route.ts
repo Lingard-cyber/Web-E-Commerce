@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdminApi, slugValue, textValue, validationError } from "@/lib/admin-api";
 
@@ -17,5 +17,6 @@ export async function POST(request: Request) {
   revalidatePath("/umkm");
   revalidatePath("/kategori");
   revalidatePath(`/umkm/${created.slug}`);
+  revalidateTag("public-umkm");
   return NextResponse.json({ id: created.id }, { status: 201 });
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdminApi, slugValue, textValue, validationError } from "@/lib/admin-api";
 
@@ -20,6 +20,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   revalidatePath("/umkm");
   revalidatePath("/kategori");
   revalidatePath(`/umkm/${slug}`);
+  revalidateTag("public-umkm");
   return NextResponse.json({ ok: true });
 }
 
@@ -33,5 +34,6 @@ export async function DELETE(_request: Request, { params }: { params: { id: stri
   revalidatePath("/");
   revalidatePath("/umkm");
   revalidatePath("/kategori");
+  revalidateTag("public-umkm");
   return NextResponse.json({ ok: true });
 }

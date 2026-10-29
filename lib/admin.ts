@@ -9,12 +9,12 @@ export type AdminContext = {
   databaseUserId?: string;
 };
 
-export async function getAdminContext(): Promise<AdminContext | null> {
+export async function getAdminContext(options: { includeDatabaseUser?: boolean } = {}): Promise<AdminContext | null> {
   if (!hasAdminSession()) return null;
 
   let adminName = process.env.ADMIN_LOGIN_NAME || "Admin Forkom";
   let databaseUser: { id: string; role: "customer" | "admin" } | null = null;
-  if (process.env.DATABASE_URL) {
+  if (options.includeDatabaseUser && process.env.DATABASE_URL) {
     try {
       const databaseAdmin = await prisma.adminUser.findFirst({ where: { isActive: true }, orderBy: { createdAt: "asc" }, select: { email: true } });
       if (databaseAdmin?.email && !process.env.ADMIN_LOGIN_NAME) adminName = databaseAdmin.email.split("@")[0];

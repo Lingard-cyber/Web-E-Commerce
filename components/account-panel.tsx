@@ -69,7 +69,9 @@ export function AccountPanel({ initialMode = "login" }: { initialMode?: "login" 
         if (!response.ok) return setMessage(result.error || "Registrasi belum dapat diproses. Silakan coba lagi.");
         setMode("login");
         setPassword("");
-        setMessage("Registrasi berhasil. Silakan masuk dengan email dan kata sandi Anda.");
+        setMessage(result.confirmationRequired
+          ? "Pendaftaran diterima. Silakan konfirmasi email melalui tautan yang kami kirim sebelum masuk."
+          : "Registrasi berhasil. Silakan masuk dengan email dan kata sandi Anda.");
         return;
       }
 
