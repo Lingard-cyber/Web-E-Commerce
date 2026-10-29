@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ClipboardList, FileText, PackageCheck, Truck } from "lucide-react";
+import { ClipboardList, FileText, MessageCircle, PackageCheck, Truck } from "lucide-react";
 import { ProductDetailActions } from "@/components/product-detail-actions";
 import { ProductGallery } from "@/components/product-gallery";
-import { ServiceInquiryForm } from "@/components/service-inquiry-form";
 import { SiteShell } from "@/components/site-shell";
 import { catalogImagePlaceholder, formatRupiah } from "@/lib/catalog";
 import { getPublicProduct } from "@/lib/catalog-db";
+import { orderingContacts, orderingWhatsappUrl } from "@/lib/ordering-contacts";
 
 export const dynamic = "force-dynamic";
 
@@ -25,9 +25,9 @@ function buildDetailedDescription(entry: Awaited<ReturnType<typeof getPublicProd
   const producer = entry.producer ? ` dari ${entry.producer}` : " dari pelaku usaha lokal Kepuharjo";
   const intro = `${entry.name} merupakan ${typeLabel.toLowerCase()}${producer} pada kategori ${entry.category}.`;
   const handling = entry.productType === "service"
-    ? "Detail kebutuhan, ruang lingkup pekerjaan, dan harga akan disesuaikan melalui konsultasi dengan penyedia layanan."
+    ? "Harga yang ditampilkan adalah harga mulai. Biaya akhir dikonfirmasi setelah ukuran, bahan, model, jumlah, dan detail pekerjaan disepakati bersama penyedia layanan."
     : entry.productType === "fresh_preorder"
-      ? "Produk disiapkan berdasarkan pesanan. Ketersediaan, waktu produksi, dan jadwal pengiriman perlu dikonfirmasi sebelum checkout dibuka."
+      ? "Produk disiapkan berdasarkan pesanan. Ketersediaan, waktu produksi, dan jadwal pengiriman dikonfirmasi sebelum pesanan diproses."
       : "Ketersediaan produk dan jumlah stok mengikuti varian yang dipilih serta konfirmasi pemenuhan dari pengelola.";
   return { intro, source, handling };
 }
@@ -45,8 +45,10 @@ export default async function ProductPage({ params }: { params: { slug: string }
   return <SiteShell><main className="mx-auto max-w-[1120px] px-4 py-8 sm:px-6 sm:py-14">
     <div className="grid overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-card md:grid-cols-[.9fr_1.1fr]">
       <ProductGallery name={entry.name} images={images} />
-      <div className="p-6 sm:p-10"><p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-forest-700">{entry.category} · {typeLabel}</p><h1 className="font-display text-[clamp(2rem,4vw,3.5rem)] font-bold leading-none">{entry.name}</h1>{entry.producer && <p className="mt-3 text-xs font-bold text-forest-700">Dari {entry.producer}</p>}<p className="mt-4 text-sm leading-7 text-muted">{entry.description}</p>{isService ? <ServiceInquiryForm productSlug={entry.slug} /> : <ProductDetailActions entry={entry} />}</div>
+      <div className="p-6 sm:p-10"><p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-forest-700">{entry.category} · {typeLabel}</p><h1 className="font-display text-[clamp(2rem,4vw,3.5rem)] font-bold leading-none">{entry.name}</h1>{entry.producer && <p className="mt-3 text-xs font-bold text-forest-700">Dari {entry.producer}</p>}<p className="mt-4 text-sm leading-7 text-muted">{entry.description}</p>{isService ? <div className="mt-7 rounded-2xl border border-accent/40 bg-accent/10 p-5"><p className="text-[10px] font-bold uppercase tracking-[.16em] text-forest-700">Harga jasa / layanan</p><p className="mt-2 font-display text-2xl font-bold text-forest-950">{lowestPrice !== null ? `Mulai ${formatRupiah(lowestPrice)}` : "Hubungi penyedia untuk penawaran harga"}</p><p className="mt-2 text-xs leading-5 text-muted">Harga akhir menyesuaikan detail pekerjaan, bahan, ukuran, jumlah, dan jadwal layanan.</p></div> : <ProductDetailActions entry={entry} />}</div>
     </div>
+
+    {isService && <section className="mt-6 rounded-3xl border border-forest-700/10 bg-white p-6 shadow-card sm:p-8"><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center"><div><p className="text-[10px] font-bold uppercase tracking-[.16em] text-forest-700">Pesan melalui WhatsApp</p><h2 className="mt-2 font-display text-2xl font-bold text-forest-950">Hubungi penyedia layanan</h2><p className="mt-2 text-xs leading-5 text-muted">Pilih salah satu nomor untuk menanyakan detail jasa atau membuat pesanan.</p></div><MessageCircle className="hidden text-[#25D366] sm:block" size={32} /></div><div className="mt-5 grid gap-3 sm:grid-cols-2">{orderingContacts.map((contact) => <a key={contact.number} href={orderingWhatsappUrl(contact.number, `Halo, saya tertarik dengan layanan ${entry.name}. Mohon informasi selengkapnya.`)} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 text-xs font-bold text-white transition hover:bg-[#1ebe5d]"><MessageCircle size={16} />{contact.display}</a>)}</div></section>}
 
     <div className="mt-6 overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-card lg:grid lg:grid-cols-[1.25fr_.75fr]">
       <section id="informasi-produk" className="p-6 sm:p-8"><div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-green-50 text-forest-700"><FileText size={18} /></span><div><p className="text-[10px] font-bold uppercase tracking-[.16em] text-forest-700">Deskripsi lengkap</p><h2 className="mt-1 font-display text-2xl font-bold">Kenali {isService ? "layanan ini" : "produk ini"}</h2></div></div><div className="mt-7 space-y-6"><div><p className="text-[10px] font-bold uppercase tracking-[.14em] text-forest-700">Tentang {isService ? "layanan" : "produk"}</p><p className="mt-2 text-sm leading-7 text-ink">{detailedDescription.intro}</p></div><div className="border-t border-slate-100 pt-5"><p className="text-[10px] font-bold uppercase tracking-[.14em] text-forest-700">Deskripsi</p><p className="mt-2 text-sm leading-7 text-muted">{detailedDescription.source}</p></div><div className="rounded-2xl border border-accent/30 bg-accent/10 p-4"><p className="text-[10px] font-bold uppercase tracking-[.14em] text-forest-800">Catatan pemenuhan</p><p className="mt-2 text-sm leading-7 text-forest-950">{detailedDescription.handling}</p></div></div><div className="mt-8 border-t border-slate-100 pt-6"><h3 className="text-sm font-bold text-forest-950">Informasi yang perlu diketahui</h3><dl className="mt-3"><DetailRow label="Kategori" value={entry.category} /><DetailRow label="Jenis" value={typeLabel} /><DetailRow label={isService ? "Penyedia jasa" : "Pelaku usaha"} value={entry.producer || "Belum dipetakan"} /><DetailRow label={isService ? "Cara pesan" : "Pilihan"} value={isService ? (entry.serviceBookingMode === "direct_booking" ? "Pemesanan langsung" : "Konsultasi / penawaran") : `${activeVariants.length} varian tersedia`} /></dl></div>{isService && <div className="mt-5 grid gap-3 sm:grid-cols-3">{[["Kebutuhan", entry.serviceRequirements], ["Ketersediaan", entry.serviceAvailability], ["Estimasi waktu", entry.serviceDuration]].map(([label, value]) => <div key={label} className="rounded-2xl border border-slate-100 p-4"><p className="text-[10px] font-bold uppercase tracking-wide text-forest-700">{label}</p><p className="mt-2 text-xs leading-5 text-muted">{value || "Dikonfirmasi saat konsultasi"}</p></div>)}</div>}</section>

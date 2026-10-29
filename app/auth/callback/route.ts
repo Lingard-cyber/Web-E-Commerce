@@ -16,7 +16,10 @@ export async function GET(request: Request) {
     const { error } = code
       ? await supabase.auth.exchangeCodeForSession(code)
       : await supabase.auth.verifyOtp({ token_hash: tokenHash as string, type: type as EmailOtpType });
-    if (error) return NextResponse.redirect(new URL("/akun/login?callback_error=1", redirectOrigin));
+    if (error) {
+      const destination = type === "recovery" ? "/akun/reset-password?error=expired" : "/akun/login?callback_error=1";
+      return NextResponse.redirect(new URL(destination, redirectOrigin));
+    }
 
     const { data: { user } } = await supabase.auth.getUser();
     if (user && process.env.DATABASE_URL) {

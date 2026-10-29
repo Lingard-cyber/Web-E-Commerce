@@ -7,7 +7,7 @@ import { createXenditPaymentSession } from "@/lib/xendit";
 type OrderBody = { idempotencyKey?: string; items?: Array<{ variantId?: string; quantity?: number }>; address?: { recipientName?: string; phone?: string; address?: string; village?: string; district?: string; regency?: string; postalCode?: string } };
 
 export async function POST(request: Request) {
-  if (process.env.ENABLE_CHECKOUT !== "true") return NextResponse.json({ error: "Checkout belum tersedia." }, { status: 503 });
+  if (process.env.ENABLE_CHECKOUT !== "true") return NextResponse.json({ error: "Pesanan belum dapat diproses saat ini. Silakan coba lagi." }, { status: 503 });
   if (!process.env.DATABASE_URL) return NextResponse.json({ error: "Database belum dikonfigurasi." }, { status: 503 });
   if (!process.env.XENDIT_SECRET_KEY) return NextResponse.json({ error: "Pembayaran belum dikonfigurasi oleh admin." }, { status: 503 });
   const { data: { user: authUser } } = await createClient().auth.getUser();
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const session = await createXenditPaymentSession({ referenceId: order.publicCode, amount: order.totalIdr, email: authUser.email, name: databaseUser.name, phone: databaseUser.phone, siteUrl: process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin });
+    const session = await createXenditPaymentSession({ referenceId: order.publicCode, amount: order.totalIdr, email: authUser.email, name: databaseUser.name, phone: databaseUser.phone, siteUrl: process.env.NEXT_PUBLIC_STORE_URL || process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin });
     await prisma.payment.update({ where: { orderId: order.id }, data: { providerPaymentId: session.payment_session_id, checkoutUrl: session.payment_link_url, rawLastEvent: session } });
     return NextResponse.json({ publicCode: order.publicCode, checkoutUrl: session.payment_link_url }, { status: 201 });
   } catch (error) {

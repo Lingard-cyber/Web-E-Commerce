@@ -50,7 +50,7 @@ function catalogImages(entry) {
   const files = fs.readdirSync(imageDirectory).filter((filename) => filename.startsWith(prefix)).sort();
   const urls = files.map((filename) => `/catalog/pdf-source/${filename}`);
   if (!urls.includes(entry.imageSrc)) throw new Error(`Foto katalog tidak ditemukan untuk ${entry.slug}: ${entry.imageSrc}`);
-  return [entry.imageSrc, ...urls.filter((url) => url !== entry.imageSrc)];
+  return [entry.imageSrc || "/placeholder-product.svg", ...urls.filter((url) => url !== entry.imageSrc)];
 }
 
 // Kategori ini mengikuti katalog PDF resmi Forkom UMKM Kepuharjo.
@@ -141,7 +141,7 @@ async function main() {
       select: { sourceCatalogEntry: true, sourcePdfPage: true, _count: { select: { images: true, variants: true } } },
     });
     const imported = entry.sourceCatalogEntry ? alreadyImported?.sourceCatalogEntry === entry.sourceCatalogEntry : alreadyImported?.sourcePdfPage === null;
-    if (imported && alreadyImported._count.images > 0 && alreadyImported._count.variants >= entry.variants.length) continue;
+    if (imported && entry.productType !== "service" && alreadyImported._count.images > 0 && alreadyImported._count.variants >= entry.variants.length) continue;
     const categoryId = categoryIds.get(entry.categorySlug);
     if (!categoryId) throw new Error(`Kategori tidak ditemukan: ${entry.categorySlug}`);
     const umkm = entry.producer ? await prisma.umkm.upsert({

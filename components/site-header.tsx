@@ -43,7 +43,7 @@ const searchablePages = [
   { label: "Daftar", description: "Buat akun pelanggan baru", href: "/akun/daftar" },
 ];
 
-type SearchResult = { label: string; description: string; href: string; group: "Halaman" | "Produk" };
+type SearchResult = { label: string; description: string; href: string; group: "Halaman" | "Produk" | "Layanan" };
 
 function SearchResultPanel({ results, onSelect }: { results: SearchResult[]; onSelect: (href: string) => void }) {
   if (!results.length) return <div className="absolute right-0 top-[calc(100%+8px)] z-[70] w-72 rounded-2xl border border-slate-200 bg-white p-4 text-[11px] text-muted shadow-2xl sm:w-80">Tidak ada halaman, fitur, atau produk yang cocok.</div>;
@@ -69,7 +69,7 @@ export function SiteHeader() {
       .map((item) => ({ ...item, group: "Halaman" as const }));
     const products = catalogEntries
       .filter((item) => `${item.name} ${item.category} ${item.description} ${item.producer || ""}`.toLowerCase().includes(term))
-      .map((item) => ({ label: item.name, description: `${item.category} · ${item.producer || "Produk UMKM Kepuharjo"}`, href: `/produk/${item.slug}`, group: "Produk" as const }));
+      .map((item) => ({ label: item.name, description: `${item.category} · ${item.producer || "Produk UMKM Kepuharjo"}`, href: `/${item.productType === "service" ? "jasa" : "produk"}/${item.slug}`, group: item.productType === "service" ? "Layanan" as const : "Produk" as const }));
     return [...pages, ...products].slice(0, 10);
   }, [searchQuery]);
 

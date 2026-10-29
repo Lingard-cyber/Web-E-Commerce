@@ -48,6 +48,29 @@ jobs:
             --exclude 'coverage/' \
             ./ "$VPS_USER@$VPS_HOST:$VPS_APP_DIR/"
 
+      - name: Configure Xendit payment environment
+        env:
+          XENDIT_SECRET_KEY: ${{ secrets.XENDIT_SECRET_KEY || secrets.XENDIT_API_KEY }}
+          XENDIT_WEBHOOK_TOKEN: ${{ secrets.XENDIT_WEBHOOK_TOKEN || secrets.XENDIT_CALLBACK_TOKEN }}
+        run: |
+          set -eu
+          test -n "$XENDIT_SECRET_KEY"
+          test -n "$XENDIT_WEBHOOK_TOKEN"
+          {
+            printf 'XENDIT_SECRET_KEY=%s\n' "$XENDIT_SECRET_KEY"
+            printf 'XENDIT_WEBHOOK_TOKEN=%s\n' "$XENDIT_WEBHOOK_TOKEN"
+            printf 'ENABLE_CHECKOUT=true\n'
+          } | ssh "$VPS_USER@$VPS_HOST" "
+            set -eu
+            cd '$VPS_APP_DIR'
+            touch .env.deploy
+            tmp=\$(mktemp)
+            grep -vE '^(XENDIT_SECRET_KEY|XENDIT_WEBHOOK_TOKEN|ENABLE_CHECKOUT)=' .env.deploy > \"\$tmp\" || true
+            cat - >> \"\$tmp\"
+            mv \"\$tmp\" .env.deploy
+            chmod 600 .env.deploy
+          "
+
       - name: Build, migrate, and restart application
         run: |
           set -eu

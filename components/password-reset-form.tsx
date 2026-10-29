@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowLeft, CheckCircle2, Eye, EyeOff, LockKeyhole, LoaderCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -9,6 +10,7 @@ import { getAuthErrorMessage } from "@/lib/auth-errors";
 type ResetState = "checking" | "ready" | "invalid" | "updated";
 
 export function PasswordResetForm() {
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +18,7 @@ export function PasswordResetForm() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<ResetState>("checking");
+  const [invalidReason, setInvalidReason] = useState("Tautan mungkin sudah kedaluwarsa atau sudah pernah digunakan. Minta tautan baru untuk melanjutkan.");
   const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
 
   const getSupabase = () => {
@@ -29,6 +32,19 @@ export function PasswordResetForm() {
 
     const checkRecoverySession = async () => {
       try {
+        const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+        const queryParams = new URLSearchParams(window.location.search);
+        const errorCode = hashParams.get("error_code") || queryParams.get("error_code");
+        const errorDescription = hashParams.get("error_description") || queryParams.get("error_description");
+        const hasAccessDenied = hashParams.get("error") === "access_denied" || queryParams.get("error") === "access_denied" || window.location.pathname.includes("error-access_denied");
+        const callbackExpired = queryParams.get("error") === "expired";
+        if (hasAccessDenied || errorCode === "otp_expired" || callbackExpired) {
+          if (mounted) {
+            setInvalidReason(callbackExpired || errorCode === "otp_expired" || errorDescription?.toLowerCase().includes("expired") ? "Tautan reset sudah kedaluwarsa. Minta tautan reset baru agar dapat membuat kata sandi baru." : "Tautan reset tidak valid atau sudah pernah digunakan. Minta tautan reset baru untuk melanjutkan.");
+            setState("invalid");
+          }
+          return;
+        }
         const supabase = getSupabase();
         const listener = supabase.auth.onAuthStateChange((event, session) => {
           if (!mounted) return;
@@ -73,7 +89,8 @@ export function PasswordResetForm() {
         return;
       }
       setState("updated");
-      setMessage("Kata sandi berhasil diperbarui. Silakan masuk menggunakan kata sandi baru.");
+      setMessage("Kata sandi berhasil diperbarui. Anda akan diarahkan ke akun.");
+      window.setTimeout(() => router.replace("/akun"), 900);
     } catch {
       setMessage("Koneksi ke layanan autentikasi gagal. Coba lagi atau minta tautan reset baru.");
     } finally {
@@ -82,15 +99,16 @@ export function PasswordResetForm() {
   };
 
   return (
-    <div className="animate-modal-in relative w-full rounded-2xl bg-white p-6 text-ink shadow-2xl sm:p-7">
-      <Link href="/akun/login" className="absolute left-4 top-4 grid h-9 w-9 place-items-center rounded-full text-muted transition hover:bg-slate-100 hover:text-ink" aria-label="Kembali ke login"><ArrowLeft size={19} /></Link>
+    <div className="animate-modal-in relative w-full overflow-hidden rounded-[1.75rem] border border-white/80 bg-white p-6 text-ink shadow-[0_24px_70px_rgba(2,40,29,.24)] sm:p-7">
+      <Link href="/akun/login" className="absolute left-4 top-4 z-10 grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white" aria-label="Kembali ke login"><ArrowLeft size={19} /></Link>
+      <div className="-mx-6 -mt-6 mb-6 bg-gradient-to-br from-forest-900 via-forest-800 to-emerald-600 px-6 pb-6 pt-16 text-white sm:-mx-7 sm:-mt-7 sm:px-7"><div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center overflow-hidden rounded-xl border border-white/30 bg-white/15"><img src="/forkom-umkm-kepuharjo.jpg" alt="Logo Forkom UMKM Kepuharjo" className="h-full w-full object-cover" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-white/70">FORKOM UMKM KEPUHARJO</p><p className="mt-1 font-display text-xl font-bold">Atur ulang kata sandi</p></div></div><p className="mt-4 max-w-xs text-[11px] leading-5 text-white/75">Buat kata sandi baru untuk menjaga akun Anda tetap aman.</p></div>
       <div className="pt-1 text-center">
         <span className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-1.5 text-[10px] font-bold text-forest-800">Pemulihan akun</span>
         <h1 className="mt-4 font-display text-[clamp(1.8rem,4vw,2.2rem)] font-bold leading-tight text-forest-900">Buat kata sandi baru</h1>
         <p className="mt-2 text-xs leading-5 text-muted">Gunakan kata sandi baru yang kuat untuk mengamankan akun Anda.</p>
       </div>
       {state === "checking" && <div className="mt-7 rounded-xl border border-slate-100 bg-[#f5f8f4] p-5 text-center text-xs text-muted"><LoaderCircle size={22} className="mx-auto mb-2 animate-spin text-forest-700" />Memeriksa tautan pemulihan akun...</div>}
-      {state === "invalid" && <div className="mt-7 rounded-xl border border-amber-200 bg-amber-50 p-4 text-center"><AlertCircle size={22} className="mx-auto mb-2 text-amber-700" /><p className="text-xs font-bold text-amber-900">Tautan reset belum aktif</p><p className="mt-2 text-[10px] leading-5 text-amber-900/80">Tautan mungkin sudah kedaluwarsa atau sudah pernah digunakan. Minta tautan baru untuk melanjutkan.</p><Link href="/akun/lupa-password" className="mt-4 inline-flex min-h-10 items-center justify-center rounded-lg bg-forest-800 px-4 text-[10px] font-bold text-white">Minta tautan reset baru</Link></div>}
+      {state === "invalid" && <div className="mt-7 rounded-xl border border-amber-200 bg-amber-50 p-5 text-center"><AlertCircle size={26} className="mx-auto mb-3 text-amber-700" /><p className="text-sm font-bold text-amber-900">Tautan reset tidak dapat digunakan</p><p className="mt-2 text-[11px] leading-5 text-amber-900/80">{invalidReason}</p><Link href="/akun/lupa-password" className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-forest-800 px-4 text-[11px] font-bold text-white hover:bg-forest-700">Kirim tautan reset baru</Link></div>}
       {state === "ready" && <form onSubmit={submit} className="mt-7 space-y-4">
         <PasswordField label="Kata sandi baru" value={password} onChange={setPassword} show={showPassword} onToggle={() => setShowPassword((value) => !value)} />
         <PasswordField label="Ulangi kata sandi baru" value={confirmation} onChange={setConfirmation} show={showConfirmation} onToggle={() => setShowConfirmation((value) => !value)} />
