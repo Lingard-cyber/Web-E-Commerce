@@ -30,7 +30,10 @@ jobs:
         run: |
           set -eu
           install -m 700 -d "$HOME/.ssh"
-          printf '%s\n' "$SSH_PRIVATE_KEY" | tr -d '\r' > "$HOME/.ssh/id_ed25519"
+          key="${SSH_PRIVATE_KEY//$'\r'/}"
+          key="${key//$'\\n'/$'\n'}"
+          printf '%s\n' "$key" > "$HOME/.ssh/id_ed25519"
+          unset key
           chmod 600 "$HOME/.ssh/id_ed25519"
           ssh-keygen -y -f "$HOME/.ssh/id_ed25519" > /dev/null
           ssh-keyscan -H "$VPS_HOST" >> "$HOME/.ssh/known_hosts"
