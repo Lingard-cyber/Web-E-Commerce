@@ -58,22 +58,35 @@ jobs:
           XENDIT_WEBHOOK_TOKEN: ${{ secrets.XENDIT_WEBHOOK_TOKEN || secrets.XENDIT_CALLBACK_TOKEN }}
         run: |
           set -eu
-          test -n "$XENDIT_SECRET_KEY"
-          test -n "$XENDIT_WEBHOOK_TOKEN"
-          {
-            printf 'XENDIT_SECRET_KEY=%s\n' "$XENDIT_SECRET_KEY"
-            printf 'XENDIT_WEBHOOK_TOKEN=%s\n' "$XENDIT_WEBHOOK_TOKEN"
-            printf 'ENABLE_CHECKOUT=true\n'
-          } | ssh "$VPS_USER@$VPS_HOST" "
-            set -eu
-            cd '$VPS_APP_DIR'
-            touch .env.deploy
-            tmp=\$(mktemp)
-            grep -vE '^(XENDIT_SECRET_KEY|XENDIT_WEBHOOK_TOKEN|ENABLE_CHECKOUT)=' .env.deploy > \"\$tmp\" || true
-            cat - >> \"\$tmp\"
-            mv \"\$tmp\" .env.deploy
-            chmod 600 .env.deploy
-          "
+          if [ -n "$XENDIT_SECRET_KEY" ] && [ -n "$XENDIT_WEBHOOK_TOKEN" ]; then
+            {
+              printf 'XENDIT_SECRET_KEY=%s\n' "$XENDIT_SECRET_KEY"
+              printf 'XENDIT_WEBHOOK_TOKEN=%s\n' "$XENDIT_WEBHOOK_TOKEN"
+              printf 'ENABLE_CHECKOUT=true\n'
+            } | ssh "$VPS_USER@$VPS_HOST" "
+              set -eu
+              cd '$VPS_APP_DIR'
+              touch .env.deploy
+              tmp=\$(mktemp)
+              grep -vE '^(XENDIT_SECRET_KEY|XENDIT_WEBHOOK_TOKEN|ENABLE_CHECKOUT)=' .env.deploy > \"\$tmp\" || true
+              cat - >> \"\$tmp\"
+              mv \"\$tmp\" .env.deploy
+              chmod 600 .env.deploy
+            "
+          else
+            ssh "$VPS_USER@$VPS_HOST" "
+              set -eu
+              cd '$VPS_APP_DIR'
+              test -f .env.deploy
+              grep -q '^XENDIT_SECRET_KEY=.' .env.deploy || { echo 'XENDIT_SECRET_KEY tidak ada di secret GitHub atau .env.deploy VPS.'; exit 1; }
+              grep -q '^XENDIT_WEBHOOK_TOKEN=.' .env.deploy || { echo 'XENDIT_WEBHOOK_TOKEN tidak ada di secret GitHub atau .env.deploy VPS.'; exit 1; }
+              tmp=\$(mktemp)
+              grep -v '^ENABLE_CHECKOUT=' .env.deploy > \"\$tmp\" || true
+              printf 'ENABLE_CHECKOUT=true\n' >> \"\$tmp\"
+              mv \"\$tmp\" .env.deploy
+              chmod 600 .env.deploy
+            "
+          fi
 
       - name: Build, migrate, and restart application
         run: |
