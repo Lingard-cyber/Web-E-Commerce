@@ -39,14 +39,6 @@ const readPublishedCatalog = unstable_cache(
       productType: product.productType as ProductType,
       description: product.description || "—",
       producer: product.umkm?.name,
-      producerProfile: product.umkm ? {
-        ownerName: product.umkm.ownerName || "—",
-        businessType: product.umkm.businessType || "—",
-        nib: product.umkm.nib || "—",
-        halalPermit: product.umkm.halalPermit || "—",
-        sppirt: product.umkm.sppirt || "—",
-        narrative: product.umkm.description?.trim() || "—",
-      } : undefined,
       variants: product.variants.map((variant) => ({
         id: variant.id,
         label: variant.label,

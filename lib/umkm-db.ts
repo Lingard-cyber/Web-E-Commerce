@@ -18,7 +18,7 @@ export type PublicUmkm = {
 export function formatUmkmDescription(name: string, description: string | null | undefined, productCount = 0) {
   void name;
   void productCount;
-  return description?.trim() || "—";
+  return description?.trim() || "";
 }
 
 const fallbackUmkm: PublicUmkm[] = Array.from(new Set(catalogEntries.map((entry) => entry.producer).filter((value): value is string => Boolean(value)))).map((name) => {
@@ -28,9 +28,9 @@ const fallbackUmkm: PublicUmkm[] = Array.from(new Set(catalogEntries.map((entry)
     name,
     slug: name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
     description: formatUmkmDescription(name, null, products.length),
-    ownerName: "—",
-    businessType: "—",
-    permits: { nib: "—", halal: "—", sppirt: "—" },
+    ownerName: "",
+    businessType: "",
+    permits: { nib: "", halal: "", sppirt: "" },
     contact: {},
     productCount: products.length,
     products: products.map((entry) => ({ id: entry.id, name: entry.name, slug: entry.slug, productType: entry.productType, category: entry.category, imageUrl: entry.imageSrc })),
@@ -66,9 +66,9 @@ const readPublishedUmkm = unstable_cache(async () => {
     name: umkm.name,
     slug: umkm.slug,
     description: formatUmkmDescription(umkm.name, umkm.description, umkm._count.products),
-    ownerName: umkm.ownerName || "—",
-    businessType: umkm.businessType || "—",
-    permits: { nib: umkm.nib || "—", halal: umkm.halalPermit || "—", sppirt: umkm.sppirt || "—" },
+    ownerName: umkm.ownerName || "",
+    businessType: umkm.businessType || "",
+    permits: { nib: umkm.nib || "", halal: umkm.halalPermit || "", sppirt: umkm.sppirt || "" },
     contact: readContact(umkm.publicContact),
     productCount: umkm._count.products,
     products: umkm.products.map((product) => ({ id: product.id, name: product.name, slug: product.slug, productType: product.productType, category: product.category.name, imageUrl: product.images[0]?.imageUrl })),

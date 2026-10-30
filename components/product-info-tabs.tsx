@@ -9,17 +9,9 @@ type ProductInfoTabsProps = {
   description: string;
   handling: string;
   purchaseSummary: string[];
-  producerProfile?: {
-    ownerName: string;
-    businessType: string;
-    nib: string;
-    halalPermit: string;
-    sppirt: string;
-    narrative: string;
-  };
 };
 
-export function ProductInfoTabs({ isService, intro, description, handling, purchaseSummary, producerProfile }: ProductInfoTabsProps) {
+export function ProductInfoTabs({ isService, intro, description, handling, purchaseSummary }: ProductInfoTabsProps) {
   const [activeTab, setActiveTab] = useState<"description" | "purchase">("description");
 
   return <section id="informasi-produk" className="mt-6 overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-card">
@@ -35,7 +27,6 @@ export function ProductInfoTabs({ isService, intro, description, handling, purch
       {activeTab === "description" ? <div className="space-y-4 text-sm leading-7 text-slate-600">
         <p>{intro}</p>
         <p>{description || (isService ? "Belum ada deskripsi untuk layanan ini." : "Belum ada deskripsi untuk barang ini.")}</p>
-        {producerProfile && <section className="rounded-xl border border-forest-700/10 bg-white p-4"><h3 className="text-xs font-bold text-forest-900">Informasi usaha</h3><dl className="mt-3 grid gap-3 text-xs sm:grid-cols-2">{[["Pemilik usaha", producerProfile.ownerName], ["Jenis produk/jasa", producerProfile.businessType], ["NIB", producerProfile.nib], ["Halal", producerProfile.halalPermit], ["SPP-IRT", producerProfile.sppirt], ["Narasi profil", producerProfile.narrative]].map(([label, value]) => <div key={label}><dt className="font-bold text-forest-800">{label}</dt><dd className="mt-1 whitespace-pre-line leading-5 text-slate-600">{value || "—"}</dd></div>)}</dl></section>}
         <div className="rounded-xl bg-[#f5f8f4] p-4 text-forest-950"><p className="mb-1 text-xs font-bold text-forest-800">Catatan pemenuhan</p>{handling}</div>
       </div> : <div className="space-y-4 text-sm leading-6 text-slate-600">
         {purchaseSummary.map((item, index) => <p key={index} className="flex items-start gap-3"><span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-forest-700" />{item}</p>)}
