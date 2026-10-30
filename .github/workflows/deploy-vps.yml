@@ -30,8 +30,9 @@ jobs:
         run: |
           set -eu
           install -m 700 -d "$HOME/.ssh"
-          printf '%s\n' "$SSH_PRIVATE_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$SSH_PRIVATE_KEY" | tr -d '\r' > "$HOME/.ssh/id_ed25519"
           chmod 600 "$HOME/.ssh/id_ed25519"
+          ssh-keygen -y -f "$HOME/.ssh/id_ed25519" > /dev/null
           ssh-keyscan -H "$VPS_HOST" >> "$HOME/.ssh/known_hosts"
 
       - name: Upload source to VPS
