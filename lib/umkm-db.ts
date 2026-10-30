@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { catalogEntries } from "@/lib/catalog";
+import { catalogEntries, catalogImagePlaceholder } from "@/lib/catalog";
 
 export type PublicUmkm = {
   id: string;
@@ -22,7 +22,7 @@ export function formatUmkmDescription(name: string, description: string | null |
 }
 
 const fallbackUmkm: PublicUmkm[] = Array.from(new Set(catalogEntries.map((entry) => entry.producer).filter((value): value is string => Boolean(value)))).map((name) => {
-  const products = catalogEntries.filter((entry) => entry.producer === name);
+  const products = catalogEntries.filter((entry) => entry.producer === name && Boolean(entry.imageSrc?.trim()) && entry.imageSrc !== catalogImagePlaceholder);
   return {
     id: `catalog-umkm-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
     name,
@@ -35,7 +35,7 @@ const fallbackUmkm: PublicUmkm[] = Array.from(new Set(catalogEntries.map((entry)
     productCount: products.length,
     products: products.map((entry) => ({ id: entry.id, name: entry.name, slug: entry.slug, productType: entry.productType, category: entry.category, imageUrl: entry.imageSrc })),
   };
-});
+}).filter((umkm) => umkm.products.length > 0);
 
 function readContact(value: unknown, address?: string | null): PublicUmkm["contact"] {
   const contact = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
@@ -48,12 +48,20 @@ function readContact(value: unknown, address?: string | null): PublicUmkm["conta
 
 const readPublishedUmkm = unstable_cache(async () => {
   const rows = await prisma.umkm.findMany({
-    where: { isPublished: true },
+    where: {
+      isPublished: true,
+      products: {
+        some: {
+          publishStatus: "published",
+          images: { some: { imageUrl: { not: "" } } },
+        },
+      },
+    },
     orderBy: { name: "asc" },
     include: {
-      _count: { select: { products: { where: { publishStatus: "published", images: { some: {} } } } } },
+      _count: { select: { products: { where: { publishStatus: "published", images: { some: { imageUrl: { not: "" } } } } } },
       products: {
-        where: { publishStatus: "published", images: { some: {} } },
+        where: { publishStatus: "published", images: { some: { imageUrl: { not: "" } } } },
         orderBy: { name: "asc" },
         take: 8,
         include: { category: true, images: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }], take: 1 } },
