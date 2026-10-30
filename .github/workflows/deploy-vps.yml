@@ -88,6 +88,34 @@ jobs:
             "
           fi
 
+      - name: Configure Supabase server key
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -eu
+          if [ -n "$SUPABASE_SECRET_KEY" ]; then
+            printf 'SUPABASE_SECRET_KEY=%s\n' "$SUPABASE_SECRET_KEY" | ssh "$VPS_USER@$VPS_HOST" "
+              set -eu
+              cd '$VPS_APP_DIR'
+              test -f .env.deploy
+              tmp=\$(mktemp)
+              grep -vE '^(SUPABASE_SECRET_KEY|SUPABASE_SERVICE_ROLE_KEY)=' .env.deploy > \"\$tmp\" || true
+              cat - >> \"\$tmp\"
+              mv \"\$tmp\" .env.deploy
+              chmod 600 .env.deploy
+            "
+          else
+            ssh "$VPS_USER@$VPS_HOST" "
+              set -eu
+              cd '$VPS_APP_DIR'
+              test -f .env.deploy
+              grep -Eq '^(SUPABASE_SECRET_KEY|SUPABASE_SERVICE_ROLE_KEY)=.' .env.deploy || {
+                echo 'Tambahkan secret GitHub SUPABASE_SECRET_KEY atau isi kunci Supabase di .env.deploy VPS.'
+                exit 1
+              }
+            "
+          fi
+
       - name: Build, migrate, and restart application
         run: |
           set -eu
