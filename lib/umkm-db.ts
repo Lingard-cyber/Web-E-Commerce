@@ -59,7 +59,16 @@ const readPublishedUmkm = unstable_cache(async () => {
     },
     orderBy: { name: "asc" },
     include: {
-      _count: { select: { products: { where: { publishStatus: "published", images: { some: { imageUrl: { not: "" } } } } } },
+      _count: {
+        select: {
+          products: {
+            where: {
+              publishStatus: "published",
+              images: { some: { imageUrl: { not: "" } } },
+            },
+          },
+        },
+      },
       products: {
         where: { publishStatus: "published", images: { some: { imageUrl: { not: "" } } } },
         orderBy: { name: "asc" },
