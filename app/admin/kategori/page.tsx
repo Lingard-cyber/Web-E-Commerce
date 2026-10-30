@@ -15,7 +15,7 @@ export default async function AdminCategoriesPage() {
   return <AdminShell name={admin.name} email={admin.email}>
     <p className="text-[10px] font-bold uppercase tracking-[.18em] text-forest-700">Katalog</p>
     <h1 className="mt-2 font-display text-3xl font-bold">Kategori</h1>
-    <p className="mt-2 max-w-2xl text-sm text-muted">Tambah kategori untuk mengelompokkan produk dan jasa. Kategori baru dapat dipilih saat menambah atau mengedit entri katalog.</p>
+    <p className="mt-2 max-w-2xl text-base leading-7 text-slate-700">Tambah kategori untuk mengelompokkan produk dan jasa. Kategori baru dapat dipilih saat menambah atau mengedit entri katalog.</p>
     <AdminCategoryManager initialCategories={items} />
   </AdminShell>;
 }

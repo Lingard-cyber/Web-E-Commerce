@@ -6,7 +6,7 @@ import { requireAdminApi, slugValue, textValue, validationError } from "@/lib/ad
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   const { response } = await requireAdminApi();
   if (response) return response;
-  const current = await prisma.umkm.findUnique({ where: { id: params.id }, select: { id: true, name: true, slug: true, description: true, isPublished: true, publicContact: true, ownerName: true, businessType: true, nib: true, halalPermit: true, sppirt: true, privateKtp: true, privateAddress: true, privatePhone: true } });
+  const current = await prisma.umkm.findUnique({ where: { id: params.id }, select: { id: true, name: true, slug: true, description: true, isPublished: true, publicContact: true, ownerName: true, businessType: true, nib: true, halalPermit: true, sppirt: true, privateKtp: true, privateAddress: true } });
   if (!current) return NextResponse.json({ error: "UMKM tidak ditemukan." }, { status: 404 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   const name = textValue(body?.name, 160) || current.name;
@@ -24,7 +24,6 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     sppirt: body && "sppirt" in body ? textValue(body.sppirt, 160) || null : current.sppirt,
     privateKtp: body && "ktp" in body ? textValue(body.ktp, 80) || null : current.privateKtp,
     privateAddress: body && "address" in body ? textValue(body.address, 1000) || null : current.privateAddress,
-    privatePhone: body && ("phone" in body || "contact" in body) ? textValue(body.phone || body.contact, 80) || null : current.privatePhone,
     isPublished: body && "isPublished" in body ? Boolean(body.isPublished) : current.isPublished,
     publicContact: { instagram: body && "instagram" in body ? textValue(body.instagram, 160) : existingContact.instagram || "" },
   } });

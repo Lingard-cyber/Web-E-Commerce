@@ -1,40 +1,35 @@
 import Link from "next/link";
-import { ArrowRight, BarChart3, Clock3, CreditCard, MessageSquareText, Package, ShoppingBag, Store, Truck, UsersRound } from "lucide-react";
+import { Suspense } from "react";
+import { ArrowRight, Store } from "lucide-react";
 import { AdminShell } from "@/components/admin-shell";
-import { AdminSalesChart } from "@/components/admin-sales-chart";
-import { formatAdminDate, formatAdminRupiah, getAdminDashboardData, labelStatus } from "@/lib/admin-data";
+import { AdminDashboardData } from "@/components/admin-dashboard-data";
 import { requireAdmin } from "@/lib/admin";
 
 export const dynamic = "force-dynamic";
 
-const statCards = [["Produk", "products", Package, "/admin/produk"], ["Jasa", "services", MessageSquareText, "/admin/jasa"], ["Pesanan produk", "orders", ShoppingBag, "/admin/pesanan-produk"], ["Permintaan jasa", "inquiries", MessageSquareText, "/admin/jasa"]] as const;
-
 export default async function AdminPage() {
   const admin = await requireAdmin();
-  const data = await getAdminDashboardData();
 
   return <AdminShell name={admin.name} email={admin.email}>
     <section className="admin-hero admin-shimmer admin-animate-in rounded-[28px] p-6 text-white sm:p-8 lg:p-10">
       <div className="relative z-10 flex flex-col justify-between gap-7 sm:flex-row sm:items-end">
-        <div className="max-w-2xl"><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.18em] text-accent"><span className="grid h-7 w-7 place-items-center rounded-lg bg-white/10"><Store size={14} /></span>Ringkasan operasional</div><h1 className="mt-4 font-display text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">Selamat datang, {admin.name}.</h1><p className="mt-3 max-w-xl text-sm leading-6 text-white/70">Satu ruang kerja untuk menjaga katalog, pesanan, dan kolaborasi UMKM tetap bergerak.</p></div>
+        <div className="max-w-2xl">
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.18em] text-accent"><span className="grid h-7 w-7 place-items-center rounded-lg bg-white/10"><Store size={14} /></span>Ringkasan operasional</div>
+          <h1 className="mt-4 font-display text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">Selamat datang, {admin.name}.</h1>
+          <p className="mt-3 max-w-xl text-base leading-7 text-white/90">Satu ruang kerja untuk menjaga katalog, pesanan, dan kolaborasi UMKM tetap bergerak.</p>
+        </div>
         <Link href="/" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-accent px-4 text-xs font-bold text-forest-950 shadow-lg shadow-black/10 hover:-translate-y-0.5 hover:bg-yellow-300">Lihat storefront <ArrowRight size={14} className="ml-2" /></Link>
       </div>
       <div className="relative z-10 mt-8 flex flex-wrap gap-2 text-[10px] text-white/70"><span className="rounded-full border border-white/15 bg-white/10 px-3 py-2 backdrop-blur">Produk & stok</span><span className="rounded-full border border-white/15 bg-white/10 px-3 py-2 backdrop-blur">Jasa & konsultasi</span><span className="rounded-full border border-white/15 bg-white/10 px-3 py-2 backdrop-blur">Pembayaran tervalidasi</span></div>
     </section>
-    {!data.available && <div className="admin-animate-in mt-6 rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-xs leading-6 text-amber-950"><strong>Database belum tersedia untuk dibaca.</strong><br />{data.error || "Periksa konfigurasi koneksi database sebelum menjalankan operasi admin."}</div>}
-    <div className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{statCards.map(([label, key, Icon, href], index) => <Link href={href} key={label} style={{ animationDelay: `${index * 80}ms` }} className="admin-animate-in group rounded-2xl border border-white/80 bg-white/85 p-5 shadow-[0_12px_35px_rgba(24,66,45,.07)] backdrop-blur transition hover:-translate-y-1 hover:border-forest-700/20 hover:shadow-xl"><div className="flex items-center justify-between"><span className="grid h-10 w-10 place-items-center rounded-xl bg-green-50 text-forest-800 transition group-hover:scale-110"><Icon size={18} /></span><ArrowRight size={15} className="text-slate-300 transition group-hover:translate-x-1 group-hover:text-forest-800" /></div><p className="mt-5 text-xs text-muted">{label}</p><strong className="mt-1 block font-display text-3xl">{data.counts[key]}</strong></Link>)}</div>
-    <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[
-      ["Menunggu tindakan", data.counts.pendingOrders, "pembayaran/order", <Clock3 size={16} />],
-      ["Sedang diproses", data.counts.processingOrders, "pesanan produk", <Truck size={16} />],
-      ["Selesai", data.counts.completedOrders, "pesanan produk", <Package size={16} />],
-      ["Pembayaran tervalidasi", formatAdminRupiah(data.counts.paidRevenue), "tidak termasuk batal/kedaluwarsa", <CreditCard size={16} />],
-    ].map(([label, value, helper, icon], index) => <div key={String(label)} style={{ animationDelay: `${index * 80 + 180}ms` }} className="admin-animate-in flex items-center gap-3 rounded-2xl border border-white/80 bg-white/75 p-4 shadow-sm backdrop-blur"><span className="grid h-9 w-9 place-items-center rounded-lg bg-slate-50 text-forest-800">{icon}</span><span><strong className="block text-lg">{value}</strong><small className="block text-[10px] text-muted">{label} · {helper}</small></span></div>)}
-    </div>
-    <div className="mt-7"><AdminSalesChart data={data.salesByMonth} /></div>
-    <div className="mt-7 grid gap-5 xl:grid-cols-[1.25fr_.75fr]"><section className="admin-animate-in rounded-2xl border border-white/80 bg-white/85 p-5 shadow-[0_12px_35px_rgba(24,66,45,.07)] backdrop-blur"><div className="flex items-center justify-between gap-3"><div><h2 className="font-display text-xl font-bold">Pesanan produk terbaru</h2><p className="mt-1 text-xs text-muted">Status pembayaran dan pemenuhan pesanan.</p></div><Link href="/admin/pesanan-produk" className="text-[10px] font-bold text-forest-800 hover:translate-x-0.5">Lihat semua</Link></div><div className="mt-5 overflow-x-auto"><table className="w-full min-w-[620px] text-left text-xs"><thead className="border-b border-slate-100 text-[10px] uppercase tracking-wide text-muted"><tr><th className="pb-3 font-semibold">Pesanan</th><th className="pb-3 font-semibold">Pembeli</th><th className="pb-3 font-semibold">Total</th><th className="pb-3 font-semibold">Status</th><th className="pb-3 font-semibold">Waktu</th></tr></thead><tbody className="divide-y divide-slate-100">{data.recentOrders.length === 0 ? <tr><td colSpan={5} className="py-8 text-center text-muted">Belum ada data pesanan.</td></tr> : data.recentOrders.map((order) => <tr key={order.id} className="transition hover:bg-green-50/50"><td className="py-3 font-bold text-forest-800">{order.publicCode}</td><td className="py-3">{order.customer}</td><td className="py-3">{formatAdminRupiah(order.totalIdr)}</td><td className="py-3"><StatusPill value={order.payment === "paid" ? "paid" : order.status} /></td><td className="py-3 text-muted">{formatAdminDate(order.createdAt)}</td></tr>)}</tbody></table></div></section><section className="admin-animate-in rounded-2xl border border-white/80 bg-white/85 p-5 shadow-[0_12px_35px_rgba(24,66,45,.07)] backdrop-blur"><div className="flex items-center justify-between gap-3"><div><h2 className="font-display text-xl font-bold">Permintaan jasa</h2><p className="mt-1 text-xs text-muted">Konsultasi dan penawaran harga.</p></div><Link href="/admin/jasa" className="text-[10px] font-bold text-forest-800">Kelola</Link></div><div className="mt-5 space-y-3">{data.recentInquiries.length === 0 ? <p className="rounded-xl bg-slate-50 p-5 text-center text-xs text-muted">Belum ada permintaan jasa.</p> : data.recentInquiries.map((inquiry) => <div key={inquiry.id} className="rounded-xl border border-slate-100 p-3 transition hover:-translate-y-0.5 hover:border-forest-700/20 hover:shadow-sm"><div className="flex items-start justify-between gap-3"><div><strong className="block text-xs">{inquiry.name}</strong><span className="mt-1 block text-[10px] text-muted">{inquiry.product} · {inquiry.contact}</span></div><StatusPill value={inquiry.status} /></div><p className="mt-2 text-[10px] text-muted">{formatAdminDate(inquiry.createdAt)}</p></div>)}</div></section></div>
-    <div className="mt-5 grid gap-4 sm:grid-cols-3"><QuickLink href="/admin/umkm" icon={<UsersRound size={18} />} title="Data UMKM" copy={`${data.counts.umkm} pelaku usaha terhubung`} /><QuickLink href="/admin/pembayaran" icon={<CreditCard size={18} />} title="Pembayaran" copy="Periksa status Xendit yang tervalidasi" /><QuickLink href="/admin/laporan" icon={<BarChart3 size={18} />} title="Laporan" copy="Pisahkan produk dan jasa" /></div>
+    <Suspense fallback={<DashboardDataLoading />}><AdminDashboardData /></Suspense>
   </AdminShell>;
 }
 
-function StatusPill({ value }: { value: string }) { return <span className={`inline-flex rounded-full px-2 py-1 text-[9px] font-bold ${value === "paid" || value === "completed" ? "bg-green-100 text-forest-800" : value === "cancelled" || value === "expired" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{labelStatus(value)}</span>; }
-function QuickLink({ href, icon, title, copy }: { href: string; icon: React.ReactNode; title: string; copy: string }) { return <Link href={href} className="group flex items-center gap-3 rounded-2xl border border-white/80 bg-white/75 p-4 shadow-sm backdrop-blur transition hover:-translate-y-1 hover:border-forest-700/20 hover:shadow-lg"><span className="grid h-10 w-10 place-items-center rounded-xl bg-green-50 text-forest-800 transition group-hover:scale-110">{icon}</span><span><strong className="block text-xs">{title}</strong><small className="mt-1 block text-[10px] text-muted">{copy}</small></span><ArrowRight size={14} className="ml-auto text-slate-300 transition group-hover:translate-x-1 group-hover:text-forest-800" /></Link>; }
+function DashboardDataLoading() {
+  return <div className="mt-6" role="status" aria-label="Memuat ringkasan data">
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{Array.from({ length: 4 }, (_, index) => <div key={index} className="h-28 animate-pulse rounded-2xl bg-white shadow-sm" />)}</div>
+    <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{Array.from({ length: 4 }, (_, index) => <div key={index} className="h-20 animate-pulse rounded-2xl bg-white/80 shadow-sm" />)}</div>
+    <div className="mt-7 h-72 animate-pulse rounded-2xl bg-white shadow-sm" />
+  </div>;
+}

@@ -8,11 +8,11 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 type ManagedUmkm = {
   id: string; name: string; description: string | null; isPublished: boolean; productCount: number;
   ownerName: string; businessType: string; nib: string; halalPermit: string; sppirt: string;
-  ktp: string; address: string; phone: string; instagram: string;
+  ktp: string; address: string; instagram: string;
 };
 const blank = {
   name: "", description: "", ownerName: "", businessType: "", nib: "", halalPermit: "", sppirt: "",
-  ktp: "", address: "", phone: "", instagram: "", isPublished: false,
+  ktp: "", address: "", instagram: "", isPublished: false,
 };
 
 export function AdminUmkmManager({ initialItems }: { initialItems: ManagedUmkm[] }) {
@@ -27,7 +27,7 @@ export function AdminUmkmManager({ initialItems }: { initialItems: ManagedUmkm[]
   const set = (key: keyof typeof blank, value: string | boolean) => setForm((current) => ({ ...current, [key]: value }));
   const edit = (item: ManagedUmkm) => {
     setEditingId(item.id); setOpen(true);
-    setForm({ name: item.name, description: item.description || "", ownerName: item.ownerName, businessType: item.businessType, nib: item.nib, halalPermit: item.halalPermit, sppirt: item.sppirt, ktp: item.ktp, address: item.address, phone: item.phone, instagram: item.instagram, isPublished: item.isPublished });
+    setForm({ name: item.name, description: item.description || "", ownerName: item.ownerName, businessType: item.businessType, nib: item.nib, halalPermit: item.halalPermit, sppirt: item.sppirt, ktp: item.ktp, address: item.address, instagram: item.instagram, isPublished: item.isPublished });
   };
   const reset = () => { setEditingId(null); setOpen(false); setForm(blank); setMessage(""); };
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -46,12 +46,12 @@ export function AdminUmkmManager({ initialItems }: { initialItems: ManagedUmkm[]
   };
   return <>
     <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><h2 className="font-display text-xl font-bold">Kelola profil UMKM</h2><p className="mt-1 text-xs text-muted">Alamat usaha tampil di storefront. KTP dan nomor HP tetap hanya terlihat admin.</p></div><button onClick={() => { reset(); setOpen(true); }} className="inline-flex min-h-10 items-center justify-center rounded-xl bg-forest-800 px-4 text-[10px] font-bold text-white hover:bg-forest-700"><Plus size={14} className="mr-2" />Tambah UMKM</button></div>
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><h2 className="font-display text-xl font-bold">Kelola profil UMKM</h2><p className="mt-1 text-xs text-muted">Alamat usaha tampil di storefront. KTP hanya terlihat admin.</p></div><button onClick={() => { reset(); setOpen(true); }} className="inline-flex min-h-10 items-center justify-center rounded-xl bg-forest-800 px-4 text-[10px] font-bold text-white hover:bg-forest-700"><Plus size={14} className="mr-2" />Tambah UMKM</button></div>
       {open && <form onSubmit={submit} className="mt-5 grid gap-3 rounded-2xl bg-[#f5f8f4] p-4 sm:grid-cols-2">
         <Field label="Nama usaha" value={form.name} onChange={(v) => set("name", v)} required />
         <Field label="Nama pemilik usaha" value={form.ownerName} onChange={(v) => set("ownerName", v)} /><Field label="Jenis produk/jasa" value={form.businessType} onChange={(v) => set("businessType", v)} />
         <Field label="NIB" value={form.nib} onChange={(v) => set("nib", v)} /><Field label="Sertifikat halal" value={form.halalPermit} onChange={(v) => set("halalPermit", v)} /><Field label="SPP-IRT" value={form.sppirt} onChange={(v) => set("sppirt", v)} />
-        <Field label="KTP (admin saja)" value={form.ktp} onChange={(v) => set("ktp", v)} /><Field label="Alamat usaha (tampil di storefront)" value={form.address} onChange={(v) => set("address", v)} /><Field label="Nomor HP (admin saja)" value={form.phone} onChange={(v) => set("phone", v)} />
+        <Field label="KTP (admin saja)" value={form.ktp} onChange={(v) => set("ktp", v)} /><Field label="Alamat usaha (tampil di storefront)" value={form.address} onChange={(v) => set("address", v)} />
         <Field label="Instagram publik" value={form.instagram} onChange={(v) => set("instagram", v)} />
         <label className="text-[10px] font-bold sm:col-span-2">Narasi profil<textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={4} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-normal outline-none focus:border-forest-700" /></label>
         <label className="flex items-center gap-2 text-[10px] font-bold sm:col-span-2"><input type="checkbox" checked={form.isPublished} onChange={(e) => set("isPublished", e.target.checked)} />Tampilkan profil pada storefront</label>

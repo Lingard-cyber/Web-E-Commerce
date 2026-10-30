@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     name, slug, description: textValue(body?.description, 8000) || null,
     ownerName: textValue(body?.ownerName, 160) || null, businessType: textValue(body?.businessType, 500) || null,
     nib: textValue(body?.nib, 160) || null, halalPermit: textValue(body?.halalPermit, 160) || null, sppirt: textValue(body?.sppirt, 160) || null,
-    privateKtp: textValue(body?.ktp, 80) || null, privateAddress: textValue(body?.address, 1000) || null, privatePhone: textValue(body?.phone || body?.contact, 80) || null,
+    privateKtp: textValue(body?.ktp, 80) || null, privateAddress: textValue(body?.address, 1000) || null,
     isPublished: Boolean(body?.isPublished), publicContact: { instagram: textValue(body?.instagram, 160) || "" },
   } });
   await prisma.auditLog.create({ data: { action: "create", entity: "umkm", entityId: created.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom" } } });

@@ -151,7 +151,6 @@ model Umkm {
   sppirt         String?
   privateKtp     String?
   privateAddress String?
-  privatePhone   String?
   publicContact  Json?
   isPublished    Boolean   @default(false)
   createdAt      DateTime  @default(now())

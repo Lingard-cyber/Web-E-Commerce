@@ -26,7 +26,6 @@ export function AdminLoginForm() {
 
       const destination = window.location.pathname.startsWith("/admin/login") ? "/admin" : "/";
       router.replace(destination);
-      router.refresh();
     } catch {
       setMessage("Koneksi ke layanan autentikasi gagal. Periksa koneksi internet lalu coba lagi.");
     } finally {

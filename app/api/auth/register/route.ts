@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { syncAuthUser } from "@/lib/auth-profile";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 function value(input: unknown, maxLength: number) {
   return typeof input === "string" ? input.trim().slice(0, maxLength) : "";
@@ -26,31 +25,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Registrasi belum dapat diproses.";
-    if (!message.includes("Supabase server credentials are missing")) return NextResponse.json({ error: "Registrasi belum dapat diproses. Silakan coba lagi." }, { status: 500 });
-
-    // Keep a public-key fallback for local development. Production uses the
-    // service-role path above so newly created accounts are already confirmed.
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const publicKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!url || !publicKey) return NextResponse.json({ error: "Layanan autentikasi belum dikonfigurasi di server." }, { status: 503 });
-
-    const supabase = createSupabaseClient(url, publicKey, { auth: { autoRefreshToken: false, persistSession: false } });
-    const configuredOrigin = process.env.NEXT_PUBLIC_STORE_URL || process.env.NEXT_PUBLIC_SITE_URL;
-    const redirectOrigin = configuredOrigin ? new URL(configuredOrigin).origin : new URL(request.url).origin;
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name, phone },
-        emailRedirectTo: new URL("/auth/callback", redirectOrigin).toString(),
-      },
-    });
-    if (signUpError) return authError(signUpError.message);
-    if (!data.session) {
-      return NextResponse.json({ ok: true, confirmationRequired: true }, { status: 201 });
+    if (message.includes("Supabase server credentials are missing")) {
+      return NextResponse.json({ error: "Pendaftaran akun langsung belum dikonfigurasi di server. Silakan hubungi pengelola." }, { status: 503 });
     }
-    await syncCreatedUser(data.user);
-    return NextResponse.json({ ok: true }, { status: 201 });
+    return NextResponse.json({ error: "Registrasi belum dapat diproses. Silakan coba lagi." }, { status: 500 });
   }
 }
 

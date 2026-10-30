@@ -14,7 +14,7 @@ export function InteriorHero({ eyebrow, title, description, image = "/kepuharjo-
       <div className="max-w-3xl">
         <p className="mb-3 inline-flex rounded-full bg-accent px-3 py-1.5 text-[9px] font-bold uppercase tracking-[.16em] text-forest-950">{eyebrow}</p>
         <h1 className="font-display text-[clamp(2.3rem,5vw,4.8rem)] font-bold leading-[.94] tracking-[-.04em]">{title}</h1>
-        <p className="mt-5 max-w-2xl text-sm leading-7 text-white/75">{description}</p>
+        <p className="mt-5 max-w-2xl text-base leading-7 text-white/90 sm:text-lg">{description}</p>
       </div>
     </div>
   </section>;

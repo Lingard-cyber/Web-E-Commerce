@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Camera, Images } from "lucide-react";
+import { ArrowLeft, Camera, Images } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
+import { GalleryLightbox } from "@/components/gallery-lightbox";
 import { getPublicGallery } from "@/lib/gallery-db";
 
 export const revalidate = 30;
@@ -29,13 +30,7 @@ export default async function GaleriPage() {
 
         {galleryImages.length === 0 ? <div className="mt-8 rounded-3xl border border-dashed border-forest-700/25 bg-white px-6 py-20 text-center text-sm text-muted">Belum ada foto yang ditampilkan.</div> : <section className="mt-8">
           <div className="mb-5 flex items-end justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-forest-700">Dokumentasi pilihan</p><h2 className="mt-2 font-display text-2xl font-bold text-ink sm:text-3xl">Momen dari Kepuharjo</h2></div><span className="rounded-full bg-white px-3 py-2 text-[10px] font-bold text-muted shadow-sm">Geser untuk melihat lebih banyak</span></div>
-          <div className="grid auto-rows-[190px] gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:auto-rows-[170px]">
-            {galleryImages.map((image, index) => <a key={image.src} href={image.src} target="_blank" rel="noreferrer" className={`group relative overflow-hidden rounded-[1.5rem] border border-white/70 bg-[#dfece3] shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-xl ${index === 0 ? "sm:col-span-2 sm:row-span-2" : index === 1 ? "lg:col-span-2" : ""}`}>
-              <img src={image.src} alt={image.alt} loading={index < 2 ? "eager" : "lazy"} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-forest-950/85 via-forest-950/10 to-transparent opacity-80 transition group-hover:opacity-100" />
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 sm:p-5"><div className="min-w-0"><p className="mb-1 text-[9px] font-bold uppercase tracking-[.16em] text-accent">Dokumentasi {String(index + 1).padStart(2, "0")}</p><h3 className="font-display text-lg font-bold leading-tight text-white sm:text-xl">{image.title}</h3>{image.alt && <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-white/80">{image.alt}</p>}</div><span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/25 bg-white/15 text-white backdrop-blur-sm transition group-hover:bg-accent group-hover:text-forest-950"><ArrowUpRight size={15} /></span></div>
-            </a>)}
-          </div>
+          <GalleryLightbox images={galleryImages} />
         </section>}
 
         <Link href="/" className="mt-8 inline-flex items-center rounded-full border border-forest-700/15 bg-white px-4 py-2.5 text-xs font-bold text-forest-800 shadow-sm transition hover:-translate-y-0.5 hover:border-forest-700/30 hover:shadow-md"><ArrowLeft size={14} className="mr-2" />Kembali ke beranda</Link>

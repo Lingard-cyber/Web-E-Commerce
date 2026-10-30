@@ -14,7 +14,6 @@ type ImportRow = {
   sppirt?: unknown;
   ktp?: unknown;
   address?: unknown;
-  phone?: unknown;
   matchProductSlugs?: unknown;
 };
 
@@ -65,7 +64,6 @@ export async function POST(request: Request) {
       sppirt: filledValue(row.sppirt, 160) || null,
       privateKtp: filledValue(row.ktp, 80) || null,
       privateAddress: filledValue(row.address, 1000) || null,
-      privatePhone: filledValue(row.phone, 80) || null,
       isPublished: true,
     };
     const existingProfile = await prisma.umkm.findUnique({ where: { importKey }, select: { id: true, slug: true } });

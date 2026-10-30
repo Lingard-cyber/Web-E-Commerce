@@ -67,11 +67,7 @@ export function AccountPanel({ initialMode = "login" }: { initialMode?: "login" 
         const response = await fetch("/api/auth/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase(), password }) });
         const result = await response.json().catch(() => ({}));
         if (!response.ok) return setMessage(result.error || "Registrasi belum dapat diproses. Silakan coba lagi.");
-        setMode("login");
-        setPassword("");
-        setMessage(result.confirmationRequired
-          ? "Pendaftaran diterima. Silakan konfirmasi email melalui tautan yang kami kirim sebelum masuk."
-          : "Registrasi berhasil. Silakan masuk dengan email dan kata sandi Anda.");
+        router.push("/akun/login?registered=1");
         return;
       }
 

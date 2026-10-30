@@ -8,5 +8,5 @@ export const dynamic = "force-dynamic";
 export default async function AdminGalleryPage() {
   const admin = await requireAdmin();
   const items = await getAdminGallery();
-  return <AdminShell name={admin.name} email={admin.email}><p className="text-[10px] font-bold uppercase tracking-[.18em] text-forest-700">Konten storefront</p><h1 className="mt-2 font-display text-3xl font-bold">Galeri Kepuharjo</h1><p className="mt-2 max-w-2xl text-sm text-muted">Kelola dokumentasi kegiatan dan foto UMKM yang tampil di beranda serta halaman galeri publik.</p><AdminGalleryManager initialItems={items} /></AdminShell>;
+  return <AdminShell name={admin.name} email={admin.email}><p className="text-[10px] font-bold uppercase tracking-[.18em] text-forest-700">Konten storefront</p><h1 className="mt-2 font-display text-3xl font-bold">Galeri Kepuharjo</h1><p className="mt-2 max-w-2xl text-base leading-7 text-slate-700">Kelola dokumentasi kegiatan dan foto UMKM yang tampil di beranda serta halaman galeri publik.</p><AdminGalleryManager initialItems={items} /></AdminShell>;
 }

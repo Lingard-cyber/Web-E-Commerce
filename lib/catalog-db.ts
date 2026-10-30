@@ -1,8 +1,12 @@
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { catalogEntries, categories, type CatalogCategory, type CatalogEntry, type ProductType } from "@/lib/catalog";
+import { catalogEntries, catalogImagePlaceholder, categories, type CatalogCategory, type CatalogEntry, type ProductType } from "@/lib/catalog";
 
-const fallbackCategories: CatalogCategory[] = categories.map((category) => ({ ...category }));
+const fallbackEntries = catalogEntries.filter((entry) => Boolean(entry.imageSrc) && entry.imageSrc !== catalogImagePlaceholder);
+const fallbackCategories: CatalogCategory[] = categories.map((category) => ({
+  ...category,
+  count: fallbackEntries.filter((entry) => entry.categorySlug === category.slug).length,
+}));
 
 const readPublishedCatalog = unstable_cache(
   async () => {
@@ -11,6 +15,7 @@ const readPublishedCatalog = unstable_cache(
         where: {
           publishStatus: "published",
           category: { status: "published" },
+          images: { some: {} },
           OR: [
             { verificationNote: null },
             { verificationNote: { not: { contains: "dummy" } } },
@@ -26,7 +31,7 @@ const readPublishedCatalog = unstable_cache(
       }),
       prisma.category.findMany({
         orderBy: { sortOrder: "asc" },
-        include: { _count: { select: { products: { where: { publishStatus: "published" } } } } },
+        include: { _count: { select: { products: { where: { publishStatus: "published", images: { some: {} } } } } } },
       }),
     ]);
 
@@ -79,7 +84,7 @@ const readPublishedCatalog = unstable_cache(
 );
 
 export async function getPublicCatalog() {
-  if (!process.env.DATABASE_URL) return { entries: catalogEntries, categories: fallbackCategories };
+  if (!process.env.DATABASE_URL) return { entries: fallbackEntries, categories: fallbackCategories };
 
   try {
     const result = await readPublishedCatalog();

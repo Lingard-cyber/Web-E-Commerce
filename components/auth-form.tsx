@@ -29,8 +29,6 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     if (isRegister) return;
     if (params.get("callback_error") === "1") {
       setMessage("Link konfirmasi email tidak valid atau sudah kedaluwarsa. Silakan daftar ulang jika diperlukan.");
-    } else if (params.get("confirmation_pending") === "1") {
-      setMessage("Pendaftaran diterima. Silakan konfirmasi email melalui tautan yang kami kirim sebelum masuk.");
     } else if (params.get("registered") === "1") setMessage("Registrasi berhasil. Silakan masuk menggunakan email dan kata sandi Anda.");
     else if (params.get("reset") === "1") setMessage("Kata sandi berhasil diperbarui. Silakan masuk dengan kata sandi baru.");
   }, [isRegister]);
@@ -44,19 +42,15 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
     setIsSubmitting(true);
     try {
-      const supabase = createClient();
       if (isRegister) {
         const response = await fetch("/api/auth/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), password }) });
         const result = await response.json().catch(() => ({}));
         if (!response.ok) return setMessage(result.error || "Registrasi belum dapat diproses. Silakan coba lagi.");
-        if (result.confirmationRequired) {
-          router.push(`/akun/login?confirmation_pending=1${nextPath ? `&next=${encodeURIComponent(nextPath)}` : ""}`);
-          return;
-        }
         router.push(`/akun/login?registered=1${nextPath ? `&next=${encodeURIComponent(nextPath)}` : ""}`);
         return;
       }
 
+      const supabase = createClient();
       const result = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
       if (result.error) return setMessage(getAuthErrorMessage(result.error.message));
 
