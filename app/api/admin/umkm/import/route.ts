@@ -1,0 +1,108 @@
+import { NextResponse } from "next/server";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { prisma } from "@/lib/prisma";
+import { requireAdminApi, slugValue, textValue } from "@/lib/admin-api";
+
+type ImportRow = {
+  rowNumber: number;
+  ownerName?: unknown;
+  businessType?: unknown;
+  narrative?: unknown;
+  nib?: unknown;
+  halalPermit?: unknown;
+  sppirt?: unknown;
+  ktp?: unknown;
+  address?: unknown;
+  phone?: unknown;
+  matchProductSlugs?: unknown;
+};
+
+function categoryFor(type: string) {
+  const value = type.toLowerCase();
+  if (/jahit|penjahit|permak|taylor/.test(value)) return { slug: "fashion-jasa-jahit", name: "Fashion & jasa jahit" };
+  if (/salon|rias|bekam|pijat|servis|service|jasa|percetakan|fotokopi|fotocopy/.test(value)) return { slug: "jasa-layanan", name: "Jasa & layanan" };
+  if (/kopi|jahe|wedang|minuman|susu|madu|herbal|jamu/.test(value)) return { slug: "minuman-herbal", name: "Minuman & herbal" };
+  if (/rajut|souvenir|kerajinan|hias|anyam|craft/.test(value)) return { slug: "kerajinan-souvenir", name: "Kerajinan & souvenir" };
+  if (/makanan|camilan|kerupuk|peyek|keripik|kripik|kue|roti|nasi|sambal|sambel|bakso|sosis|pizza|olahan|snack|stik|sempol|slondok|kuliner|jajan|catering|pang[s]?it|soto|jadah|telur|sayur|es buah/.test(value)) return { slug: "makanan-camilan", name: "Makanan & camilan" };
+  if (/batik|kaos|aksesoris|aksesori/.test(value)) return { slug: "kerajinan-souvenir", name: "Kerajinan & souvenir" };
+  return { slug: "lainnya", name: "Usaha lainnya" };
+}
+
+function typeFor(type: string): "ready_stock" | "fresh_preorder" | "service" {
+  return /jahit|penjahit|permak|salon|rias|bekam|pijat|servis|service|jasa|percetakan|fotokopi|fotocopy|taylor/.test(type.toLowerCase()) ? "service" : "ready_stock";
+}
+
+export async function POST(request: Request) {
+  const { response } = await requireAdminApi();
+  if (response) return response;
+  const payload = await request.json().catch(() => null) as { rows?: ImportRow[] } | null;
+  if (!Array.isArray(payload?.rows) || payload.rows.length === 0 || payload.rows.length > 100) {
+    return NextResponse.json({ error: "Unggah 1 sampai 100 baris data UMKM." }, { status: 400 });
+  }
+
+  const summary = { profilesCreated: 0, profilesUpdated: 0, productsCreated: 0, productsLinked: 0, skipped: 0 };
+  for (const row of payload.rows) {
+    const rowNumber = Number(row.rowNumber);
+    const ownerName = textValue(row.ownerName, 160);
+    const businessType = textValue(row.businessType, 500);
+    if (!Number.isInteger(rowNumber) || rowNumber <= 0 || !ownerName || !businessType) { summary.skipped++; continue; }
+    const importKey = `induk-umkm-row-${rowNumber}`;
+    const name = ownerName;
+    const slug = slugValue(`umkm-${rowNumber}-${ownerName}`);
+    const values = {
+      name, slug,
+      description: textValue(row.narrative, 8000) || null,
+      ownerName,
+      businessType,
+      nib: textValue(row.nib, 160) || null,
+      halalPermit: textValue(row.halalPermit, 160) || null,
+      sppirt: textValue(row.sppirt, 160) || null,
+      privateKtp: textValue(row.ktp, 80) || null,
+      privateAddress: textValue(row.address, 1000) || null,
+      privatePhone: textValue(row.phone, 80) || null,
+      isPublished: true,
+    };
+    const existingProfile = await prisma.umkm.findUnique({ where: { importKey }, select: { id: true, slug: true } });
+    const profile = await prisma.umkm.upsert({ where: { importKey }, create: { ...values, importKey }, update: values });
+    if (existingProfile) summary.profilesUpdated++; else summary.profilesCreated++;
+
+    const matchSlugs = Array.isArray(row.matchProductSlugs) ? row.matchProductSlugs.map((value) => textValue(value, 180)).filter(Boolean) : [];
+    let linkedCount = 0;
+    for (const matchSlug of matchSlugs) {
+      const existingProduct = await prisma.product.findUnique({ where: { slug: matchSlug }, select: { id: true } });
+      if (!existingProduct) continue;
+      await prisma.product.update({ where: { id: existingProduct.id }, data: { umkmId: profile.id, ...(values.description ? { description: values.description } : {}) } });
+      summary.productsLinked++;
+      linkedCount++;
+    }
+    if (linkedCount > 0) continue;
+
+    const categorySpec = categoryFor(businessType);
+    const category = await prisma.category.upsert({ where: { slug: categorySpec.slug }, create: { ...categorySpec, description: `Produk dan layanan ${categorySpec.name.toLowerCase()} dari UMKM Kepuharjo.` }, update: {} });
+    const productType = typeFor(businessType);
+    const productSlug = slugValue(`induk-${rowNumber}-${businessType}`);
+    const productData = {
+      umkmId: profile.id,
+      categoryId: category.id,
+      name: businessType,
+      slug: productSlug,
+      description: values.description,
+      productType,
+      publishStatus: "published" as const,
+      serviceBookingMode: productType === "service" ? "quotation" as const : null,
+      verificationNote: "Data awal dari induk UMKM; harga, stok, dan foto belum tersedia.",
+    };
+    const existingImportedProduct = await prisma.product.findUnique({ where: { importKey }, select: { id: true } });
+    await prisma.product.upsert({
+      where: { importKey },
+      create: { ...productData, importKey, variants: { create: { label: productType === "service" ? "Konsultasi" : "Varian utama", priceIdr: null, stockQty: null } } },
+      update: productData,
+    });
+    if (!existingImportedProduct) summary.productsCreated++;
+  }
+
+  await prisma.auditLog.create({ data: { action: "import", entity: "umkm-workbook", metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom", ...summary } } });
+  revalidatePath("/"); revalidatePath("/produk"); revalidatePath("/jasa"); revalidatePath("/umkm");
+  revalidateTag("public-umkm"); revalidateTag("public-catalog");
+  return NextResponse.json(summary);
+}

@@ -37,8 +37,16 @@ const readPublishedCatalog = unstable_cache(
       category: product.category.name,
       categorySlug: product.category.slug,
       productType: product.productType as ProductType,
-      description: product.description || "Produk lokal dari pelaku usaha Kepuharjo.",
+      description: product.description || "—",
       producer: product.umkm?.name,
+      producerProfile: product.umkm ? {
+        ownerName: product.umkm.ownerName || "—",
+        businessType: product.umkm.businessType || "—",
+        nib: product.umkm.nib || "—",
+        halalPermit: product.umkm.halalPermit || "—",
+        sppirt: product.umkm.sppirt || "—",
+        narrative: product.umkm.description?.trim() || "—",
+      } : undefined,
       variants: product.variants.map((variant) => ({
         id: variant.id,
         label: variant.label,

@@ -71,19 +71,19 @@ enum ServiceBookingMode {
 }
 
 model User {
-  id                String             @id @default(cuid())
-  authId            String?            @unique // ID dari Supabase Auth
-  email             String             @unique
-  name              String?
-  phone             String?
-  role              UserRole           @default(customer)
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  addresses         Address[]
-  cart              Cart?
-  orders            Order[]
-  serviceInquiries  ServiceInquiry[]
-  auditLogs         AuditLog[]
+  id               String           @id @default(cuid())
+  authId           String?          @unique // ID dari Supabase Auth
+  email            String           @unique
+  name             String?
+  phone            String?
+  role             UserRole         @default(customer)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  addresses        Address[]
+  cart             Cart?
+  orders           Order[]
+  serviceInquiries ServiceInquiry[]
+  auditLogs        AuditLog[]
 
   @@map("pengguna")
 }
@@ -104,32 +104,40 @@ model GalleryImage {
 }
 
 model Address {
-  id              String   @id @default(cuid())
-  userId          String
-  label           String   @default("Rumah")
-  recipientName   String
-  phone           String
-  address         String
-  village         String?
-  district        String?
-  regency         String?
-  postalCode      String?
-  isDefault       Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders          Order[]
+  id            String   @id @default(cuid())
+  userId        String
+  label         String   @default("Rumah")
+  recipientName String
+  phone         String
+  address       String
+  village       String?
+  district      String?
+  regency       String?
+  postalCode    String?
+  isDefault     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders        Order[]
 
   @@index([userId])
-
   @@map("alamat")
 }
 
 model Umkm {
   id             String    @id @default(cuid())
+  importKey      String?   @unique
   name           String
   slug           String    @unique
   description    String?
+  ownerName      String?
+  businessType   String?
+  nib            String?
+  halalPermit    String?
+  sppirt         String?
+  privateKtp     String?
+  privateAddress String?
+  privatePhone   String?
   publicContact  Json?
   isPublished    Boolean   @default(false)
   createdAt      DateTime  @default(now())
@@ -140,11 +148,11 @@ model Umkm {
 }
 
 model Category {
-  id          String    @id @default(cuid())
+  id          String         @id @default(cuid())
   name        String
-  slug        String    @unique
+  slug        String         @unique
   description String?
-  sortOrder   Int       @default(0)
+  sortOrder   Int            @default(0)
   status      CategoryStatus @default(published)
   products    Product[]
 
@@ -152,34 +160,34 @@ model Category {
 }
 
 model Product {
-  id                 String         @id @default(cuid())
-  umkmId             String?
-  categoryId         String
-  name               String
-  slug               String         @unique
-  description        String?
-  productType        ProductType
-  publishStatus      PublishStatus  @default(draft)
-  verificationNote   String?
-  serviceBookingMode ServiceBookingMode?
+  id                  String              @id @default(cuid())
+  importKey           String?             @unique
+  umkmId              String?
+  categoryId          String
+  name                String
+  slug                String              @unique
+  description         String?
+  productType         ProductType
+  publishStatus       PublishStatus       @default(draft)
+  verificationNote    String?
+  serviceBookingMode  ServiceBookingMode?
   serviceRequirements String?
   serviceAvailability String?
-  serviceDuration    String?
-  sourcePdfPage      Int?
-  sourceCatalogEntry Int?
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
-  umkm               Umkm?          @relation(fields: [umkmId], references: [id], onDelete: SetNull)
-  category           Category       @relation(fields: [categoryId], references: [id])
-  variants           ProductVariant[]
-  images             ProductImage[]
-  orderItems         OrderItem[]
-  serviceInquiries   ServiceInquiry[]
+  serviceDuration     String?
+  sourcePdfPage       Int?
+  sourceCatalogEntry  Int?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  umkm                Umkm?               @relation(fields: [umkmId], references: [id], onDelete: SetNull)
+  category            Category            @relation(fields: [categoryId], references: [id])
+  variants            ProductVariant[]
+  images              ProductImage[]
+  orderItems          OrderItem[]
+  serviceInquiries    ServiceInquiry[]
 
   @@index([umkmId])
   @@index([categoryId])
   @@index([publishStatus])
-
   @@map("produk")
 }
 
@@ -198,23 +206,21 @@ model ProductVariant {
   stockMovements StockMovement[]
 
   @@index([productId])
-
   @@map("varian_produk")
 }
 
 model ProductImage {
-  id         String   @id @default(cuid())
-  productId  String
-  imageUrl   String
-  altText    String?
-  sortOrder  Int      @default(0)
-  isPrimary  Boolean  @default(false)
-  isHero     Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  productId String
+  imageUrl  String
+  altText   String?
+  sortOrder Int      @default(0)
+  isPrimary Boolean  @default(false)
+  isHero    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
-
   @@map("gambar_produk")
 }
 
@@ -228,7 +234,6 @@ model StockMovement {
   variant     ProductVariant @relation(fields: [variantId], references: [id])
 
   @@index([variantId, createdAt])
-
   @@map("pergerakan_stok")
 }
 
@@ -255,33 +260,31 @@ model CartItem {
 
   @@unique([cartId, variantId])
   @@index([variantId])
-
   @@map("item_keranjang")
 }
 
 model Order {
-  id                       String       @id @default(cuid())
-  publicCode               String       @unique
-  userId                   String
-  addressId                String?
-  status                   OrderStatus  @default(pending_payment)
-  subtotalIdr              Int
-  shippingIdr              Int          @default(0)
-  discountIdr              Int          @default(0)
-  totalIdr                 Int
-  shippingAddressSnapshot  Json
-  idempotencyKey           String       @unique
-  createdAt                DateTime     @default(now())
-  updatedAt                DateTime     @updatedAt
-  user                     User         @relation(fields: [userId], references: [id])
-  address                  Address?     @relation(fields: [addressId], references: [id], onDelete: SetNull)
-  items                    OrderItem[]
-  payment                  Payment?
-  shipment                 Shipment?
+  id                      String      @id @default(cuid())
+  publicCode              String      @unique
+  userId                  String
+  addressId               String?
+  status                  OrderStatus @default(pending_payment)
+  subtotalIdr             Int
+  shippingIdr             Int         @default(0)
+  discountIdr             Int         @default(0)
+  totalIdr                Int
+  shippingAddressSnapshot Json
+  idempotencyKey          String      @unique
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+  user                    User        @relation(fields: [userId], references: [id])
+  address                 Address?    @relation(fields: [addressId], references: [id], onDelete: SetNull)
+  items                   OrderItem[]
+  payment                 Payment?
+  shipment                Shipment?
 
   @@index([userId, createdAt])
   @@index([status])
-
   @@map("pesanan")
 }
 
@@ -301,39 +304,37 @@ model OrderItem {
 
   @@index([orderId])
   @@index([productId])
-
   @@map("item_pesanan")
 }
 
 model Payment {
-  id                 String         @id @default(cuid())
-  orderId            String         @unique
-  provider           String
-  providerPaymentId  String?
-  checkoutUrl        String?
-  status             PaymentStatus  @default(pending)
-  rawLastEvent       Json?
-  paidAt             DateTime?
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
-  order              Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  events             PaymentEvent[]
+  id                String         @id @default(cuid())
+  orderId           String         @unique
+  provider          String
+  providerPaymentId String?
+  checkoutUrl       String?
+  status            PaymentStatus  @default(pending)
+  rawLastEvent      Json?
+  paidAt            DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  order             Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  events            PaymentEvent[]
 
   @@map("pembayaran")
 }
 
 model PaymentEvent {
-  id              String    @id @default(cuid())
+  id              String   @id @default(cuid())
   provider        String
-  providerEventId String    @unique
+  providerEventId String   @unique
   eventType       String
   payload         Json
-  receivedAt      DateTime  @default(now())
+  receivedAt      DateTime @default(now())
   paymentId       String?
-  payment         Payment?  @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  payment         Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
 
   @@index([paymentId])
-
   @@map("peristiwa_pembayaran")
 }
 
@@ -342,7 +343,7 @@ model Shipment {
   orderId        String         @unique
   courier        String?
   trackingNumber String?
-  status         ShipmentStatus  @default(pending)
+  status         ShipmentStatus @default(pending)
   shippedAt      DateTime?
   deliveredAt    DateTime?
   createdAt      DateTime       @default(now())
@@ -353,22 +354,21 @@ model Shipment {
 }
 
 model ServiceInquiry {
-  id          String                @id @default(cuid())
-  productId   String
-  userId      String?
-  name        String
-  contact     String
-  message     String
-  status      ServiceInquiryStatus  @default(new)
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
-  product     Product               @relation(fields: [productId], references: [id])
-  user        User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id        String               @id @default(cuid())
+  productId String
+  userId    String?
+  name      String
+  contact   String
+  message   String
+  status    ServiceInquiryStatus @default(new)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  product   Product              @relation(fields: [productId], references: [id])
+  user      User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([productId])
   @@index([userId])
   @@index([status])
-
   @@map("permintaan_jasa")
 }
 
@@ -394,6 +394,5 @@ model AuditLog {
 
   @@index([userId, createdAt])
   @@index([entity, entityId])
-
   @@map("log_audit")
 }

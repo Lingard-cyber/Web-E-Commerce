@@ -26,6 +26,14 @@ export type CatalogEntry = {
   productType: ProductType;
   description: string;
   producer?: string;
+  producerProfile?: {
+    ownerName: string;
+    businessType: string;
+    nib: string;
+    halalPermit: string;
+    sppirt: string;
+    narrative: string;
+  };
   variants: ProductVariant[];
   sourcePdfPage: number;
   sourceCatalogEntry: number;
