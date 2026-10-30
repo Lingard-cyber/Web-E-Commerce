@@ -29,6 +29,13 @@ export function PasswordResetForm() {
         }
         return;
       }
+      if (params.get("error") === "invalid") {
+        if (mounted) {
+          setInvalidReason("Tautan reset tidak valid, sudah pernah dipakai, atau tidak cocok dengan email akun.");
+          setState("invalid");
+        }
+        return;
+      }
       try {
         const response = await fetch("/api/auth/password-reset/confirm", { cache: "no-store" });
         const result = await response.json().catch(() => ({}));

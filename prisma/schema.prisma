@@ -88,6 +88,20 @@ model User {
   @@map("pengguna")
 }
 
+model PasswordResetChallenge {
+  id          String    @id @default(cuid())
+  email       String
+  authUserId  String?
+  expiresAt   DateTime
+  verifiedAt  DateTime?
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([email, createdAt])
+  @@index([expiresAt])
+  @@map("password_reset_challenges")
+}
+
 model GalleryImage {
   id          String   @id @default(cuid())
   src         String

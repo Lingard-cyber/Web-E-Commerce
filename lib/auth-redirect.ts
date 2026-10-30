@@ -8,8 +8,8 @@ export function getPublicOrigin(request: Request) {
     try { return new URL(configured).origin; } catch { /* Fall through to the canonical domain. */ }
   }
 
-  const domain = process.env.SITE_DOMAIN?.trim().replace(/^https?:\/\//i, "").replace(/\/$/, "");
-  if (domain && process.env.NODE_ENV === "production") return `https://${domain}`;
+  const domain = process.env.SITE_DOMAIN?.trim().replace(/^https?:\/\//i, "").replace(/\/$/, "") || "umkmkepuharjo.my.id";
+  if (process.env.NODE_ENV === "production") return `https://${domain}`;
 
   const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0].trim();
   const host = forwardedHost || request.headers.get("host");

@@ -3,5 +3,5 @@ import { AuthPageFrame } from "@/components/auth-page-frame";
 
 // Compatibility alias for links where "password" was typed as "pasword".
 export default function ResetPasswordTypoPage() {
-  return <AuthPageFrame modal><PasswordResetForm /></AuthPageFrame>;
+  return <AuthPageFrame><PasswordResetForm /></AuthPageFrame>;
 }
