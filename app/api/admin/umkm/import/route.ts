@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdminApi, slugValue, textValue } from "@/lib/admin-api";
+import { catalogEntries } from "@/lib/catalog";
 
 type ImportRow = {
   rowNumber: number;
@@ -16,6 +17,11 @@ type ImportRow = {
   phone?: unknown;
   matchProductSlugs?: unknown;
 };
+
+function filledValue(value: unknown, maxLength: number) {
+  const clean = textValue(value, maxLength);
+  return clean === "-" || clean === "—" ? "" : clean;
+}
 
 function categoryFor(type: string) {
   const value = type.toLowerCase();
@@ -43,23 +49,23 @@ export async function POST(request: Request) {
   const summary = { profilesCreated: 0, profilesUpdated: 0, productsCreated: 0, productsLinked: 0, skipped: 0 };
   for (const row of payload.rows) {
     const rowNumber = Number(row.rowNumber);
-    const ownerName = textValue(row.ownerName, 160);
-    const businessType = textValue(row.businessType, 500);
+    const ownerName = filledValue(row.ownerName, 160);
+    const businessType = filledValue(row.businessType, 500);
     if (!Number.isInteger(rowNumber) || rowNumber <= 0 || !ownerName || !businessType) { summary.skipped++; continue; }
     const importKey = `induk-umkm-row-${rowNumber}`;
     const name = ownerName;
     const slug = slugValue(`umkm-${rowNumber}-${ownerName}`);
     const values = {
       name, slug,
-      description: textValue(row.narrative, 8000) || null,
+      description: filledValue(row.narrative, 8000) || null,
       ownerName,
       businessType,
-      nib: textValue(row.nib, 160) || null,
-      halalPermit: textValue(row.halalPermit, 160) || null,
-      sppirt: textValue(row.sppirt, 160) || null,
-      privateKtp: textValue(row.ktp, 80) || null,
-      privateAddress: textValue(row.address, 1000) || null,
-      privatePhone: textValue(row.phone, 80) || null,
+      nib: filledValue(row.nib, 160) || null,
+      halalPermit: filledValue(row.halalPermit, 160) || null,
+      sppirt: filledValue(row.sppirt, 160) || null,
+      privateKtp: filledValue(row.ktp, 80) || null,
+      privateAddress: filledValue(row.address, 1000) || null,
+      privatePhone: filledValue(row.phone, 80) || null,
       isPublished: true,
     };
     const existingProfile = await prisma.umkm.findUnique({ where: { importKey }, select: { id: true, slug: true } });
@@ -71,7 +77,8 @@ export async function POST(request: Request) {
     for (const matchSlug of matchSlugs) {
       const existingProduct = await prisma.product.findUnique({ where: { slug: matchSlug }, select: { id: true } });
       if (!existingProduct) continue;
-      await prisma.product.update({ where: { id: existingProduct.id }, data: { umkmId: profile.id, ...(values.description ? { description: values.description } : {}) } });
+      const catalogDescription = values.description ? catalogEntries.find((entry) => entry.slug === matchSlug)?.description : undefined;
+      await prisma.product.update({ where: { id: existingProduct.id }, data: { umkmId: profile.id, ...(catalogDescription ? { description: catalogDescription } : {}) } });
       summary.productsLinked++;
       linkedCount++;
     }
