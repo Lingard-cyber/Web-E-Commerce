@@ -37,13 +37,12 @@ const fallbackUmkm: PublicUmkm[] = Array.from(new Set(catalogEntries.map((entry)
   };
 });
 
-function readContact(value: unknown): PublicUmkm["contact"] {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-  const contact = value as Record<string, unknown>;
+function readContact(value: unknown, address?: string | null): PublicUmkm["contact"] {
+  const contact = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
   return {
     whatsapp: undefined,
     instagram: typeof contact.instagram === "string" ? contact.instagram : undefined,
-    address: undefined,
+    address: address?.trim() || undefined,
   };
 }
 
@@ -69,7 +68,7 @@ const readPublishedUmkm = unstable_cache(async () => {
     ownerName: umkm.ownerName || "",
     businessType: umkm.businessType || "",
     permits: { nib: umkm.nib || "", halal: umkm.halalPermit || "", sppirt: umkm.sppirt || "" },
-    contact: readContact(umkm.publicContact),
+    contact: readContact(umkm.publicContact, umkm.privateAddress),
     productCount: umkm._count.products,
     products: umkm.products.map((product) => ({ id: product.id, name: product.name, slug: product.slug, productType: product.productType, category: product.category.name, imageUrl: product.images[0]?.imageUrl })),
   } satisfies PublicUmkm));

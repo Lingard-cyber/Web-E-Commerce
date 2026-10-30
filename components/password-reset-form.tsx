@@ -1,96 +1,77 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeft, CheckCircle2, Eye, EyeOff, LockKeyhole, LoaderCircle } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { getAuthErrorMessage } from "@/lib/auth-errors";
+import { AlertCircle, ArrowLeft, CheckCircle2, Eye, EyeOff, LockKeyhole, LoaderCircle, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type ResetState = "checking" | "ready" | "invalid" | "updated";
 
 export function PasswordResetForm() {
-  const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
+  const [emailConfirmation, setEmailConfirmation] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<ResetState>("checking");
+  const [accountEmail, setAccountEmail] = useState("");
   const [invalidReason, setInvalidReason] = useState("Tautan mungkin sudah kedaluwarsa atau sudah pernah digunakan. Minta tautan baru untuk melanjutkan.");
-  const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
-
-  const getSupabase = () => {
-    if (!supabaseRef.current) supabaseRef.current = createClient();
-    return supabaseRef.current;
-  };
 
   useEffect(() => {
     let mounted = true;
-    let subscription: { unsubscribe: () => void } | null = null;
-
-    const checkRecoverySession = async () => {
+    const checkRecovery = async () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("error") === "expired") {
+        if (mounted) {
+          setInvalidReason("Tautan reset sudah kedaluwarsa. Minta tautan reset baru agar dapat membuat kata sandi baru.");
+          setState("invalid");
+        }
+        return;
+      }
       try {
-        const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-        const queryParams = new URLSearchParams(window.location.search);
-        const errorCode = hashParams.get("error_code") || queryParams.get("error_code");
-        const errorDescription = hashParams.get("error_description") || queryParams.get("error_description");
-        const hasAccessDenied = hashParams.get("error") === "access_denied" || queryParams.get("error") === "access_denied" || window.location.pathname.includes("error-access_denied");
-        const callbackExpired = queryParams.get("error") === "expired";
-        if (hasAccessDenied || errorCode === "otp_expired" || callbackExpired) {
-          if (mounted) {
-            setInvalidReason(callbackExpired || errorCode === "otp_expired" || errorDescription?.toLowerCase().includes("expired") ? "Tautan reset sudah kedaluwarsa. Minta tautan reset baru agar dapat membuat kata sandi baru." : "Tautan reset tidak valid atau sudah pernah digunakan. Minta tautan reset baru untuk melanjutkan.");
-            setState("invalid");
-          }
-          return;
-        }
-        const supabase = getSupabase();
-        const listener = supabase.auth.onAuthStateChange((event, session) => {
-          if (!mounted) return;
-          if (session && (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN" || event === "INITIAL_SESSION")) setState("ready");
-          if (!session && event === "SIGNED_OUT") setState("invalid");
-        });
-        subscription = listener.data.subscription;
-
-        const first = await supabase.auth.getSession();
+        const response = await fetch("/api/auth/password-reset/confirm", { cache: "no-store" });
+        const result = await response.json().catch(() => ({}));
         if (!mounted) return;
-        if (first.data.session) {
-          setState("ready");
+        if (!response.ok || !result.email) {
+          setState("invalid");
+          if (response.status === 403) setInvalidReason("Halaman ini hanya bisa dibuka melalui tautan reset yang dikirim ke email Anda.");
           return;
         }
-
-        // The browser client may need a moment to consume access tokens from the URL hash.
-        await new Promise((resolve) => window.setTimeout(resolve, 700));
-        const second = await supabase.auth.getSession();
-        if (mounted) setState(second.data.session ? "ready" : "invalid");
+        setAccountEmail(result.email);
+        setState("ready");
       } catch {
-        if (mounted) setState("invalid");
+        if (mounted) {
+          setInvalidReason("Koneksi ke layanan autentikasi gagal. Minta tautan reset baru lalu coba lagi.");
+          setState("invalid");
+        }
       }
     };
-
-    void checkRecoverySession();
-    return () => {
-      mounted = false;
-      subscription?.unsubscribe();
-    };
+    void checkRecovery();
+    return () => { mounted = false; };
   }, []);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (emailConfirmation.trim().toLowerCase() !== accountEmail.trim().toLowerCase()) return setMessage("Email konfirmasi harus sama persis dengan email akun pada tautan reset.");
     if (password.length < 8) return setMessage("Kata sandi minimal 8 karakter.");
     if (password !== confirmation) return setMessage("Konfirmasi kata sandi belum sama.");
     setLoading(true);
     setMessage("");
     try {
-      const { error } = await getSupabase().auth.updateUser({ password });
-      if (error) {
-        setMessage(error.message.toLowerCase().includes("session") ? "Tautan reset sudah tidak aktif. Minta tautan reset baru lalu coba lagi." : getAuthErrorMessage(error.message));
+      const response = await fetch("/api/auth/password-reset/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailConfirmation, password }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setMessage(result.error || "Kata sandi belum dapat diperbarui.");
+        if (response.status === 401 || response.status === 403) setState("invalid");
         return;
       }
       setState("updated");
-      setMessage("Kata sandi berhasil diperbarui. Anda akan diarahkan ke akun.");
-      window.setTimeout(() => router.replace("/akun/login?reset=1"), 900);
+      setMessage("Kata sandi berhasil diperbarui. Silakan masuk kembali dengan email akun Anda.");
     } catch {
       setMessage("Koneksi ke layanan autentikasi gagal. Coba lagi atau minta tautan reset baru.");
     } finally {
@@ -105,11 +86,13 @@ export function PasswordResetForm() {
       <div className="pt-1 text-center">
         <span className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-1.5 text-[10px] font-bold text-forest-800">Pemulihan akun</span>
         <h1 className="mt-4 font-display text-[clamp(1.8rem,4vw,2.2rem)] font-bold leading-tight text-forest-900">Buat kata sandi baru</h1>
-        <p className="mt-2 text-xs leading-5 text-muted">Gunakan kata sandi baru yang kuat untuk mengamankan akun Anda.</p>
+        <p className="mt-2 text-xs leading-5 text-muted">Pastikan email konfirmasi sesuai dengan akun pada tautan pemulihan.</p>
       </div>
       {state === "checking" && <div className="mt-7 rounded-xl border border-slate-100 bg-[#f5f8f4] p-5 text-center text-xs text-muted"><LoaderCircle size={22} className="mx-auto mb-2 animate-spin text-forest-700" />Memeriksa tautan pemulihan akun...</div>}
       {state === "invalid" && <div className="mt-7 rounded-xl border border-amber-200 bg-amber-50 p-5 text-center"><AlertCircle size={26} className="mx-auto mb-3 text-amber-700" /><p className="text-sm font-bold text-amber-900">Tautan reset tidak dapat digunakan</p><p className="mt-2 text-[11px] leading-5 text-amber-900/80">{invalidReason}</p><Link href="/akun/lupa-password" className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-forest-800 px-4 text-[11px] font-bold text-white hover:bg-forest-700">Kirim tautan reset baru</Link></div>}
       {state === "ready" && <form onSubmit={submit} className="mt-7 space-y-4">
+        <label className="block text-[11px] font-bold text-ink">Email akun pada tautan<div className="relative mt-1.5"><Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" /><input value={accountEmail} readOnly className="h-11 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-xs font-normal text-muted" /></div></label>
+        <label className="block text-[11px] font-bold text-ink">Ketik ulang email untuk konfirmasi<div className="relative mt-1.5"><Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" /><input value={emailConfirmation} onChange={(event) => setEmailConfirmation(event.target.value)} required type="email" autoComplete="email" className="h-11 w-full rounded-lg border border-slate-200 bg-[#f5f8f4] pl-9 pr-3 text-xs font-normal outline-none transition focus:border-forest-700 focus:bg-white focus:ring-4 focus:ring-green-50" placeholder="Email akun yang sama" /></div></label>
         <PasswordField label="Kata sandi baru" value={password} onChange={setPassword} show={showPassword} onToggle={() => setShowPassword((value) => !value)} />
         <PasswordField label="Ulangi kata sandi baru" value={confirmation} onChange={setConfirmation} show={showConfirmation} onToggle={() => setShowConfirmation((value) => !value)} />
         <p className="rounded-lg bg-[#f5f8f4] p-3 text-[10px] leading-5 text-muted">Gunakan minimal 8 karakter. Jangan gunakan kata sandi yang sama dengan akun lain.</p>

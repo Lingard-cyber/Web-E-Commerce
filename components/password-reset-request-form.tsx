@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { ArrowLeft, Mail, Send } from "lucide-react";
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { getAuthErrorMessage } from "@/lib/auth-errors";
 
 export function PasswordResetRequestForm() {
   const [email, setEmail] = useState("");
@@ -17,18 +15,9 @@ export function PasswordResetRequestForm() {
     setLoading(true);
     setMessage("");
     try {
-      // Prefer the configured production origin so reset links always return to
-      // the live storefront domain, while localhost remains usable in local dev.
-      const configuredOrigin = process.env.NEXT_PUBLIC_STORE_URL || process.env.NEXT_PUBLIC_SITE_URL || "";
-      const siteOrigin = configuredOrigin && !/localhost|127\.0\.0\.1/i.test(configuredOrigin)
-        ? configuredOrigin
-        : "https://umkmkepuharjo.my.id";
-      const redirectTo = `${new URL("/auth/callback", siteOrigin).toString()}?next=${encodeURIComponent("/reset/password")}`;
-      const { error } = await createClient().auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo });
-      if (error) {
-        setMessage(getAuthErrorMessage(error.message));
-        return;
-      }
+      const response = await fetch("/api/auth/password-reset", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) { setMessage(result.error || "Permintaan reset belum dapat diproses."); return; }
       setSent(true);
       setMessage("Jika email terdaftar, tautan untuk membuat kata sandi baru sudah dikirim. Periksa inbox atau folder spam.");
     } catch {

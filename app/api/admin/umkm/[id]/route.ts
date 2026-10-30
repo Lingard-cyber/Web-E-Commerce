@@ -10,7 +10,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   if (!current) return NextResponse.json({ error: "UMKM tidak ditemukan." }, { status: 404 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   const name = textValue(body?.name, 160) || current.name;
-  const slug = slugValue(body?.slug || name);
+  const slug = body && "slug" in body ? slugValue(body.slug) || current.slug : current.slug;
   const duplicate = await prisma.umkm.findFirst({ where: { slug, id: { not: params.id } }, select: { id: true } });
   if (duplicate) return NextResponse.json({ error: "Slug UMKM sudah digunakan." }, { status: 409 });
   const existingContact = current.publicContact && typeof current.publicContact === "object" && !Array.isArray(current.publicContact) ? current.publicContact as { instagram?: string } : {};

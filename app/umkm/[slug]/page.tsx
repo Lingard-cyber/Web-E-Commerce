@@ -12,6 +12,7 @@ export default async function UmkmDetailPage({ params }: { params: { slug: strin
   if (!umkm) notFound();
 
   const businessDetails = [
+    ["Alamat usaha", umkm.contact.address],
     ["Jenis produk/jasa", umkm.businessType],
     ["NIB", umkm.permits.nib],
     ["Sertifikat halal", umkm.permits.halal],
