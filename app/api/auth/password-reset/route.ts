@@ -20,7 +20,9 @@ export async function POST(request: Request) {
   try {
     await prisma.passwordResetChallenge.deleteMany({ where: { expiresAt: { lt: now } } });
     const recentRequests = await prisma.passwordResetChallenge.count({ where: { email, createdAt: { gte: emailWindow } } });
-    if (recentRequests >= 3) return NextResponse.json({ ok: true });
+    if (recentRequests >= 3) {
+      return NextResponse.json({ error: "Permintaan reset terlalu sering. Tunggu beberapa saat sebelum meminta tautan lagi." }, { status: 429 });
+    }
 
     const challenge = await prisma.passwordResetChallenge.create({ data: {
       email,
