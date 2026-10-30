@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdminApi, slugValue, textValue, validationError } from "@/lib/admin-api";
 
@@ -27,7 +27,7 @@ async function readBody(request: Request) {
 }
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
-  const { admin, response } = await requireAdminApi();
+  const { response } = await requireAdminApi();
   if (response) return response;
   const body = await readBody(request);
   if (body && "error" in body && typeof body.error === "string") return validationError(body.error);
@@ -51,6 +51,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   const serviceBookingMode: typeof bookingModes[number] | null = productType === "service" ? (textValue(body?.serviceBookingMode, 40) as typeof bookingModes[number] || current.serviceBookingMode || "quotation") : null;
   if (productType === "service" && (!serviceBookingMode || !bookingModes.includes(serviceBookingMode))) return validationError("Mode pemesanan jasa tidak valid.");
   const imageUrl = body && "imageUrl" in body ? textValue(body.imageUrl, MAX_SOURCE_LENGTH) : undefined;
+  const isHero = body && "isHero" in body ? body.isHero === true || body.isHero === "true" : current.images[0]?.isHero ?? false;
 
   await prisma.$transaction(async (tx) => {
     await tx.product.update({ where: { id: params.id }, data: { name, slug, description: body && "description" in body ? textValue(body.description, 5000) || null : current.description, categoryId, umkmId, productType, publishStatus, serviceBookingMode, serviceRequirements: productType === "service" ? textValue(body?.serviceRequirements, 3000) || current.serviceRequirements : null, serviceAvailability: productType === "service" ? textValue(body?.serviceAvailability, 500) || current.serviceAvailability : null, serviceDuration: productType === "service" ? textValue(body?.serviceDuration, 200) || current.serviceDuration : null } });
@@ -58,32 +59,36 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     if (variant) await tx.productVariant.update({ where: { id: variant.id }, data: { label: textValue(body?.variantLabel, 120) || variant.label, priceIdr: productType === "service" && serviceBookingMode === "quotation" && !price ? null : price, stockQty: productType === "service" ? null : stock } });
     if (imageUrl !== undefined) {
       const primary = current.images[0];
-      if (primary) await tx.productImage.update({ where: { id: primary.id }, data: { imageUrl, altText: name } });
-      else if (imageUrl) await tx.productImage.create({ data: { productId: params.id, imageUrl, altText: name, isPrimary: true } });
+      if (primary) await tx.productImage.update({ where: { id: primary.id }, data: { imageUrl, altText: name, isHero } });
+      else if (imageUrl) await tx.productImage.create({ data: { productId: params.id, imageUrl, altText: name, isPrimary: true, isHero } });
+    } else if (body && "isHero" in body && current.images[0]) {
+      await tx.productImage.update({ where: { id: current.images[0].id }, data: { isHero } });
     }
-    if (admin?.databaseUserId) await tx.auditLog.create({ data: { userId: admin.databaseUserId, action: "update", entity: "product", entityId: params.id, metadata: { productType, publishStatus } } });
+    await tx.auditLog.create({ data: { action: "update", entity: "product", entityId: params.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom", productType, publishStatus } } });
   });
   revalidatePath("/");
   revalidatePath("/produk");
   revalidatePath("/jasa");
   revalidatePath("/kategori");
   revalidatePath(`/produk/${slug}`);
+  revalidateTag("public-catalog");
   return NextResponse.json({ ok: true });
 }
 
 export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
-  const { admin, response } = await requireAdminApi();
+  const { response } = await requireAdminApi();
   if (response) return response;
   const product = await prisma.product.findUnique({ where: { id: params.id }, select: { id: true, slug: true } });
   if (!product) return NextResponse.json({ error: "Produk atau jasa tidak ditemukan." }, { status: 404 });
   await prisma.$transaction(async (tx) => {
     await tx.product.update({ where: { id: params.id }, data: { publishStatus: "archived", variants: { updateMany: { where: {}, data: { isActive: false } } } } });
-    if (admin?.databaseUserId) await tx.auditLog.create({ data: { userId: admin.databaseUserId, action: "archive", entity: "product", entityId: params.id } });
+    await tx.auditLog.create({ data: { action: "archive", entity: "product", entityId: params.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom" } } });
   });
   revalidatePath("/");
   revalidatePath("/produk");
   revalidatePath("/jasa");
   revalidatePath("/kategori");
   revalidatePath(`/produk/${product.slug}`);
+  revalidateTag("public-catalog");
   return NextResponse.json({ ok: true });
 }

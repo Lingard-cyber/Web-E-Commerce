@@ -1,0 +1,1 @@
+ALTER TABLE "gambar_produk" ADD COLUMN "isHero" BOOLEAN NOT NULL DEFAULT false;

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdminApi, slugValue, textValue, validationError } from "@/lib/admin-api";
 
@@ -27,7 +27,7 @@ async function readBody(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const { admin, response } = await requireAdminApi();
+  const { response } = await requireAdminApi();
   if (response) return response;
   const body = await readBody(request);
   if (body && "error" in body && typeof body.error === "string") return validationError(body.error);
@@ -55,11 +55,12 @@ export async function POST(request: Request) {
   if (!Number.isInteger(price) || price < 0 || !Number.isInteger(stock) || stock < 0) return validationError("Harga dan stok harus berupa angka nol atau lebih.");
   const variantLabel = textValue(body?.variantLabel, 120) || (productType === "service" ? "Konsultasi" : "Varian utama");
   const imageUrl = textValue(body?.imageUrl, MAX_SOURCE_LENGTH);
+  const isHero = body?.isHero === true || body?.isHero === "true";
   const serviceBookingMode = productType === "service" ? (textValue(body?.serviceBookingMode, 40) as typeof bookingModes[number] || "quotation") : null;
 
   const product = await prisma.$transaction(async (tx) => {
-    const created = await tx.product.create({ data: { name, slug, description, categoryId, umkmId, productType, publishStatus, serviceBookingMode, serviceRequirements: productType === "service" ? textValue(body?.serviceRequirements, 3000) || null : null, serviceAvailability: productType === "service" ? textValue(body?.serviceAvailability, 500) || null : null, serviceDuration: productType === "service" ? textValue(body?.serviceDuration, 200) || null : null, variants: { create: { label: variantLabel, priceIdr: productType === "service" && serviceBookingMode === "quotation" && !price ? null : price, stockQty: productType === "service" ? null : stock } }, images: imageUrl ? { create: { imageUrl, isPrimary: true, altText: name } } : undefined } });
-    if (admin?.databaseUserId) await tx.auditLog.create({ data: { userId: admin.databaseUserId, action: "create", entity: "product", entityId: created.id, metadata: { productType } } });
+    const created = await tx.product.create({ data: { name, slug, description, categoryId, umkmId, productType, publishStatus, serviceBookingMode, serviceRequirements: productType === "service" ? textValue(body?.serviceRequirements, 3000) || null : null, serviceAvailability: productType === "service" ? textValue(body?.serviceAvailability, 500) || null : null, serviceDuration: productType === "service" ? textValue(body?.serviceDuration, 200) || null : null, variants: { create: { label: variantLabel, priceIdr: productType === "service" && serviceBookingMode === "quotation" && !price ? null : price, stockQty: productType === "service" ? null : stock } }, images: imageUrl ? { create: { imageUrl, isPrimary: true, isHero, altText: name } } : undefined } });
+    await tx.auditLog.create({ data: { action: "create", entity: "product", entityId: created.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom", productType } } });
     return created;
   });
   revalidatePath("/");
@@ -67,5 +68,6 @@ export async function POST(request: Request) {
   revalidatePath("/jasa");
   revalidatePath("/kategori");
   revalidatePath(`/produk/${slug}`);
+  revalidateTag("public-catalog");
   return NextResponse.json({ id: product.id }, { status: 201 });
 }

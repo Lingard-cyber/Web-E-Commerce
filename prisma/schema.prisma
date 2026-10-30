@@ -88,16 +88,6 @@ model User {
   @@map("pengguna")
 }
 
-model AdminUser {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("admin_users")
-}
-
 model GalleryImage {
   id          String   @id @default(cuid())
   src         String
@@ -219,6 +209,7 @@ model ProductImage {
   altText    String?
   sortOrder  Int      @default(0)
   isPrimary  Boolean  @default(false)
+  isHero     Boolean  @default(false)
   createdAt  DateTime @default(now())
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 

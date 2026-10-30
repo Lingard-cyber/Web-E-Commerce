@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "db:seed": "node prisma/seed.js",
-    "db:seed-admin": "node prisma/seed-admin.js"
+    "db:cleanup-demo-user": "node prisma/cleanup-demo-user.js"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",

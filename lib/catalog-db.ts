@@ -52,7 +52,7 @@ const readPublishedCatalog = unstable_cache(
       verificationNote: product.verificationNote || undefined,
       imageAlt: product.images[0]?.altText || product.name,
       imageSrc: product.images[0]?.imageUrl,
-      images: product.images.map((image) => ({ id: image.id, imageUrl: image.imageUrl, altText: image.altText || product.name })),
+      images: product.images.map((image) => ({ id: image.id, imageUrl: image.imageUrl, altText: image.altText || product.name, isHero: image.isHero, sortOrder: image.sortOrder })),
       serviceBookingMode: product.serviceBookingMode || undefined,
       serviceRequirements: product.serviceRequirements || undefined,
       serviceAvailability: product.serviceAvailability || undefined,
@@ -83,11 +83,11 @@ export async function getPublicCatalog() {
 
   try {
     const result = await readPublishedCatalog();
-    // Keep the storefront useful before the first published product, but retain
-    // database categories so newly created categories are still visible.
-    return result.entries.length > 0 ? result : { entries: catalogEntries, categories: result.categories };
+    return result;
   } catch {
-    return { entries: catalogEntries, categories: fallbackCategories };
+    // Do not substitute the old static catalog when the database is configured:
+    // the admin-managed database is the source of truth for the storefront.
+    return { entries: [], categories: fallbackCategories };
   }
 }
 

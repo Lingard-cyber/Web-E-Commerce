@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 const categoryStatuses = ["coming_soon", "published"] as const;
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
-  const { admin, response } = await requireAdminApi();
+  const { response } = await requireAdminApi();
   if (response) return response;
 
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
@@ -25,7 +25,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
   const category = await prisma.$transaction(async (tx) => {
     const updated = await tx.category.update({ where: { id: params.id }, data: { name, slug, description, sortOrder, status } });
-    if (admin?.databaseUserId) await tx.auditLog.create({ data: { userId: admin.databaseUserId, action: "update", entity: "category", entityId: current.id, metadata: { name, slug, status } } });
+    await tx.auditLog.create({ data: { action: "update", entity: "category", entityId: current.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom", name, slug, status } } });
     return updated;
   });
 
@@ -41,7 +41,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 }
 
 export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
-  const { admin, response } = await requireAdminApi();
+  const { response } = await requireAdminApi();
   if (response) return response;
   const current = await prisma.category.findUnique({ where: { id: params.id }, select: { id: true, slug: true, name: true, _count: { select: { products: true } } } });
   if (!current) return NextResponse.json({ error: "Kategori tidak ditemukan." }, { status: 404 });
@@ -49,7 +49,7 @@ export async function DELETE(_request: Request, { params }: { params: { id: stri
 
   await prisma.$transaction(async (tx) => {
     await tx.category.delete({ where: { id: params.id } });
-    if (admin?.databaseUserId) await tx.auditLog.create({ data: { userId: admin.databaseUserId, action: "delete", entity: "category", entityId: current.id, metadata: { name: current.name, slug: current.slug } } });
+    await tx.auditLog.create({ data: { action: "delete", entity: "category", entityId: current.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom", name: current.name, slug: current.slug } } });
   });
   revalidateTag("public-catalog");
   revalidatePath("/");

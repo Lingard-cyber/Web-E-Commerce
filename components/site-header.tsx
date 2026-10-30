@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CartDrawer } from "@/components/cart-drawer";
 import { LogoutDialog } from "@/components/logout-dialog";
 import { breakAuthSession } from "@/lib/auth-logout";
-import { catalogEntries } from "@/lib/catalog";
+import type { CatalogEntry } from "@/lib/catalog";
 import { createClient } from "@/lib/supabase/client";
 
 const primaryLinks = [
@@ -49,7 +49,7 @@ function SearchResultPanel({ results, onSelect }: { results: SearchResult[]; onS
   return <div className="absolute right-0 top-[calc(100%+8px)] z-[70] max-h-[min(70vh,420px)] w-[min(22rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl"><p className="px-3 pb-2 pt-1 text-[9px] font-bold uppercase tracking-[.16em] text-muted">Hasil pencarian</p>{results.map((result) => <button type="button" key={`${result.group}-${result.href}`} onClick={() => onSelect(result.href)} className="flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition hover:bg-green-50"><span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-[#f0f7f1] text-[9px] font-bold text-forest-800">{result.group === "Produk" ? "P" : "↗"}</span><span className="min-w-0"><strong className="block truncate text-[11px] text-forest-950">{result.label}</strong><small className="mt-0.5 block line-clamp-2 text-[10px] leading-4 text-muted">{result.description}</small></span></button>)}</div>;
 }
 
-export function SiteHeader() {
+export function SiteHeader({ catalogEntries }: { catalogEntries: CatalogEntry[] }) {
   const [open, setOpen] = useState(false);
   const [userName, setUserName] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);

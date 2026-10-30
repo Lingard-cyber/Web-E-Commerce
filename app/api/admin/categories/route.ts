@@ -4,7 +4,7 @@ import { requireAdminApi, slugValue, textValue, validationError } from "@/lib/ad
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
-  const { admin, response } = await requireAdminApi();
+  const { response } = await requireAdminApi();
   if (response) return response;
 
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   try {
     const created = await prisma.$transaction(async (tx) => {
       const category = await tx.category.create({ data: { name, slug, description, sortOrder, status } });
-      if (admin?.databaseUserId) await tx.auditLog.create({ data: { userId: admin.databaseUserId, action: "create", entity: "category", entityId: category.id } });
+      await tx.auditLog.create({ data: { action: "create", entity: "category", entityId: category.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom" } } });
       return category;
     });
     revalidateTag("public-catalog");

@@ -81,6 +81,7 @@ jobs:
             docker compose --env-file .env.deploy -f '$COMPOSE_FILE' build
             docker compose --env-file .env.deploy -f '$COMPOSE_FILE' run --rm storefront npx prisma migrate deploy
             docker compose --env-file .env.deploy -f '$COMPOSE_FILE' up -d --remove-orphans
+            docker compose --env-file .env.deploy -f '$COMPOSE_FILE' run --rm storefront npm run db:cleanup-demo-user
             docker compose --env-file .env.deploy -f '$COMPOSE_FILE' ps
             curl --fail --silent --show-error --max-time 30 http://127.0.0.1:3010/ > /dev/null
           "

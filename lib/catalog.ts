@@ -13,6 +13,8 @@ export type CatalogImage = {
   id: string;
   imageUrl: string;
   altText?: string;
+  isHero?: boolean;
+  sortOrder?: number;
 };
 
 export type CatalogEntry = {

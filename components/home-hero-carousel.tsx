@@ -2,12 +2,12 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { GalleryImageRecord } from "@/lib/gallery-db";
+type HomeHeroSlide = { id: string; src: string; alt: string; title: string; isHero: boolean; sortOrder: number };
 
-export function HomeHeroCarousel({ images }: { images: GalleryImageRecord[] }) {
+export function HomeHeroCarousel({ images }: { images: HomeHeroSlide[] }) {
   const [active, setActive] = useState(0);
   const selectedSlides = images.filter((image) => image.isHero);
-  const slides = (selectedSlides.length ? selectedSlides : images).slice(0, 5);
+  const slides = selectedSlides.length ? selectedSlides : images;
   useEffect(() => {
     const timer = window.setInterval(() => setActive((value) => (value + 1) % Math.max(slides.length, 1)), 5000);
     return () => window.clearInterval(timer);
