@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     const callback = new URL("/auth/callback", getPublicOrigin(request)).toString();
     const { error } = await createClient().auth.resetPasswordForEmail(email, { redirectTo: callback });
     if (error) {
-      console.error("Password reset email request failed", { code: error.code || "unknown", status: error.status || 0 });
+      console.error("Password reset email request failed", { code: error.code || "unknown", status: error.status || 0, message: error.message });
       await prisma.passwordResetChallenge.delete({ where: { id: challenge.id } });
       cookies().delete("umkm_pending_password_reset");
       return NextResponse.json({ error: getAuthErrorMessage(error.message, error.code) }, { status: 400 });
