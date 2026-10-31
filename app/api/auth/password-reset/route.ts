@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { randomBytes } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { getPublicOrigin } from "@/lib/auth-redirect";
 import { getAuthErrorMessage } from "@/lib/auth-errors";
@@ -22,13 +23,11 @@ export async function POST(request: Request) {
     // Supabase intentionally hides whether an email exists in public recovery requests.
     // This app asks for explicit feedback, so check Auth users with the server-only admin key.
     const admin = createAdminClient();
-    const account = await findAuthUser(admin, email);
+    const account = await findOrRestoreConsumerAuthUser(admin, email);
     if (!account.exists) {
       const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL?.match(/^https?:\/\/([^.]+)/)?.[1] || "unknown";
       console.warn("Consumer password reset account not found in Supabase Auth", { projectRef, profileExists: account.profileExists, profileHasAuthId: account.profileHasAuthId });
-      return NextResponse.json({ error: account.profileExists
-        ? "Profil konsumen ditemukan, tetapi akun masuknya tidak ditemukan di Supabase Auth. Pengelola perlu memeriksa konfigurasi autentikasi situs."
-        : "Email tidak ditemukan di akun konsumen situs ini. Pastikan email sama dengan yang digunakan saat mendaftar." }, { status: 404 });
+      return NextResponse.json({ error: "Email tidak ditemukan di akun konsumen situs ini. Pastikan email sama dengan yang digunakan saat mendaftar." }, { status: 404 });
     }
 
     await prisma.passwordResetChallenge.deleteMany({ where: { expiresAt: { lt: now } } });
@@ -60,21 +59,47 @@ export async function POST(request: Request) {
   }
 }
 
-async function findAuthUser(admin: ReturnType<typeof createAdminClient>, email: string) {
-  // Most app accounts are synchronized into `pengguna`; checking their Auth ID
-  // first avoids depending on a full users-list scan for the common case.
-  const profile = await prisma.user.findUnique({ where: { email }, select: { authId: true } });
+async function findOrRestoreConsumerAuthUser(admin: ReturnType<typeof createAdminClient>, email: string) {
+  const profile = await prisma.user.findUnique({ where: { email }, select: { id: true, authId: true, name: true, phone: true } });
   if (profile?.authId) {
     const { data, error } = await admin.auth.admin.getUserById(profile.authId);
     if (!error && data.user?.email?.trim().toLowerCase() === email) return { exists: true, profileExists: true, profileHasAuthId: true };
   }
 
+  let authUser: { id: string; email?: string } | null = null;
   for (let page = 1; page <= 100; page += 1) {
     const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
     if (error) throw error;
-    const users = data.users;
-    if (users.some((user) => user.email?.trim().toLowerCase() === email)) return { exists: true, profileExists: Boolean(profile), profileHasAuthId: Boolean(profile?.authId) };
-    if (users.length < 1000) return { exists: false, profileExists: Boolean(profile), profileHasAuthId: Boolean(profile?.authId) };
+    authUser = data.users.find((user) => user.email?.trim().toLowerCase() === email) || null;
+    if (authUser || data.users.length < 1000) break;
   }
-  return { exists: false, profileExists: Boolean(profile), profileHasAuthId: Boolean(profile?.authId) };
+
+  if (authUser) {
+    if (profile && profile.authId !== authUser.id) {
+      await prisma.user.update({ where: { id: profile.id }, data: { authId: authUser.id } });
+    }
+    return { exists: true, profileExists: Boolean(profile), profileHasAuthId: Boolean(profile?.authId) };
+  }
+
+  // A consumer profile is the app's record that this person registered.
+  // Restore its missing Supabase Auth identity so recovery OTP can be verified.
+  if (!profile) return { exists: false, profileExists: false, profileHasAuthId: false };
+
+  const { data: created, error: createError } = await admin.auth.admin.createUser({
+    email,
+    password: randomBytes(32).toString("base64url"),
+    email_confirm: true,
+    user_metadata: { name: profile.name || "", phone: profile.phone || "" },
+  });
+  if (createError || !created.user) {
+    throw createError || new Error("Supabase Auth did not return the recovered consumer account.");
+  }
+
+  try {
+    await prisma.user.update({ where: { id: profile.id }, data: { authId: created.user.id } });
+  } catch (error) {
+    await admin.auth.admin.deleteUser(created.user.id).catch(() => undefined);
+    throw error;
+  }
+  return { exists: true, profileExists: true, profileHasAuthId: true, restored: true };
 }
