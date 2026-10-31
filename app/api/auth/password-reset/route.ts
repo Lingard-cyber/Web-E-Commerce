@@ -22,8 +22,14 @@ export async function POST(request: Request) {
     // Supabase intentionally hides whether an email exists in public recovery requests.
     // This app asks for explicit feedback, so check Auth users with the server-only admin key.
     const admin = createAdminClient();
-    const exists = await findAuthUser(admin, email);
-    if (!exists) return NextResponse.json({ error: "Email tidak terdaftar. Periksa kembali atau buat akun terlebih dahulu." }, { status: 404 });
+    const account = await findAuthUser(admin, email);
+    if (!account.exists) {
+      const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL?.match(/^https?:\/\/([^.]+)/)?.[1] || "unknown";
+      console.warn("Consumer password reset account not found in Supabase Auth", { projectRef, profileExists: account.profileExists, profileHasAuthId: account.profileHasAuthId });
+      return NextResponse.json({ error: account.profileExists
+        ? "Profil konsumen ditemukan, tetapi akun masuknya tidak ditemukan di Supabase Auth. Pengelola perlu memeriksa konfigurasi autentikasi situs."
+        : "Email tidak ditemukan di akun konsumen situs ini. Pastikan email sama dengan yang digunakan saat mendaftar." }, { status: 404 });
+    }
 
     await prisma.passwordResetChallenge.deleteMany({ where: { expiresAt: { lt: now } } });
     const recentRequests = await prisma.passwordResetChallenge.count({ where: { email, createdAt: { gte: emailWindow } } });
@@ -55,12 +61,20 @@ export async function POST(request: Request) {
 }
 
 async function findAuthUser(admin: ReturnType<typeof createAdminClient>, email: string) {
+  // Most app accounts are synchronized into `pengguna`; checking their Auth ID
+  // first avoids depending on a full users-list scan for the common case.
+  const profile = await prisma.user.findUnique({ where: { email }, select: { authId: true } });
+  if (profile?.authId) {
+    const { data, error } = await admin.auth.admin.getUserById(profile.authId);
+    if (!error && data.user?.email?.trim().toLowerCase() === email) return { exists: true, profileExists: true, profileHasAuthId: true };
+  }
+
   for (let page = 1; page <= 100; page += 1) {
     const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
     if (error) throw error;
     const users = data.users;
-    if (users.some((user) => user.email?.trim().toLowerCase() === email)) return true;
-    if (users.length < 1000) return false;
+    if (users.some((user) => user.email?.trim().toLowerCase() === email)) return { exists: true, profileExists: Boolean(profile), profileHasAuthId: Boolean(profile?.authId) };
+    if (users.length < 1000) return { exists: false, profileExists: Boolean(profile), profileHasAuthId: Boolean(profile?.authId) };
   }
-  return false;
+  return { exists: false, profileExists: Boolean(profile), profileHasAuthId: Boolean(profile?.authId) };
 }
