@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { syncAuthUser } from "@/lib/auth-profile";
 import { getPublicOrigin } from "@/lib/auth-redirect";
+import { PASSWORD_RESET_OTP_TTL_MS, PASSWORD_RESET_OTP_TTL_SECONDS } from "@/lib/password-reset-constants";
 
 const recoveryCookie = "umkm_password_recovery";
 const pendingRecoveryCookie = "umkm_pending_password_reset";
@@ -55,7 +56,7 @@ export async function GET(request: Request) {
         verifiedAt: null,
         usedAt: null,
         expiresAt: { gt: now },
-      }, data: { authUserId: user.id, verifiedAt: now } }).catch(() => ({ count: 0 }));
+      }, data: { authUserId: user.id, verifiedAt: now, expiresAt: new Date(now.getTime() + PASSWORD_RESET_OTP_TTL_MS) } }).catch(() => ({ count: 0 }));
       if (verified.count !== 1) {
         await supabase.auth.signOut();
         const response = NextResponse.redirect(new URL("/akun/reset-password?error=invalid", redirectOrigin));
@@ -81,6 +82,6 @@ export async function GET(request: Request) {
 
   const response = NextResponse.redirect(new URL(isRecovery ? "/akun/reset-password" : "/", redirectOrigin));
   if (isRecovery) response.cookies.delete(pendingRecoveryCookie);
-  if (recoveryChallengeId) response.cookies.set(recoveryCookie, recoveryChallengeId, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 10 * 60 });
+  if (recoveryChallengeId) response.cookies.set(recoveryCookie, recoveryChallengeId, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: PASSWORD_RESET_OTP_TTL_SECONDS });
   return response;
 }

@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthErrorMessage } from "@/lib/auth-errors";
+import { PASSWORD_RESET_OTP_TTL_MS, PASSWORD_RESET_OTP_TTL_SECONDS } from "@/lib/password-reset-constants";
 
 const pendingCookie = "umkm_pending_password_reset";
 const recoveryCookie = "umkm_password_recovery";
@@ -42,14 +43,14 @@ export async function POST(request: Request) {
     verifiedAt: null,
     usedAt: null,
     expiresAt: { gt: now },
-  }, data: { authUserId: data.user.id, verifiedAt: now } });
+  }, data: { authUserId: data.user.id, verifiedAt: now, expiresAt: new Date(now.getTime() + PASSWORD_RESET_OTP_TTL_MS) } });
   if (verified.count !== 1) {
     await supabase.auth.signOut();
     return NextResponse.json({ error: "Kode OTP sudah tidak berlaku. Minta kode baru." }, { status: 410 });
   }
 
   const response = NextResponse.json({ ok: true });
-  response.cookies.set(recoveryCookie, challenge.id, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 5 * 60 });
+  response.cookies.set(recoveryCookie, challenge.id, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: PASSWORD_RESET_OTP_TTL_SECONDS });
   response.cookies.set(pendingCookie, "", { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 0 });
   return response;
 }

@@ -6,6 +6,7 @@ import { getPublicOrigin } from "@/lib/auth-redirect";
 import { getAuthErrorMessage } from "@/lib/auth-errors";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { PASSWORD_RESET_OTP_TTL_MS, PASSWORD_RESET_OTP_TTL_SECONDS } from "@/lib/password-reset-constants";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
@@ -38,11 +39,11 @@ export async function POST(request: Request) {
 
     const challenge = await prisma.passwordResetChallenge.create({ data: {
       email,
-      expiresAt: new Date(now.getTime() + 5 * 60 * 1000),
+      expiresAt: new Date(now.getTime() + PASSWORD_RESET_OTP_TTL_MS),
     }, select: { id: true } });
     challengeId = challenge.id;
 
-    cookies().set("umkm_pending_password_reset", challenge.id, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 5 * 60 });
+    cookies().set("umkm_pending_password_reset", challenge.id, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: PASSWORD_RESET_OTP_TTL_SECONDS });
     const callback = new URL("/auth/callback", getPublicOrigin(request)).toString();
     const { error } = await createClient().auth.resetPasswordForEmail(email, { redirectTo: callback });
     if (error) {
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
       cookies().delete("umkm_pending_password_reset");
       return NextResponse.json({ error: getAuthErrorMessage(error.message, error.code) }, { status: 400 });
     }
-    return NextResponse.json({ ok: true, expiresIn: 300 });
+    return NextResponse.json({ ok: true, expiresIn: PASSWORD_RESET_OTP_TTL_SECONDS });
   } catch {
     if (challengeId) await prisma.passwordResetChallenge.delete({ where: { id: challengeId } }).catch(() => undefined);
     cookies().delete("umkm_pending_password_reset");

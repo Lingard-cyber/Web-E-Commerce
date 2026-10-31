@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowLeft, KeyRound, Mail, Send } from "lucide-react";
 import { useState } from "react";
+import { PASSWORD_RESET_OTP_TTL_SECONDS } from "@/lib/password-reset-constants";
 
 type Step = "email" | "otp";
 
@@ -28,7 +29,7 @@ export function PasswordResetRequestForm() {
         return;
       }
       setStep("otp");
-      setMessage(`Kode verifikasi 6 digit telah dikirim ke ${email}. Kode berlaku selama 5 menit.`);
+      setMessage(`Kode verifikasi 6 digit telah dikirim ke ${email}. Kode berlaku selama ${Math.round(PASSWORD_RESET_OTP_TTL_SECONDS / 60)} menit.`);
     } catch {
       setIsError(true);
       setMessage("Koneksi ke layanan autentikasi gagal. Periksa koneksi internet lalu coba lagi.");
