@@ -4,7 +4,7 @@ import { syncAuthUser } from "@/lib/auth-profile";
 import { createClient } from "@/lib/supabase/server";
 import { createXenditPaymentSession } from "@/lib/xendit";
 
-type OrderBody = { idempotencyKey?: string; items?: Array<{ variantId?: string; quantity?: number }>; address?: { recipientName?: string; phone?: string; address?: string; village?: string; district?: string; regency?: string; postalCode?: string } };
+type OrderBody = { idempotencyKey?: string; items?: Array<{ variantId?: string; quantity?: number }>; addressId?: string };
 
 export async function POST(request: Request) {
   if (process.env.ENABLE_CHECKOUT !== "true") return NextResponse.json({ error: "Pesanan belum dapat diproses saat ini. Silakan coba lagi." }, { status: 503 });
@@ -17,12 +17,13 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null) as OrderBody | null;
   const idempotencyKey = body?.idempotencyKey?.trim();
   const requestedItems = body?.items || [];
-  const address = body?.address;
   if (!idempotencyKey || idempotencyKey.length > 100 || requestedItems.length === 0) return NextResponse.json({ error: "Item dan idempotency key wajib diisi." }, { status: 400 });
-  if (!address?.recipientName?.trim() || !address.phone?.trim() || !address.address?.trim()) return NextResponse.json({ error: "Nama penerima, nomor telepon, dan alamat wajib diisi." }, { status: 400 });
+  if (!body?.addressId?.trim()) return NextResponse.json({ error: "Pilih alamat pengiriman dari profil Anda." }, { status: 400 });
 
   const databaseUser = await prisma.user.findUnique({ where: { authId: authUser.id }, select: { id: true, name: true, phone: true } });
   if (!databaseUser) return NextResponse.json({ error: "Profil akun belum tersinkron. Silakan coba lagi." }, { status: 409 });
+  const address = await prisma.address.findFirst({ where: { id: body.addressId, userId: databaseUser.id } });
+  if (!address) return NextResponse.json({ error: "Alamat tidak ditemukan di profil Anda. Muat ulang halaman dan pilih alamat yang tersedia." }, { status: 404 });
   const normalizedItems = requestedItems.map((item) => ({ variantId: String(item.variantId || ""), quantity: Number(item.quantity) })).filter((item) => item.variantId && Number.isInteger(item.quantity) && item.quantity > 0 && item.quantity <= 99);
   if (normalizedItems.length !== requestedItems.length) return NextResponse.json({ error: "Data item pesanan tidak valid." }, { status: 400 });
   const quantities = new Map<string, number>();
@@ -41,12 +42,11 @@ export async function POST(request: Request) {
   const items = variants.map((variant) => { const quantity = quantities.get(variant.id) || 0; return { productId: variant.productId, variantId: variant.id, productName: variant.product.name, variantLabel: variant.label, quantity, unitPriceIdr: variant.priceIdr as number, subtotalIdr: (variant.priceIdr as number) * quantity }; });
   const subtotalIdr = items.reduce((sum, item) => sum + item.subtotalIdr, 0);
   const publicCode = `KPH-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
-  const shippingSnapshot = { recipientName: address.recipientName.trim(), phone: address.phone.trim(), address: address.address.trim(), village: address.village?.trim() || null, district: address.district?.trim() || null, regency: address.regency?.trim() || null, postalCode: address.postalCode?.trim() || null };
+  const shippingSnapshot = { recipientName: address.recipientName, phone: address.phone, address: address.address, village: address.village, district: address.district, regency: address.regency, postalCode: address.postalCode };
 
   let order;
   try {
     order = await prisma.$transaction(async (tx) => {
-      const createdAddress = await tx.address.create({ data: { userId: databaseUser.id, label: "Checkout", recipientName: shippingSnapshot.recipientName, phone: shippingSnapshot.phone, address: shippingSnapshot.address, village: shippingSnapshot.village, district: shippingSnapshot.district, regency: shippingSnapshot.regency, postalCode: shippingSnapshot.postalCode } });
       for (const item of items) {
         const variant = variants.find((value) => value.id === item.variantId);
         if (variant?.stockQty !== null) {
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
           await tx.stockMovement.create({ data: { variantId: item.variantId, quantity: -item.quantity, reason: "order_reserved", referenceId: idempotencyKey } });
         }
       }
-      return tx.order.create({ data: { publicCode, userId: databaseUser.id, addressId: createdAddress.id, status: "pending_payment", subtotalIdr, shippingIdr: 0, discountIdr: 0, totalIdr: subtotalIdr, shippingAddressSnapshot: shippingSnapshot, idempotencyKey, items: { create: items }, payment: { create: { provider: "xendit_session", status: "pending" } }, shipment: { create: { status: "pending" } } } });
+      return tx.order.create({ data: { publicCode, userId: databaseUser.id, addressId: address.id, status: "pending_payment", subtotalIdr, shippingIdr: 0, discountIdr: 0, totalIdr: subtotalIdr, shippingAddressSnapshot: shippingSnapshot, idempotencyKey, items: { create: items }, payment: { create: { provider: "xendit_session", status: "pending" } }, shipment: { create: { status: "pending" } } } });
     });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Pesanan belum dapat dibuat." }, { status: 409 });
