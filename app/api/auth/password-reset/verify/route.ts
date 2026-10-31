@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
   const token = typeof body?.token === "string" ? body.token.replace(/\s/g, "") : "";
   if (!/^\S+@\S+\.\S+$/.test(email)) return NextResponse.json({ error: "Format email belum valid." }, { status: 400 });
-  if (!/^\d{6}$/.test(token)) return NextResponse.json({ error: "Masukkan kode OTP 6 digit." }, { status: 400 });
+  if (!/^\d{6,10}$/.test(token)) return NextResponse.json({ error: "Masukkan seluruh kode OTP yang dikirim (6–10 digit)." }, { status: 400 });
 
   const challengeId = cookies().get(pendingCookie)?.value;
   if (!challengeId) return NextResponse.json({ error: "Permintaan kode sudah kedaluwarsa. Minta kode baru." }, { status: 410 });
