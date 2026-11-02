@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, ChevronDown, MessageCircle, Search, Sparkles } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { CatalogEntry, catalogEntries, catalogImagePlaceholder, categories, formatRupiah, ProductType } from "@/lib/catalog";
+import { catalogImagePlaceholder, formatRupiah } from "@/lib/catalog-utils";
+import type { CatalogCategory, CatalogEntry, ProductType } from "@/lib/catalog";
 import { orderingContacts, orderingWhatsappUrl } from "@/lib/ordering-contacts";
 
 function typeLabel(type: ProductType) {
@@ -16,7 +17,7 @@ function typeTone(type: ProductType) {
   return type === "service" ? "bg-amber-100 text-amber-800" : type === "fresh_preorder" ? "bg-orange-100 text-orange-800" : "bg-green-100 text-forest-800";
 }
 
-export function ProductBrowser({ compact = false, initialCategory, mode = "all", entries = catalogEntries, categoryOptions = categories, showFilters = false }: { compact?: boolean; initialCategory?: string; mode?: "all" | "product" | "service"; entries?: CatalogEntry[]; categoryOptions?: typeof categories | { slug: string; name: string; count: number; description: string }[]; showFilters?: boolean }) {
+export function ProductBrowser({ compact = false, initialCategory, mode = "all", entries, categoryOptions, showFilters = false }: { compact?: boolean; initialCategory?: string; mode?: "all" | "product" | "service"; entries: CatalogEntry[]; categoryOptions: CatalogCategory[]; showFilters?: boolean }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState(initialCategory || "all");
   const [type, setType] = useState<ProductType | "all">("all");

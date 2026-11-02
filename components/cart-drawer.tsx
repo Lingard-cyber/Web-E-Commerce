@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { CartItem, hydrateCartFromDatabase, persistCartToDatabase, readCart, writeCart } from "@/lib/cart";
-import { catalogImagePlaceholder, formatRupiah } from "@/lib/catalog";
+import { catalogImagePlaceholder, formatRupiah } from "@/lib/catalog-utils";
 import { createClient } from "@/lib/supabase/client";
 
 export function CartDrawer() {

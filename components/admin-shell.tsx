@@ -29,6 +29,15 @@ export function AdminShell({ children, name, email }: { children: ReactNode; nam
     setDarkMode(window.localStorage.getItem("admin-theme") === "dark");
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [open]);
+
   const toggleTheme = () => {
     setDarkMode((current) => {
       const next = !current;
@@ -40,7 +49,7 @@ export function AdminShell({ children, name, email }: { children: ReactNode; nam
   return <div className={`${darkMode ? "admin-theme-dark" : ""} admin-interface admin-backdrop relative min-h-screen overflow-hidden text-ink`}>
     <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true"><span className="absolute bottom-12 right-[34%] h-2 w-2 rounded-full bg-accent/70 shadow-[0_0_0_10px_rgba(248,196,0,.08)]" /></div>
     <aside className={`${open ? "translate-x-0" : "-translate-x-full"} fixed inset-y-0 left-0 z-40 w-[min(270px,calc(100vw-1rem))] overflow-y-auto border-r border-white/70 bg-white/90 p-4 pb-6 shadow-[14px_0_40px_rgba(21,67,45,.08)] backdrop-blur-xl transition-transform sm:p-5 lg:translate-x-0`}>
-      <div className="flex items-center gap-3 border-b border-slate-100 pb-5"><span className="grid h-10 w-10 place-items-center overflow-hidden rounded-full border border-white/30 bg-white shadow-lg shadow-forest-950/15"><img src="/forkom-umkm-kepuharjo.jpg" alt="Logo Forkom UMKM Kepuharjo" className="h-full w-full object-cover" /></span><span><strong className="block text-sm">Forkom Admin</strong><small className="text-[10px] text-muted">Operasional terpusat</small></span><span className="ml-auto h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_5px_rgba(52,211,153,.12)]" title="Sistem aktif" /></div>
+      <div className="flex items-center gap-3 border-b border-slate-100 pb-5"><span className="grid h-10 w-10 place-items-center overflow-hidden rounded-full border border-white/30 bg-white shadow-lg shadow-forest-950/15"><img src="/forkom-umkm-kepuharjo.jpg" alt="Logo Forkom UMKM Kepuharjo" className="h-full w-full object-cover" /></span><span><strong className="block text-sm">Forkom Admin</strong><small className="text-[10px] text-muted">Operasional terpusat</small></span><span className="ml-auto h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_5px_rgba(52,211,153,.12)]" title="Sistem aktif" /><button type="button" onClick={() => setOpen(false)} className="grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white/80 text-slate-600 transition hover:bg-slate-100 hover:text-ink lg:hidden" aria-label="Tutup sidebar admin" title="Tutup menu"><X size={17} /></button></div>
       <nav className="mt-6 space-y-1">{nav.map(([label, href, Icon]) => { const resolvedHref = toAdminPath(href); const active = href === "/admin" ? pathname === resolvedHref : pathname.startsWith(resolvedHref); return <Link key={href} href={resolvedHref} onClick={() => setOpen(false)} className={`${active ? "bg-forest-950 text-white shadow-lg shadow-forest-950/15" : "text-slate-600 hover:bg-green-50 hover:text-forest-800"} group flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold`}><Icon size={16} className="transition-transform group-hover:scale-110" />{label}{active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-accent" />}</Link>; })}</nav>
       <div className="mt-6 rounded-2xl border border-forest-700/10 bg-forest-50/70 p-3"><div className="flex items-center gap-2 text-[10px] font-bold text-forest-800"><PackageCheck size={14} />Panel operasional</div><p className="mt-2 text-[10px] leading-5 text-muted">Pantau katalog, transaksi, dan koordinasi UMKM dari satu tempat.</p></div>
       <div className="mt-6 border-t border-slate-100 pt-4"><AdminLogout /></div>

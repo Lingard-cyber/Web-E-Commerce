@@ -87,11 +87,50 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   return NextResponse.json({ ok: true });
 }
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   const { response } = await requireAdminApi();
   if (response) return response;
-  const product = await prisma.product.findUnique({ where: { id: params.id }, select: { id: true, slug: true } });
+  const permanent = new URL(request.url).searchParams.get("permanent") === "true";
+  let product;
+  try {
+    product = await prisma.product.findUnique({
+      where: { id: params.id },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        _count: { select: { orderItems: true, serviceInquiries: true } },
+        variants: { select: { id: true, _count: { select: { cartItems: true, stockMovements: true } } } },
+      },
+    });
+  } catch {
+    return NextResponse.json({ error: "Database gagal memproses penghapusan. Coba lagi setelah koneksi database pulih." }, { status: 503 });
+  }
   if (!product) return NextResponse.json({ error: "Produk atau jasa tidak ditemukan." }, { status: 404 });
+  if (permanent) {
+    if (product._count.orderItems > 0) return NextResponse.json({ error: "Entri memiliki riwayat pesanan sehingga tidak dapat dihapus permanen. Arsipkan entri untuk menyembunyikannya dari katalog." }, { status: 409 });
+    if (product._count.serviceInquiries > 0) return NextResponse.json({ error: "Entri memiliki riwayat permintaan jasa sehingga tidak dapat dihapus permanen. Arsipkan entri agar riwayat pelanggan tetap tersimpan." }, { status: 409 });
+    try {
+      await prisma.$transaction(async (tx) => {
+        const variantIds = product.variants.map((variant) => variant.id);
+        if (variantIds.length) {
+          await tx.cartItem.deleteMany({ where: { variantId: { in: variantIds } } });
+          await tx.stockMovement.deleteMany({ where: { variantId: { in: variantIds } } });
+        }
+        await tx.product.delete({ where: { id: params.id } });
+        await tx.auditLog.create({ data: { action: "delete", entity: "product", entityId: params.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom", name: product.name, slug: product.slug } } });
+      });
+    } catch {
+      return NextResponse.json({ error: "Penghapusan gagal karena masih ada data terkait. Muat ulang halaman dan coba lagi; jika masih gagal, arsipkan entri agar tidak tampil di katalog." }, { status: 409 });
+    }
+    revalidatePath("/");
+    revalidatePath("/produk");
+    revalidatePath("/jasa");
+    revalidatePath("/kategori");
+    revalidatePath(`/produk/${product.slug}`);
+    revalidateTag("public-catalog");
+    return NextResponse.json({ ok: true, deleted: true });
+  }
   await prisma.$transaction(async (tx) => {
     await tx.product.update({ where: { id: params.id }, data: { publishStatus: "archived", variants: { updateMany: { where: {}, data: { isActive: false } } } } });
     await tx.auditLog.create({ data: { action: "archive", entity: "product", entityId: params.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom" } } });

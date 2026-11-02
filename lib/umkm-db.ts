@@ -1,12 +1,12 @@
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { catalogEntries, catalogImagePlaceholder } from "@/lib/catalog";
 
 export type PublicUmkm = {
   id: string;
   name: string;
   slug: string;
   description: string;
+  profileImage?: string;
   ownerName: string;
   businessType: string;
   permits: { nib: string; halal: string; sppirt: string };
@@ -21,22 +21,6 @@ export function formatUmkmDescription(name: string, description: string | null |
   return description?.trim() || "";
 }
 
-const fallbackUmkm: PublicUmkm[] = Array.from(new Set(catalogEntries.map((entry) => entry.producer).filter((value): value is string => Boolean(value)))).map((name) => {
-  const products = catalogEntries.filter((entry) => entry.producer === name && Boolean(entry.imageSrc?.trim()) && entry.imageSrc !== catalogImagePlaceholder);
-  return {
-    id: `catalog-umkm-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
-    name,
-    slug: name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-    description: formatUmkmDescription(name, null, products.length),
-    ownerName: "",
-    businessType: "",
-    permits: { nib: "", halal: "", sppirt: "" },
-    contact: {},
-    productCount: products.length,
-    products: products.map((entry) => ({ id: entry.id, name: entry.name, slug: entry.slug, productType: entry.productType, category: entry.category, imageUrl: entry.imageSrc })),
-  };
-}).filter((umkm) => umkm.products.length > 0);
-
 function readContact(value: unknown, address?: string | null): PublicUmkm["contact"] {
   const contact = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
   return {
@@ -46,17 +30,14 @@ function readContact(value: unknown, address?: string | null): PublicUmkm["conta
   };
 }
 
+function readProfileImage(value: unknown) {
+  const contact = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+  return typeof contact.profileImage === "string" && contact.profileImage.startsWith("data:image/") ? contact.profileImage : undefined;
+}
+
 const readPublishedUmkm = unstable_cache(async () => {
   const rows = await prisma.umkm.findMany({
-    where: {
-      isPublished: true,
-      products: {
-        some: {
-          publishStatus: "published",
-          images: { some: { imageUrl: { not: "" } } },
-        },
-      },
-    },
+    where: { isPublished: true },
     orderBy: { name: "asc" },
     include: {
       _count: {
@@ -82,6 +63,7 @@ const readPublishedUmkm = unstable_cache(async () => {
     name: umkm.name,
     slug: umkm.slug,
     description: formatUmkmDescription(umkm.name, umkm.description, umkm._count.products),
+    profileImage: readProfileImage(umkm.publicContact),
     ownerName: umkm.ownerName || "",
     businessType: umkm.businessType || "",
     permits: { nib: umkm.nib || "", halal: umkm.halalPermit || "", sppirt: umkm.sppirt || "" },
@@ -92,8 +74,8 @@ const readPublishedUmkm = unstable_cache(async () => {
 }, ["public-umkm"], { revalidate: 30, tags: ["public-umkm"] });
 
 export async function getPublicUmkm() {
-  if (!process.env.DATABASE_URL) return fallbackUmkm;
-  try { return await readPublishedUmkm(); } catch { return fallbackUmkm; }
+  if (!process.env.DATABASE_URL) return [];
+  try { return await readPublishedUmkm(); } catch { return []; }
 }
 
 export async function getPublicUmkmBySlug(slug: string) {

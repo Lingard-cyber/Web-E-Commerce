@@ -1,12 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { catalogEntries, catalogImagePlaceholder, categories, type CatalogCategory, type CatalogEntry, type ProductType } from "@/lib/catalog";
-
-const fallbackEntries = catalogEntries.filter((entry) => Boolean(entry.imageSrc) && entry.imageSrc !== catalogImagePlaceholder);
-const fallbackCategories: CatalogCategory[] = categories.map((category) => ({
-  ...category,
-  count: fallbackEntries.filter((entry) => entry.categorySlug === category.slug).length,
-}));
+import { type CatalogCategory, type CatalogEntry, type ProductType } from "@/lib/catalog";
 
 const readPublishedCatalog = unstable_cache(
   async () => {
@@ -31,7 +25,9 @@ const readPublishedCatalog = unstable_cache(
       }),
       prisma.category.findMany({
         orderBy: { sortOrder: "asc" },
-        include: { _count: { select: { products: { where: { publishStatus: "published", images: { some: {} } } } } } },
+        // Match the admin catalog count: include every non-archived entry,
+        // even when it is still awaiting publication or has no product image.
+        include: { _count: { select: { products: { where: { publishStatus: { not: "archived" } } } } } },
       }),
     ]);
 
@@ -72,11 +68,6 @@ const readPublishedCatalog = unstable_cache(
       comingSoon: category.status === "coming_soon",
     }));
 
-    const existingSlugs = new Set(publicCategories.map((category) => category.slug));
-    for (const category of categories.filter((item) => item.comingSoon && !existingSlugs.has(item.slug))) {
-      publicCategories.push({ ...category });
-    }
-
     return { entries, categories: publicCategories };
   },
   ["public-catalog"],
@@ -84,15 +75,13 @@ const readPublishedCatalog = unstable_cache(
 );
 
 export async function getPublicCatalog() {
-  if (!process.env.DATABASE_URL) return { entries: fallbackEntries, categories: fallbackCategories };
+  if (!process.env.DATABASE_URL) return { entries: [], categories: [] as CatalogCategory[] };
 
   try {
     const result = await readPublishedCatalog();
     return result;
   } catch {
-    // Do not substitute the old static catalog when the database is configured:
-    // the admin-managed database is the source of truth for the storefront.
-    return { entries: [], categories: fallbackCategories };
+    return { entries: [], categories: [] as CatalogCategory[] };
   }
 }
 

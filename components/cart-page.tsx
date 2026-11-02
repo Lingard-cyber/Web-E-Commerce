@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { CartItem, persistCartToDatabase, readCart, writeCart } from "@/lib/cart";
-import { catalogImagePlaceholder, formatRupiah } from "@/lib/catalog";
+import { catalogImagePlaceholder, formatRupiah } from "@/lib/catalog-utils";
 
 export function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);

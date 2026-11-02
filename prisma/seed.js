@@ -1,5 +1,5 @@
-require("dotenv").config({ override: true });
-const { PrismaClient } = require("@prisma/client");
+﻿require("dotenv").config({ override: true });
+const { PrismaClient } = require("../generated/prisma");
 const fs = require("node:fs");
 const path = require("node:path");
 const Module = require("node:module");
@@ -44,13 +44,32 @@ const suppliedPhotos = {
   "keripik-usus-egi-ds": ["/catalog/egi-ds/keripik-usus.jpeg"],
 };
 
+const catalogOwnerNames = {
+  "nasi-bakar-enak": "Sutirah",
+  "stik-kelor-camilan-alif": "Asih Wulansari",
+  "yuni-taylor": "Yuni Astuti",
+  "aneka-keripik-egi-ds": "Sunarti",
+  "keripik-usus-egi-ds": "Sunarti",
+  "manggleng-pedas-manis": "Tri Lesningsih",
+  "apem-merapi": "Endar Rahayu",
+  "pizza": "Fivin Rakhmawati",
+  "rumah-jahit-masruroh": "Siti Masruroh",
+  "singkong-keju-chicken-katsu-daisuki": "Siti Masruroh",
+  "sambel-bawang-the-ngatmos": "Ika Sulistya Rini",
+  "souvenir-ngatmos": "Ika Sulistya Rini",
+};
+
 function catalogImages(entry) {
-  if (!entry.sourcePdfPage) return suppliedPhotos[entry.slug] || [entry.imageSrc];
+  if (!entry.sourcePdfPage) {
+    const urls = suppliedPhotos[entry.slug] || (entry.imageSrc ? [entry.imageSrc] : []);
+    return urls.filter((url) => url && fs.existsSync(path.join(__dirname, "../public", url.replace(/^\//, ""))));
+  }
   const prefix = `page-${String(entry.sourcePdfPage).padStart(2, "0")}-image-`;
   const files = fs.readdirSync(imageDirectory).filter((filename) => filename.startsWith(prefix)).sort();
   const urls = files.map((filename) => `/catalog/pdf-source/${filename}`);
-  if (!urls.includes(entry.imageSrc)) throw new Error(`Foto katalog tidak ditemukan untuk ${entry.slug}: ${entry.imageSrc}`);
-  return [entry.imageSrc || "/placeholder-product.svg", ...urls.filter((url) => url !== entry.imageSrc)];
+  const preferred = entry.imageSrc && fs.existsSync(path.join(__dirname, "../public", entry.imageSrc.replace(/^\//, ""))) ? entry.imageSrc : undefined;
+  const primary = preferred || urls[0];
+  return primary ? [primary] : [];
 }
 
 // Kategori ini mengikuti katalog PDF resmi Forkom UMKM Kepuharjo.
@@ -62,16 +81,52 @@ const kategoriData = [
 ];
 
 const galeriData = [
-  { src: "/gallery/kegiatan-01.jpeg", alt: "Kegiatan warga Forkom UMKM Kepuharjo di balai desa", title: "Kegiatan bersama warga", sortOrder: 1 },
-  { src: "/gallery/kegiatan-02.jpeg", alt: "Kunjungan dan interaksi warga di kegiatan UMKM Kepuharjo", title: "Kunjungan UMKM", sortOrder: 2 },
-  { src: "/gallery/kegiatan-03.jpeg", alt: "Produk UMKM Kepuharjo dalam kegiatan warga", title: "Produk lokal Kepuharjo", sortOrder: 3 },
-  { src: "/gallery/kegiatan-04.jpeg", alt: "Penyerahan produk UMKM Kepuharjo kepada tamu", title: "Apresiasi produk lokal", sortOrder: 4 },
-  { src: "/gallery/kegiatan-05.jpeg", alt: "Pelaku UMKM Kepuharjo berfoto bersama di depan sekretariat", title: "Kebersamaan Forkom UMKM", sortOrder: 5 },
+  { src: "/gallery/kegiatan-01.jpeg", alt: "Kegiatan warga Forkom UMKM Kepuharjo di balai desa", title: "Kegiatan bersama warga", sortOrder: 1, isHero: true },
+  { src: "/gallery/kegiatan-02.jpeg", alt: "Kunjungan dan interaksi warga di kegiatan UMKM Kepuharjo", title: "Kunjungan UMKM", sortOrder: 2, isHero: true },
+  { src: "/gallery/kegiatan-03.jpeg", alt: "Produk UMKM Kepuharjo dalam kegiatan warga", title: "Produk lokal Kepuharjo", sortOrder: 3, isHero: true },
+  { src: "/gallery/kegiatan-04.jpeg", alt: "Penyerahan produk UMKM Kepuharjo kepada tamu", title: "Apresiasi produk lokal", sortOrder: 4, isHero: true },
+  { src: "/gallery/kegiatan-05.jpeg", alt: "Pelaku UMKM Kepuharjo berfoto bersama di depan sekretariat", title: "Kebersamaan Forkom UMKM", sortOrder: 5, isHero: true },
 ];
+
+const curatedGallerySources = new Set(galeriData.map((item) => item.src));
+const galleryDirectory = path.join(__dirname, "../public/gallery");
+const communityGalleryData = fs.readdirSync(galleryDirectory)
+  .filter((filename) => /\.(?:jpe?g|png|webp)$/i.test(filename))
+  .map((filename) => `/gallery/${filename}`)
+  .filter((src) => !curatedGallerySources.has(src))
+  .sort()
+  .map((src, index) => ({ src, title: "Dokumentasi UMKM Kepuharjo", alt: "Foto kegiatan dan dokumentasi UMKM Kepuharjo.", sortOrder: 6 + index, isHero: false }));
+
+const unusedCatalogPhotos = [
+  ["page-02-image-01.jpg", "Pelaku UMKM Kepuharjo"],
+  ["page-07-image-02.jpg", "Produk keripik EGI DS"],
+  ["page-10-image-01.jpg", "Kue ulang tahun Arga"],
+  ["page-10-image-02.jpg", "Donat Arga"],
+  ["page-10-image-03.jpg", "Bolu Arga"],
+  ["page-10-image-04.jpg", "Kue kering Arga"],
+  ["page-10-image-05.jpg", "Kue kering Arga"],
+  ["page-10-image-06.jpg", "Cookies Arga"],
+  ["page-11-image-01.jpg", "Chicken katsu Daisuki"],
+  ["page-12-image-01.jpg", "Produk Nasi Bakar Enak"],
+  ["page-13-image-02.jpg", "Pizza mini Kepuharjo"],
+  ["page-21-image-01.jpg", "Produk kopi Merapi"],
+  ["page-24-image-03.jpg", "Hasil jahit Yuni Taylor"],
+];
+const catalogGalleryData = unusedCatalogPhotos.map(([filename, title], index) => ({
+  src: `/catalog/pdf-source/${filename}`,
+  title,
+  alt: `${title}, foto dari katalog Forkom UMKM Kepuharjo.`,
+  sortOrder: 24 + index,
+  isHero: false,
+}));
+const completeGalleryData = [...galeriData, ...communityGalleryData, ...catalogGalleryData];
 
 async function main() {
   for (const urls of Object.values(suppliedPhotos)) for (const url of urls) {
     if (!fs.existsSync(path.join(__dirname, "../public", url.slice(1)))) throw new Error(`Foto tidak ditemukan: ${url}`);
+  }
+  for (const item of completeGalleryData) {
+    if (!fs.existsSync(path.join(__dirname, "../public", item.src.slice(1)))) throw new Error(`Foto galeri tidak ditemukan: ${item.src}`);
   }
   for (const item of kategoriData) {
     await prisma.category.upsert({
@@ -81,12 +136,12 @@ async function main() {
     });
   }
 
-  for (const item of galeriData) {
+  for (const item of completeGalleryData) {
     const existing = await prisma.galleryImage.findFirst({ where: { src: item.src } });
     if (existing) {
-      await prisma.galleryImage.update({ where: { id: existing.id }, data: { ...item, isPublished: true } });
+      await prisma.galleryImage.update({ where: { id: existing.id }, data: { ...item, isPublished: true, isHero: item.isHero } });
     } else {
-      await prisma.galleryImage.create({ data: { ...item, isPublished: true } });
+      await prisma.galleryImage.create({ data: { ...item, isPublished: true, isHero: item.isHero } });
     }
   }
 
@@ -138,23 +193,29 @@ async function main() {
   for (const entry of catalogEntries) {
     const alreadyImported = await prisma.product.findUnique({
       where: { slug: entry.slug },
-      select: { sourceCatalogEntry: true, sourcePdfPage: true, _count: { select: { images: true, variants: true } } },
+      select: { sourceCatalogEntry: true, sourcePdfPage: true, publishStatus: true, _count: { select: { images: true, variants: true } } },
     });
     const imported = entry.sourceCatalogEntry ? alreadyImported?.sourceCatalogEntry === entry.sourceCatalogEntry : alreadyImported?.sourcePdfPage === null;
-    if (imported && entry.productType !== "service" && alreadyImported._count.images > 0 && alreadyImported._count.variants >= entry.variants.length) continue;
+    const desiredStatus = catalogImages(entry).length ? "published" : "archived";
+    if (imported && alreadyImported.publishStatus === desiredStatus && alreadyImported._count.images > 0 && alreadyImported._count.variants >= entry.variants.length) continue;
     const categoryId = categoryIds.get(entry.categorySlug);
     if (!categoryId) throw new Error(`Kategori tidak ditemukan: ${entry.categorySlug}`);
-    const umkm = entry.producer ? await prisma.umkm.upsert({
-      where: { slug: entry.producer.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") },
-      update: { name: entry.producer, isPublished: true },
-      create: { name: entry.producer, slug: entry.producer.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""), isPublished: true },
-    }) : null;
+    const ownerName = catalogOwnerNames[entry.slug] || entry.producer;
+    let umkm = ownerName ? await prisma.umkm.findFirst({ where: { ownerName }, select: { id: true } }) : null;
+    if (!umkm && entry.producer) {
+      const producerSlug = entry.producer.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      umkm = await prisma.umkm.upsert({
+        where: { slug: producerSlug },
+        update: { name: entry.producer, isPublished: true },
+        create: { name: entry.producer, slug: producerSlug, isPublished: true },
+      });
+    }
     const imageUrls = catalogImages(entry);
     await prisma.$transaction(async (tx) => {
       const product = await tx.product.upsert({
         where: { slug: entry.slug },
-        update: { name: entry.name, description: entry.description, categoryId, umkmId: umkm?.id || null, productType: entry.productType, publishStatus: "published", verificationNote: entry.verificationNote || null, sourcePdfPage: entry.sourcePdfPage || null, sourceCatalogEntry: entry.sourceCatalogEntry || null, serviceBookingMode: entry.productType === "service" ? "quotation" : null },
-        create: { slug: entry.slug, name: entry.name, description: entry.description, categoryId, umkmId: umkm?.id || null, productType: entry.productType, publishStatus: "published", verificationNote: entry.verificationNote || null, sourcePdfPage: entry.sourcePdfPage || null, sourceCatalogEntry: entry.sourceCatalogEntry || null, serviceBookingMode: entry.productType === "service" ? "quotation" : null },
+        update: { name: entry.name, description: entry.description, categoryId, umkmId: umkm?.id || null, productType: entry.productType, publishStatus: imageUrls.length ? "published" : "archived", verificationNote: entry.verificationNote || null, sourcePdfPage: entry.sourcePdfPage || null, sourceCatalogEntry: entry.sourceCatalogEntry || null, serviceBookingMode: entry.productType === "service" ? "quotation" : null },
+        create: { slug: entry.slug, name: entry.name, description: entry.description, categoryId, umkmId: umkm?.id || null, productType: entry.productType, publishStatus: imageUrls.length ? "published" : "archived", verificationNote: entry.verificationNote || null, sourcePdfPage: entry.sourcePdfPage || null, sourceCatalogEntry: entry.sourceCatalogEntry || null, serviceBookingMode: entry.productType === "service" ? "quotation" : null },
       });
       const wantedSkus = entry.variants.map((variant) => `catalog-${entry.slug}-${variant.id}`);
       await tx.productVariant.updateMany({ where: { productId: product.id, OR: [{ sku: null }, { sku: { notIn: wantedSkus } }] }, data: { isActive: false } });
@@ -174,7 +235,7 @@ async function main() {
         await tx.productVariant.deleteMany({ where: { id: { in: ids } } });
       }
       await tx.productImage.deleteMany({ where: { productId: product.id } });
-      await tx.productImage.createMany({ data: imageUrls.map((imageUrl, sortOrder) => ({ productId: product.id, imageUrl, altText: entry.sourcePdfPage ? `${entry.name} — foto katalog halaman ${entry.sourcePdfPage}` : entry.name, sortOrder, isPrimary: sortOrder === 0 })) });
+      if (imageUrls.length) await tx.productImage.createMany({ data: imageUrls.map((imageUrl, sortOrder) => ({ productId: product.id, imageUrl, altText: entry.sourcePdfPage ? `${entry.name} - foto katalog halaman ${entry.sourcePdfPage}` : entry.name, sortOrder, isPrimary: sortOrder === 0 })) });
     });
   }
 

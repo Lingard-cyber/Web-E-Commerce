@@ -5,7 +5,7 @@ import { ProductDetailActions } from "@/components/product-detail-actions";
 import { ProductGallery } from "@/components/product-gallery";
 import { ProductInfoTabs } from "@/components/product-info-tabs";
 import { SiteShell } from "@/components/site-shell";
-import { catalogImagePlaceholder, formatRupiah } from "@/lib/catalog";
+import { catalogImagePlaceholder, formatRupiah } from "@/lib/catalog-utils";
 import { getPublicProduct } from "@/lib/catalog-db";
 import { orderingContacts, orderingWhatsappUrl } from "@/lib/ordering-contacts";
 

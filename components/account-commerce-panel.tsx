@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { CheckCircle2, Clock3, MapPin, Package, Plus, RefreshCw, Trash2, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
-import { formatRupiah } from "@/lib/catalog";
+import { formatRupiah } from "@/lib/catalog-utils";
 import { persistCartToDatabase, readCart, writeCart } from "@/lib/cart";
 
 type Address = { id: string; label: string; recipientName: string; phone: string; address: string; village?: string | null; district?: string | null; regency?: string | null; postalCode?: string | null; isDefault: boolean };

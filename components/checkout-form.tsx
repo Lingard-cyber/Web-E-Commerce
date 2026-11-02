@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Home, LoaderCircle, LockKeyhole, MapPin, Phone, Plus, UserRound } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { CartItem, persistCartToDatabase, readCart, writeCart } from "@/lib/cart";
-import { formatRupiah } from "@/lib/catalog";
+import { formatRupiah } from "@/lib/catalog-utils";
 import { XenditComponentsCheckout } from "@/components/xendit-components-checkout";
 
 type CheckoutAddress = {

@@ -73,10 +73,11 @@ export async function POST(request: Request) {
     const matchSlugs = Array.isArray(row.matchProductSlugs) ? row.matchProductSlugs.map((value) => textValue(value, 180)).filter(Boolean) : [];
     let linkedCount = 0;
     for (const matchSlug of matchSlugs) {
-      const existingProduct = await prisma.product.findUnique({ where: { slug: matchSlug }, select: { id: true } });
+      const existingProduct = await prisma.product.findUnique({ where: { slug: matchSlug }, select: { id: true, images: { select: { imageUrl: true } } } });
       if (!existingProduct) continue;
       const catalogDescription = values.description ? catalogEntries.find((entry) => entry.slug === matchSlug)?.description : undefined;
-      await prisma.product.update({ where: { id: existingProduct.id }, data: { umkmId: profile.id, ...(catalogDescription ? { description: catalogDescription } : {}) } });
+      const hasPhoto = existingProduct.images.some(({ imageUrl }) => imageUrl.trim() && !/placeholder|no-image/i.test(imageUrl));
+      await prisma.product.update({ where: { id: existingProduct.id }, data: { umkmId: profile.id, publishStatus: hasPhoto ? "published" : "archived", ...(catalogDescription ? { description: catalogDescription } : {}) } });
       summary.productsLinked++;
       linkedCount++;
     }
@@ -86,6 +87,8 @@ export async function POST(request: Request) {
     const category = await prisma.category.upsert({ where: { slug: categorySpec.slug }, create: { ...categorySpec, description: `Produk dan layanan ${categorySpec.name.toLowerCase()} dari UMKM Kepuharjo.` }, update: {} });
     const productType = typeFor(businessType);
     const productSlug = slugValue(`induk-${rowNumber}-${businessType}`);
+    const existingImportedProduct = await prisma.product.findUnique({ where: { importKey }, select: { id: true, images: { select: { imageUrl: true } } } });
+    const hasPhoto = existingImportedProduct?.images.some(({ imageUrl }) => imageUrl.trim() && !/placeholder|no-image/i.test(imageUrl)) ?? false;
     const productData = {
       umkmId: profile.id,
       categoryId: category.id,
@@ -93,11 +96,10 @@ export async function POST(request: Request) {
       slug: productSlug,
       description: values.description,
       productType,
-      publishStatus: "published" as const,
+      publishStatus: hasPhoto ? "published" as const : "archived" as const,
       serviceBookingMode: productType === "service" ? "quotation" as const : null,
       verificationNote: "Data awal dari induk UMKM; harga, stok, dan foto belum tersedia.",
     };
-    const existingImportedProduct = await prisma.product.findUnique({ where: { importKey }, select: { id: true } });
     await prisma.product.upsert({
       where: { importKey },
       create: { ...productData, importKey, variants: { create: { label: productType === "service" ? "Konsultasi" : "Varian utama", priceIdr: null, stockQty: null } } },

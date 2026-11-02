@@ -6,6 +6,7 @@ import { requireAdminApi, slugValue, textValue, validationError } from "@/lib/ad
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   const { response } = await requireAdminApi();
   if (response) return response;
+  try {
   const current = await prisma.umkm.findUnique({ where: { id: params.id }, select: { id: true, name: true, slug: true, description: true, isPublished: true, publicContact: true, ownerName: true, businessType: true, nib: true, halalPermit: true, sppirt: true, privateKtp: true, privateAddress: true } });
   if (!current) return NextResponse.json({ error: "UMKM tidak ditemukan." }, { status: 404 });
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
@@ -13,7 +14,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   const slug = body && "slug" in body ? slugValue(body.slug) || current.slug : current.slug;
   const duplicate = await prisma.umkm.findFirst({ where: { slug, id: { not: params.id } }, select: { id: true } });
   if (duplicate) return NextResponse.json({ error: "Slug UMKM sudah digunakan." }, { status: 409 });
-  const existingContact = current.publicContact && typeof current.publicContact === "object" && !Array.isArray(current.publicContact) ? current.publicContact as { instagram?: string } : {};
+  const existingContact = current.publicContact && typeof current.publicContact === "object" && !Array.isArray(current.publicContact) ? current.publicContact as { instagram?: string; profileImage?: string } : {};
   await prisma.umkm.update({ where: { id: params.id }, data: {
     name, slug,
     description: body && "description" in body ? textValue(body.description, 8000) || null : current.description,
@@ -25,7 +26,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     privateKtp: body && "ktp" in body ? textValue(body.ktp, 80) || null : current.privateKtp,
     privateAddress: body && "address" in body ? textValue(body.address, 1000) || null : current.privateAddress,
     isPublished: body && "isPublished" in body ? Boolean(body.isPublished) : current.isPublished,
-    publicContact: { instagram: body && "instagram" in body ? textValue(body.instagram, 160) : existingContact.instagram || "" },
+    publicContact: {
+      instagram: body && "instagram" in body ? textValue(body.instagram, 160) : existingContact.instagram || "",
+      profileImage: body && "profileImage" in body ? textValue(body.profileImage, 6 * 1024 * 1024) : existingContact.profileImage || "",
+    },
   } });
   await prisma.auditLog.create({ data: { action: "update", entity: "umkm", entityId: params.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom" } } });
   revalidatePath("/");
@@ -35,6 +39,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   revalidateTag("public-umkm");
   revalidateTag("public-catalog");
   return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("Admin UMKM profile update failed:", error);
+    return NextResponse.json({ error: "Profil belum tersimpan karena server gagal mengakses database. Periksa koneksi database lalu coba lagi." }, { status: 503 });
+  }
 }
 
 export async function DELETE(_request: Request, { params }: { params: { id: string } }) {

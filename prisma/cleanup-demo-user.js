@@ -1,6 +1,6 @@
-require("dotenv").config({ override: true });
+﻿require("dotenv").config({ override: true });
 
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require("../generated/prisma");
 const { createClient } = require("@supabase/supabase-js");
 
 const demoEmail = "demo@kepuharjomarket.test";

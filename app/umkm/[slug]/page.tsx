@@ -23,6 +23,7 @@ export default async function UmkmDetailPage({ params }: { params: { slug: strin
   return <SiteShell><main className="mx-auto max-w-[1040px] px-4 py-8 sm:px-6 sm:py-14">
     <Link href="/umkm" className="mb-5 inline-flex items-center gap-2 text-[10px] font-bold text-forest-800 hover:underline"><ArrowLeft size={13} />Kembali ke daftar UMKM</Link>
     <section className="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-card">
+      {umkm.profileImage && <div className="bg-slate-100"><img src={umkm.profileImage} alt={`Foto profil ${umkm.name}`} className="mx-auto max-h-[560px] w-full object-contain" /></div>}
       <div className="bg-forest-900 p-7 text-white sm:p-10">
         <p className="text-[10px] font-bold uppercase tracking-[.18em] text-accent">Profil UMKM Kepuharjo</p>
         <h1 className="mt-3 font-display text-[clamp(2.2rem,5vw,4rem)] font-bold leading-none">{umkm.name}</h1>

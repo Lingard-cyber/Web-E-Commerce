@@ -3,7 +3,8 @@
 import { ArrowRight, Check, ChevronDown, FileText, MessageCircle, Share2, ShoppingCart, Heart } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CatalogEntry, formatRupiah } from "@/lib/catalog";
+import { formatRupiah } from "@/lib/catalog-utils";
+import type { CatalogEntry } from "@/lib/catalog";
 import { persistCartToDatabase, readCart, writeCart } from "@/lib/cart";
 import { createClient } from "@/lib/supabase/client";
 import { orderingContacts, orderingWhatsappUrl } from "@/lib/ordering-contacts";

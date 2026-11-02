@@ -10,8 +10,8 @@ export default async function AdminCategoriesPage() {
   const categories = process.env.DATABASE_URL ? await prisma.category.findMany({
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     include: { _count: { select: { products: true } }, products: { orderBy: { name: "asc" }, include: { umkm: { select: { name: true } } } } },
-  }).catch(() => []) : [];
-  const items = categories.map(({ id, name, slug, description, sortOrder, status, _count, products }) => ({ id, name, slug, description, sortOrder, status, productCount: _count.products, entries: products.map(({ id, name, productType, publishStatus, umkm }) => ({ id, name, productType, publishStatus, umkmName: umkm?.name || null })) }));
+  }) : [];
+  const items = categories.map(({ id, name, slug, description, sortOrder, status, _count, products }) => ({ id, name, slug, description, sortOrder, status, productCount: _count.products, entries: products.map(({ id, name, slug, description, productType, publishStatus, umkm }) => ({ id, name, slug, description, productType, publishStatus, umkmName: umkm?.name || null })) }));
   return <AdminShell name={admin.name} email={admin.email}>
     <p className="text-[10px] font-bold uppercase tracking-[.18em] text-forest-700">Katalog</p>
     <h1 className="mt-2 font-display text-3xl font-bold">Kategori</h1>
