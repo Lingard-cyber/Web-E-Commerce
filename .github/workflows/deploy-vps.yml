@@ -123,6 +123,8 @@ jobs:
             set -eu
             cd '$VPS_APP_DIR'
             test -f .env.deploy
+            docker builder prune -af
+            docker image prune -af
             docker compose --env-file .env.deploy -f '$COMPOSE_FILE' build
             docker compose --env-file .env.deploy -f '$COMPOSE_FILE' run --rm storefront npx prisma migrate deploy
             docker compose --env-file .env.deploy -f '$COMPOSE_FILE' up -d --remove-orphans
