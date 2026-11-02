@@ -16,11 +16,11 @@ const primaryLinks = [
   { label: "Jasa & Layanan", href: "/jasa" },
   { label: "Kategori", href: "/kategori" },
   { label: "UMKM", href: "/umkm" },
+  { label: "Kontak", href: "/#kontak" },
 ];
 
 const utilityLinks = [
   { label: "Sambutan Lurah", href: "/sambutan-lurah" },
-  { label: "Kontak", href: "/#kontak" },
   { label: "Bantuan", href: "/bantuan" },
 ];
 
