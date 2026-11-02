@@ -44,6 +44,18 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   const umkmId = body && "umkmId" in body ? textValue(body.umkmId, 80) || null : current.umkmId;
   const category = await prisma.category.findUnique({ where: { id: categoryId }, select: { id: true } });
   if (!category) return validationError("Kategori tidak ditemukan.");
+  if (body && Object.keys(body).length === 1 && "categoryId" in body) {
+    await prisma.$transaction(async (tx) => {
+      await tx.product.update({ where: { id: params.id }, data: { categoryId } });
+      await tx.auditLog.create({ data: { action: "update", entity: "product", entityId: params.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom", productType: current.productType, categoryId } } });
+    });
+    revalidatePath("/");
+    revalidatePath("/produk");
+    revalidatePath("/jasa");
+    revalidatePath("/kategori");
+    revalidateTag("public-catalog");
+    return NextResponse.json({ ok: true });
+  }
   if (umkmId && !(await prisma.umkm.findUnique({ where: { id: umkmId }, select: { id: true } }))) return validationError("Data UMKM tidak ditemukan.");
   const price = body && "priceIdr" in body ? Number(body.priceIdr || 0) : current.variants[0]?.priceIdr ?? 0;
   const stock = body && "stockQty" in body ? Number(body.stockQty || 0) : current.variants[0]?.stockQty ?? 0;

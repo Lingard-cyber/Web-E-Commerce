@@ -5,7 +5,7 @@ import { FormEvent, useState } from "react";
 import { Archive, Pencil, Plus, Save, Trash2, X } from "lucide-react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
-type CategoryEntry = { id: string; name: string; productType: "product" | "service"; publishStatus: string; umkmName: string | null };
+type CategoryEntry = { id: string; name: string; productType: "ready_stock" | "fresh_preorder" | "service"; publishStatus: string; umkmName: string | null };
 type Category = { id: string; name: string; slug: string; description: string | null; sortOrder: number; status: "coming_soon" | "published"; productCount: number; entries: CategoryEntry[] };
 type CategoryForm = { name: string; slug: string; description: string; sortOrder: string; status: Category["status"] };
 
@@ -27,6 +27,8 @@ export function AdminCategoryManager({ initialCategories }: { initialCategories:
   const [pendingDelete, setPendingDelete] = useState<Category | null>(null);
   const [pendingEntry, setPendingEntry] = useState<{ categoryId: string; entry: CategoryEntry } | null>(null);
   const [archivingId, setArchivingId] = useState<string | null>(null);
+  const [entrySelection, setEntrySelection] = useState<Record<string, string>>({});
+  const [movingEntryId, setMovingEntryId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
 
   const setField = <K extends keyof CategoryForm>(field: K, value: CategoryForm[K]) => setForm((current) => ({ ...current, [field]: value }));
@@ -159,6 +161,34 @@ export function AdminCategoryManager({ initialCategories }: { initialCategories:
     }
   }
 
+  async function addEntryToCategory(categoryId: string) {
+    const entryId = entrySelection[categoryId];
+    const sourceCategory = categories.find((category) => category.entries.some((entry) => entry.id === entryId));
+    const entry = sourceCategory?.entries.find((item) => item.id === entryId);
+    if (!entry || !sourceCategory || sourceCategory.id === categoryId) return;
+    setMovingEntryId(entry.id);
+    setMessage("");
+    try {
+      const response = await fetch(`/api/admin/products/${entry.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ categoryId }) });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setMessage(result.error || "Entri belum dapat dipindahkan.");
+        return;
+      }
+      setCategories((current) => current.map((category) => {
+        const entries = category.id === categoryId ? [...category.entries, entry].sort((a, b) => a.name.localeCompare(b.name)) : category.entries.filter((item) => item.id !== entry.id);
+        return { ...category, entries, productCount: entries.length };
+      }));
+      setEntrySelection((current) => ({ ...current, [categoryId]: "" }));
+      setMessage(`${entry.name} berhasil dipindahkan ke kategori ${categories.find((category) => category.id === categoryId)?.name || "tujuan"}.`);
+      router.refresh();
+    } catch {
+      setMessage("Koneksi ke server gagal. Coba lagi.");
+    } finally {
+      setMovingEntryId(null);
+    }
+  }
+
   return <div className="mt-6 space-y-5">
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -190,11 +220,12 @@ export function AdminCategoryManager({ initialCategories }: { initialCategories:
     </section>
     <ConfirmDialog open={Boolean(pendingDelete)} title="Hapus kategori?" description={pendingDelete ? `Kategori “${pendingDelete.name}” akan dihapus. Kategori yang sudah dipakai produk atau jasa tidak dapat dihapus.` : ""} confirmLabel="Hapus kategori" loading={Boolean(deletingId)} onCancel={() => setPendingDelete(null)} onConfirm={() => void confirmRemoveCategory()} />
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="font-display text-lg font-bold">Entri dalam kategori</h2>
-      <p className="mt-1 text-xs text-muted">Lihat produk atau jasa pada setiap kategori. Entri dapat diarsipkan agar tidak tampil di katalog.</p>
+      <h2 className="font-display text-lg font-bold">Produk/jasa dalam kategori</h2>
+      <p className="mt-1 text-xs text-muted">Tambahkan atau pindahkan produk dan jasa antar kategori. Kategori dapat dihapus setelah semua data dipindahkan.</p>
       <div className="mt-4 space-y-2">{categories.map((category) => <details key={category.id} className="group rounded-xl border border-slate-200 bg-white">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-4 py-3 text-xs font-bold hover:bg-slate-50"><span>{category.name}</span><span className="rounded-full bg-green-50 px-2.5 py-1 text-[10px] text-forest-800">{category.entries.length} entri</span></summary>
-        {category.entries.length === 0 ? <p className="border-t border-slate-100 px-4 py-3 text-xs text-muted">Belum ada produk atau jasa di kategori ini.</p> : <div className="divide-y divide-slate-100 border-t border-slate-100">{category.entries.map((entry) => <div key={entry.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"><div><p className="text-xs font-semibold">{entry.name}</p><p className="mt-1 text-[10px] text-muted">{entry.productType === "service" ? "Jasa/Layanan" : "Produk"}{entry.umkmName ? ` · ${entry.umkmName}` : " · Belum dipetakan"}</p></div><div className="flex items-center gap-2"><span className={`rounded-full px-2 py-1 text-[9px] font-bold ${entry.publishStatus === "published" ? "bg-green-50 text-forest-800" : entry.publishStatus === "archived" ? "bg-slate-100 text-slate-600" : "bg-amber-50 text-amber-800"}`}>{entry.publishStatus.replaceAll("_", " ")}</span>{entry.publishStatus !== "archived" && <button type="button" disabled={archivingId === entry.id} onClick={() => setPendingEntry({ categoryId: category.id, entry })} className="inline-flex items-center rounded-lg border border-red-200 px-2.5 py-1.5 text-[10px] font-bold text-red-700 hover:bg-red-50 disabled:opacity-50"><Archive size={12} className="mr-1" />Arsipkan</button>}</div></div>)}</div>}
+        <div className="border-t border-slate-100 px-4 py-3"><div className="flex flex-wrap items-end gap-2"><label className="min-w-[240px] flex-1 text-[10px] font-bold">Tambahkan produk/jasa dari kategori lain<select value={entrySelection[category.id] || ""} onChange={(event) => setEntrySelection((current) => ({ ...current, [category.id]: event.target.value }))} className="mt-1.5 h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs font-normal"><option value="">Pilih produk atau jasa</option>{categories.filter((source) => source.id !== category.id).flatMap((source) => source.entries.map((entry) => <option key={entry.id} value={entry.id}>{entry.name} ({entry.productType === "service" ? "Jasa" : "Produk"} · {source.name})</option>))}</select></label><button type="button" disabled={!entrySelection[category.id] || Boolean(movingEntryId)} onClick={() => void addEntryToCategory(category.id)} className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-forest-800 px-3 text-[10px] font-bold text-white disabled:opacity-50"><Plus size={13} />{movingEntryId ? "Memindahkan..." : "Tambahkan"}</button></div></div>
+        {category.entries.length === 0 ? <p className="px-4 py-3 text-xs text-muted">Belum ada produk atau jasa di kategori ini.</p> : <div className="divide-y divide-slate-100">{category.entries.map((entry) => <div key={entry.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"><div><p className="text-xs font-semibold">{entry.name}</p><p className="mt-1 text-[10px] text-muted">{entry.productType === "service" ? "Jasa/Layanan" : "Produk"}{entry.umkmName ? ` · ${entry.umkmName}` : " · Belum dipetakan"}</p></div><div className="flex items-center gap-2"><span className={`rounded-full px-2 py-1 text-[9px] font-bold ${entry.publishStatus === "published" ? "bg-green-50 text-forest-800" : entry.publishStatus === "archived" ? "bg-slate-100 text-slate-600" : "bg-amber-50 text-amber-800"}`}>{entry.publishStatus.replaceAll("_", " ")}</span>{entry.publishStatus !== "archived" && <button type="button" disabled={archivingId === entry.id} onClick={() => setPendingEntry({ categoryId: category.id, entry })} className="inline-flex items-center rounded-lg border border-red-200 px-2.5 py-1.5 text-[10px] font-bold text-red-700 hover:bg-red-50 disabled:opacity-50"><Archive size={12} className="mr-1" />Arsipkan</button>}</div></div>)}</div>}
       </details>)}</div>
     </section>
     <ConfirmDialog open={Boolean(pendingEntry)} title="Arsipkan entri?" description={pendingEntry ? `${pendingEntry.entry.name} akan dihapus dari katalog aktif. Riwayat transaksi tetap disimpan.` : ""} confirmLabel="Arsipkan entri" loading={Boolean(archivingId)} onCancel={() => setPendingEntry(null)} onConfirm={() => void archiveEntry()} />
