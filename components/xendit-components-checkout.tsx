@@ -1,38 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import Script from "next/script";
 import { ArrowLeft, LoaderCircle, ShieldCheck } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
-
-type XenditSdk = {
-  createChannelPickerComponent: () => HTMLElement;
-  addEventListener: (name: string, listener: () => void) => void;
-  submit: () => void;
-};
-
-declare global {
-  interface Window {
-    XenditComponents?: (new (options: { componentsSdkKey: string }) => XenditSdk) | { XenditComponents?: new (options: { componentsSdkKey: string }) => XenditSdk };
-    XenditComponentsWeb?: { XenditComponents?: new (options: { componentsSdkKey: string }) => XenditSdk };
-  }
-}
+import { XenditComponents } from "xendit-components-web";
+import { useEffect, useRef, useState } from "react";
 
 export function XenditComponentsCheckout({ sdkKey, publicCode, amount }: { sdkKey: string; publicCode: string; amount: number }) {
   const pickerRef = useRef<HTMLDivElement>(null);
-  const sdkRef = useRef<XenditSdk | null>(null);
+  const sdkRef = useRef<XenditComponents | null>(null);
+  const [sdkLoaded, setSdkLoaded] = useState(false);
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
 
-  const initialize = useCallback(() => {
-    const exported = window.XenditComponents;
-    const Constructor = typeof exported === "function" ? exported : exported?.XenditComponents || window.XenditComponentsWeb?.XenditComponents;
-    if (!Constructor || !pickerRef.current || sdkRef.current) return;
+  useEffect(() => {
+    if (!pickerRef.current) return;
     try {
-      const sdk = new Constructor({ componentsSdkKey: sdkKey });
+      const sdk = new XenditComponents({ componentsSdkKey: sdkKey });
       sdkRef.current = sdk;
       pickerRef.current.replaceChildren(sdk.createChannelPickerComponent());
+      setSdkLoaded(true);
       sdk.addEventListener("submission-ready", () => setReady(true));
       sdk.addEventListener("submission-not-ready", () => setReady(false));
       sdk.addEventListener("submission-begin", () => { setBusy(true); setMessage("Memproses pembayaran..."); });
@@ -43,6 +30,10 @@ export function XenditComponentsCheckout({ sdkKey, publicCode, amount }: { sdkKe
     } catch {
       setMessage("Metode pembayaran belum dapat dimuat. Muat ulang halaman atau coba lagi nanti.");
     }
+    return () => {
+      pickerRef.current?.replaceChildren();
+      sdkRef.current = null;
+    };
   }, [publicCode, sdkKey]);
 
   const submit = () => {
@@ -62,7 +53,7 @@ export function XenditComponentsCheckout({ sdkKey, publicCode, amount }: { sdkKe
           <h1 className="mt-2 font-display text-2xl font-bold text-forest-950">Pilih metode pembayaran</h1>
           <p className="mt-2 text-xs leading-5 text-muted">Pilih cara pembayaran yang nyaman. Pembayaran diproses dengan aman oleh Xendit.</p>
           <div ref={pickerRef} className="xendit-payment-picker mt-6 min-h-28" />
-          {!sdkRef.current && !message && <div className="flex items-center justify-center gap-2 py-4 text-xs text-muted"><LoaderCircle size={16} className="animate-spin text-forest-700" />Memuat metode pembayaran...</div>}
+          {!sdkLoaded && !message && <div className="flex items-center justify-center gap-2 py-4 text-xs text-muted"><LoaderCircle size={16} className="animate-spin text-forest-700" />Memuat metode pembayaran...</div>}
           {message && <p role="status" className="mt-4 rounded-xl bg-amber-50 p-3 text-xs text-amber-900">{message}</p>}
           <button type="button" onClick={submit} disabled={!ready || busy} className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-xl bg-forest-800 px-5 text-xs font-bold text-white shadow-sm transition hover:bg-forest-700 disabled:cursor-not-allowed disabled:opacity-50">{busy ? <LoaderCircle size={15} className="mr-2 animate-spin" /> : <ShieldCheck size={15} className="mr-2" />}{busy ? "Memproses pembayaran..." : "Bayar sekarang"}</button>
         </section>
@@ -76,7 +67,6 @@ export function XenditComponentsCheckout({ sdkKey, publicCode, amount }: { sdkKe
         </aside>
       </div>
     </div>
-    <Script src="https://assets.xendit.co/components/0.0.35/index.umd.js" strategy="afterInteractive" onReady={initialize} onError={() => setMessage("SDK pembayaran gagal dimuat. Periksa koneksi lalu muat ulang halaman.")} />
     <style jsx global>{`
       :root {
         --xendit-font-family: inherit;
