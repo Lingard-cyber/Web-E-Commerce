@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { syncAuthUser } from "@/lib/auth-profile";
 import { createClient } from "@/lib/supabase/server";
-import { createXenditPaymentSession } from "@/lib/xendit";
+import { createXenditPaymentSession, getXenditComponentsSdkKey } from "@/lib/xendit";
 
 type OrderBody = { idempotencyKey?: string; items?: Array<{ variantId?: string; quantity?: number }>; addressId?: string };
 
@@ -30,7 +30,12 @@ export async function POST(request: Request) {
   for (const item of normalizedItems) quantities.set(item.variantId, (quantities.get(item.variantId) || 0) + item.quantity);
 
   const existingOrder = await prisma.order.findUnique({ where: { idempotencyKey }, include: { payment: true } });
-  if (existingOrder) return NextResponse.json({ publicCode: existingOrder.publicCode, checkoutUrl: existingOrder.payment?.checkoutUrl || null });
+  if (existingOrder) {
+    const componentsSdkKey = existingOrder.payment?.providerPaymentId ? await getXenditComponentsSdkKey(existingOrder.payment.providerPaymentId).catch(() => null) : null;
+    return componentsSdkKey
+      ? NextResponse.json({ publicCode: existingOrder.publicCode, componentsSdkKey })
+      : NextResponse.json({ error: "Sesi pembayaran sudah kedaluwarsa. Silakan buat pesanan kembali." }, { status: 409 });
+  }
   const variants = await prisma.productVariant.findMany({ where: { id: { in: Array.from(quantities.keys()) }, isActive: true, product: { publishStatus: "published", productType: { not: "service" } } }, include: { product: true } });
   if (variants.length !== quantities.size) return NextResponse.json({ error: "Salah satu produk sudah tidak tersedia." }, { status: 409 });
   for (const variant of variants) {
@@ -63,8 +68,8 @@ export async function POST(request: Request) {
 
   try {
     const session = await createXenditPaymentSession({ referenceId: order.publicCode, amount: order.totalIdr, email: authUser.email, name: databaseUser.name, phone: databaseUser.phone, siteUrl: process.env.NEXT_PUBLIC_STORE_URL || process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin });
-    await prisma.payment.update({ where: { orderId: order.id }, data: { providerPaymentId: session.payment_session_id, checkoutUrl: session.payment_link_url, rawLastEvent: session } });
-    return NextResponse.json({ publicCode: order.publicCode, checkoutUrl: session.payment_link_url }, { status: 201 });
+    await prisma.payment.update({ where: { orderId: order.id }, data: { providerPaymentId: session.payment_session_id, rawLastEvent: { payment_session_id: session.payment_session_id, mode: "COMPONENTS" } } });
+    return NextResponse.json({ publicCode: order.publicCode, componentsSdkKey: session.components_sdk_key }, { status: 201 });
   } catch (error) {
     await prisma.$transaction(async (tx) => {
       await tx.order.update({ where: { id: order.id }, data: { status: "cancelled" } });

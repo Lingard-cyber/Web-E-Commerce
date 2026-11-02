@@ -15,15 +15,12 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
-  const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
   const password = typeof body?.password === "string" ? body.password : "";
   if (password.length < 8) return NextResponse.json({ error: "Kata sandi minimal 8 karakter." }, { status: 400 });
 
   const supabase = createClient();
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user?.email) return NextResponse.json({ error: "Sesi pemulihan tidak valid atau sudah kedaluwarsa." }, { status: 401 });
-  if (email !== user.email.trim().toLowerCase()) return NextResponse.json({ error: "Email konfirmasi tidak cocok dengan email pada tautan pemulihan." }, { status: 400 });
-
   const challenge = await findChallenge(request, user.id, user.email);
   if (!challenge) return NextResponse.json({ error: "Tautan reset sudah tidak aktif. Minta tautan baru." }, { status: 403 });
   const now = new Date();
