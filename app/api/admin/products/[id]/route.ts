@@ -2,36 +2,29 @@ import { NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdminApi, slugValue, textValue, validationError } from "@/lib/admin-api";
+import { MAX_PRODUCT_IMAGES, readProductBody, readStringList, type UploadedProductImage } from "@/lib/admin-product-images";
 
 const productTypes = ["ready_stock", "fresh_preorder", "service"] as const;
 const publishStatuses = ["draft", "pending_verification", "published", "archived"] as const;
 const bookingModes = ["direct_booking", "quotation"] as const;
-const MAX_UPLOAD_BYTES = 6 * 1024 * 1024;
 const MAX_SOURCE_LENGTH = 9 * 1024 * 1024;
-const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
-async function readBody(request: Request) {
-  const contentType = request.headers.get("content-type") || "";
-  if (!contentType.includes("multipart/form-data")) return await request.json().catch(() => null) as Record<string, unknown> | null;
-  const form = await request.formData();
-  const body: Record<string, unknown> = {};
-  form.forEach((value, key) => { if (typeof value === "string") body[key] = value; });
-  const file = form.get("file");
-  if (file && typeof file !== "string") {
-    if (!allowedImageTypes.has(file.type)) return { error: "Format foto harus JPG, PNG, WEBP, atau GIF." };
-    if (file.size <= 0) return { error: "File foto yang dipilih kosong." };
-    if (file.size > MAX_UPLOAD_BYTES) return { error: "Ukuran foto maksimal 6 MB." };
-    body.imageUrl = `data:${file.type};base64,${Buffer.from(await file.arrayBuffer()).toString("base64")}`;
-  }
-  return body;
+export async function GET(_request: Request, { params }: { params: { id: string } }) {
+  const { response } = await requireAdminApi();
+  if (response) return response;
+  const product = await prisma.product.findUnique({ where: { id: params.id }, select: { id: true } });
+  if (!product) return NextResponse.json({ error: "Produk atau jasa tidak ditemukan." }, { status: 404 });
+  const images = await prisma.productImage.findMany({ where: { productId: params.id }, orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }], select: { id: true, imageUrl: true, altText: true, isPrimary: true, isHero: true } });
+  return NextResponse.json({ images });
 }
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   const { response } = await requireAdminApi();
   if (response) return response;
-  const body = await readBody(request);
+  const body = await readProductBody(request);
+  if (body instanceof NextResponse) return body;
   if (body && "error" in body && typeof body.error === "string") return validationError(body.error);
-  const current = await prisma.product.findUnique({ where: { id: params.id }, include: { variants: { where: { isActive: true }, take: 1 }, images: { where: { isPrimary: true }, take: 1 } } });
+  const current = await prisma.product.findUnique({ where: { id: params.id }, include: { variants: { where: { isActive: true }, take: 1 }, images: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }] } } });
   if (!current) return NextResponse.json({ error: "Produk atau jasa tidak ditemukan." }, { status: 404 });
   const name = textValue(body?.name, 160) || current.name;
   const slug = slugValue(body?.slug || name);
@@ -63,18 +56,43 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   const serviceBookingMode: typeof bookingModes[number] | null = productType === "service" ? (textValue(body?.serviceBookingMode, 40) as typeof bookingModes[number] || current.serviceBookingMode || "quotation") : null;
   if (productType === "service" && (!serviceBookingMode || !bookingModes.includes(serviceBookingMode))) return validationError("Mode pemesanan jasa tidak valid.");
   const imageUrl = body && "imageUrl" in body ? textValue(body.imageUrl, MAX_SOURCE_LENGTH) : undefined;
-  const isHero = body && "isHero" in body ? body.isHero === true || body.isHero === "true" : current.images[0]?.isHero ?? false;
+  const uploadedImages = Array.isArray(body?.imageFiles) ? body.imageFiles as UploadedProductImage[] : [];
+  const imageCollectionRequested = Boolean(body && ("existingImageIds" in body || "imageFiles" in body));
+  const existingImageIds = readStringList(body?.existingImageIds);
+  const heroImageIds = new Set(readStringList(body?.heroImageIds));
+  const primaryImageKey = textValue(body?.primaryImageKey, 120);
+  const legacyIsHero = body && "isHero" in body ? body.isHero === true || body.isHero === "true" : false;
+  if (imageCollectionRequested) {
+    if (existingImageIds.some((id) => !current.images.some((image) => image.id === id))) return validationError("Daftar foto yang dipilih tidak sesuai dengan entri ini.");
+    if (existingImageIds.length + uploadedImages.length + (imageUrl ? 1 : 0) > MAX_PRODUCT_IMAGES) return validationError(`Maksimal ${MAX_PRODUCT_IMAGES} foto per entri.`);
+  }
+  const requestedPrimaryExists = existingImageIds.includes(primaryImageKey) || uploadedImages.some((image) => image.key === primaryImageKey);
+  const fallbackPrimaryKey = current.images.find((image) => existingImageIds.includes(image.id))?.id || uploadedImages[0]?.key || "";
+  const selectedPrimaryKey = requestedPrimaryExists ? primaryImageKey : fallbackPrimaryKey;
 
   await prisma.$transaction(async (tx) => {
     await tx.product.update({ where: { id: params.id }, data: { name, slug, description: body && "description" in body ? textValue(body.description, 5000) || null : current.description, categoryId, umkmId, productType, publishStatus, serviceBookingMode, serviceRequirements: productType === "service" ? textValue(body?.serviceRequirements, 3000) || current.serviceRequirements : null, serviceAvailability: productType === "service" ? textValue(body?.serviceAvailability, 500) || current.serviceAvailability : null, serviceDuration: productType === "service" ? textValue(body?.serviceDuration, 200) || current.serviceDuration : null } });
     const variant = current.variants[0];
     if (variant) await tx.productVariant.update({ where: { id: variant.id }, data: { label: textValue(body?.variantLabel, 120) || variant.label, priceIdr: productType === "service" && serviceBookingMode === "quotation" && !price ? null : price, stockQty: productType === "service" ? null : stock } });
-    if (imageUrl !== undefined) {
-      const primary = current.images[0];
-      if (primary) await tx.productImage.update({ where: { id: primary.id }, data: { imageUrl, altText: name, isHero } });
-      else if (imageUrl) await tx.productImage.create({ data: { productId: params.id, imageUrl, altText: name, isPrimary: true, isHero } });
-    } else if (body && "isHero" in body && current.images[0]) {
-      await tx.productImage.update({ where: { id: current.images[0].id }, data: { isHero } });
+    if (imageCollectionRequested) {
+      const legacyImages = imageUrl ? [{ key: "legacy", imageUrl, isHero: legacyIsHero }] : [];
+      const newImages = [...uploadedImages, ...legacyImages];
+      const keptImages = current.images.filter((image) => existingImageIds.includes(image.id));
+      if (existingImageIds.length) await tx.productImage.deleteMany({ where: { productId: params.id, id: { notIn: existingImageIds } } });
+      else await tx.productImage.deleteMany({ where: { productId: params.id } });
+      for (const image of keptImages) {
+        await tx.productImage.update({ where: { id: image.id }, data: { isPrimary: selectedPrimaryKey === image.id, isHero: heroImageIds.has(image.id), altText: image.altText || name } });
+      }
+      for (const [index, image] of newImages.entries()) {
+        await tx.productImage.create({ data: { productId: params.id, imageUrl: image.imageUrl, altText: name, isPrimary: selectedPrimaryKey === image.key, isHero: image.isHero, sortOrder: keptImages.length + index } });
+      }
+    } else if (imageUrl !== undefined) {
+      const primary = current.images.find((image) => image.isPrimary) || current.images[0];
+      if (primary) await tx.productImage.update({ where: { id: primary.id }, data: { imageUrl, altText: name, isHero: legacyIsHero } });
+      else if (imageUrl) await tx.productImage.create({ data: { productId: params.id, imageUrl, isPrimary: true, isHero: legacyIsHero, altText: name } });
+    } else if (body && "isHero" in body && current.images.length) {
+      const primary = current.images.find((image) => image.isPrimary) || current.images[0];
+      await tx.productImage.update({ where: { id: primary.id }, data: { isHero: legacyIsHero } });
     }
     await tx.auditLog.create({ data: { action: "update", entity: "product", entityId: params.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom", productType, publishStatus } } });
   });

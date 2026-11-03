@@ -2,34 +2,18 @@ import { NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdminApi, slugValue, textValue, validationError } from "@/lib/admin-api";
+import { MAX_PRODUCT_IMAGES, readProductBody, type UploadedProductImage } from "@/lib/admin-product-images";
 
 const productTypes = ["ready_stock", "fresh_preorder", "service"] as const;
 const publishStatuses = ["draft", "pending_verification", "published", "archived"] as const;
 const bookingModes = ["direct_booking", "quotation"] as const;
-const MAX_UPLOAD_BYTES = 6 * 1024 * 1024;
 const MAX_SOURCE_LENGTH = 9 * 1024 * 1024;
-const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
-
-async function readBody(request: Request) {
-  const contentType = request.headers.get("content-type") || "";
-  if (!contentType.includes("multipart/form-data")) return await request.json().catch(() => null) as Record<string, unknown> | null;
-  const form = await request.formData();
-  const body: Record<string, unknown> = {};
-  form.forEach((value, key) => { if (typeof value === "string") body[key] = value; });
-  const file = form.get("file");
-  if (file && typeof file !== "string") {
-    if (!allowedImageTypes.has(file.type)) return { error: "Format foto harus JPG, PNG, WEBP, atau GIF." };
-    if (file.size <= 0) return { error: "File foto yang dipilih kosong." };
-    if (file.size > MAX_UPLOAD_BYTES) return { error: "Ukuran foto maksimal 6 MB." };
-    body.imageUrl = `data:${file.type};base64,${Buffer.from(await file.arrayBuffer()).toString("base64")}`;
-  }
-  return body;
-}
 
 export async function POST(request: Request) {
   const { response } = await requireAdminApi();
   if (response) return response;
-  const body = await readBody(request);
+  const body = await readProductBody(request);
+  if (body instanceof NextResponse) return body;
   if (body && "error" in body && typeof body.error === "string") return validationError(body.error);
   const name = textValue(body?.name, 160);
   const slug = slugValue(body?.slug || name);
@@ -56,10 +40,15 @@ export async function POST(request: Request) {
   const variantLabel = textValue(body?.variantLabel, 120) || (productType === "service" ? "Konsultasi" : "Varian utama");
   const imageUrl = textValue(body?.imageUrl, MAX_SOURCE_LENGTH);
   const isHero = body?.isHero === true || body?.isHero === "true";
+  const imageFiles = Array.isArray(body?.imageFiles) ? body.imageFiles as UploadedProductImage[] : [];
+  const images = [...imageFiles, ...(imageUrl ? [{ key: "legacy", imageUrl, isHero }] : [])];
+  if (images.length > MAX_PRODUCT_IMAGES) return validationError(`Maksimal ${MAX_PRODUCT_IMAGES} foto per entri.`);
+  const primaryImageKey = textValue(body?.primaryImageKey, 120);
+  const selectedPrimaryImageKey = images.some((image) => image.key === primaryImageKey) ? primaryImageKey : images[0]?.key || "";
   const serviceBookingMode = productType === "service" ? (textValue(body?.serviceBookingMode, 40) as typeof bookingModes[number] || "quotation") : null;
 
   const product = await prisma.$transaction(async (tx) => {
-    const created = await tx.product.create({ data: { name, slug, description, categoryId, umkmId, productType, publishStatus, serviceBookingMode, serviceRequirements: productType === "service" ? textValue(body?.serviceRequirements, 3000) || null : null, serviceAvailability: productType === "service" ? textValue(body?.serviceAvailability, 500) || null : null, serviceDuration: productType === "service" ? textValue(body?.serviceDuration, 200) || null : null, variants: { create: { label: variantLabel, priceIdr: productType === "service" && serviceBookingMode === "quotation" && !price ? null : price, stockQty: productType === "service" ? null : stock } }, images: imageUrl ? { create: { imageUrl, isPrimary: true, isHero, altText: name } } : undefined } });
+    const created = await tx.product.create({ data: { name, slug, description, categoryId, umkmId, productType, publishStatus, serviceBookingMode, serviceRequirements: productType === "service" ? textValue(body?.serviceRequirements, 3000) || null : null, serviceAvailability: productType === "service" ? textValue(body?.serviceAvailability, 500) || null : null, serviceDuration: productType === "service" ? textValue(body?.serviceDuration, 200) || null : null, variants: { create: { label: variantLabel, priceIdr: productType === "service" && serviceBookingMode === "quotation" && !price ? null : price, stockQty: productType === "service" ? null : stock } }, images: images.length ? { create: images.map((image, index) => ({ imageUrl: image.imageUrl, isPrimary: selectedPrimaryImageKey === image.key, isHero: image.isHero, altText: name, sortOrder: index })) } : undefined } });
     await tx.auditLog.create({ data: { action: "create", entity: "product", entityId: created.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom", productType } } });
     return created;
   });
