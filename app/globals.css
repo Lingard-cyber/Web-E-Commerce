@@ -178,6 +178,18 @@ a {
   color: #b0b0b0 !important;
 }
 
+.admin-theme-dark [class*="text-slate-700"],
+.admin-theme-dark [class*="text-slate-800"],
+.admin-theme-dark [class*="text-slate-900"] {
+  color: #d1d5db !important;
+}
+
+.admin-theme-dark [class*="text-forest-700"],
+.admin-theme-dark [class*="text-forest-800"],
+.admin-theme-dark [class*="text-forest-900"] {
+  color: #6ee7b7 !important;
+}
+
 .admin-theme-dark input,
 .admin-theme-dark textarea,
 .admin-theme-dark select {
