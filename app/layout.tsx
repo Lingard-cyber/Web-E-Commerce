@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   title: "Forkom UMKM Kepuharjo",
   description: "Etalase digital produk lokal dan jasa UMKM Kalurahan Kepuharjo.",
   icons: {
-    icon: "/forkom-favicon-small.png",
-    shortcut: "/forkom-favicon-small.png",
-    apple: "/forkom-favicon-small.png",
+    icon: "/favicon-kepuharjo.svg",
+    shortcut: "/favicon-kepuharjo.svg",
+    apple: "/logo-kepuharjo.jpeg",
   },
 };
 

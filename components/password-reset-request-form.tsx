@@ -69,7 +69,7 @@ export function PasswordResetRequestForm() {
     <div className="animate-modal-in relative w-full overflow-hidden rounded-[1.75rem] border border-white/80 bg-white p-6 text-ink shadow-[0_24px_70px_rgba(2,40,29,.24)] sm:p-7">
       <Link href="/akun/login" className="absolute left-4 top-4 z-10 grid h-9 w-9 place-items-center rounded-full text-white/80 transition hover:bg-white/15 hover:text-white" aria-label="Kembali ke login"><ArrowLeft size={19} /></Link>
       <div className="-mx-6 -mt-6 mb-6 bg-gradient-to-br from-forest-900 via-forest-800 to-emerald-600 px-6 pb-6 pt-16 text-white sm:-mx-7 sm:-mt-7 sm:px-7">
-        <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center overflow-hidden rounded-xl border border-white/30 bg-white/15"><img src="/forkom-umkm-kepuharjo.jpg" alt="Logo Forkom UMKM Kepuharjo" className="h-full w-full object-cover" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-white/70">FORKOM UMKM KEPUHARJO</p><p className="mt-1 font-display text-xl font-bold">Pemulihan akun</p></div></div>
+        <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center overflow-hidden rounded-xl border border-white/30 bg-white/15"><img src="/logo-kepuharjo.jpeg" alt="Logo Forkom UMKM Kepuharjo" className="h-full w-full object-contain" /></span><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-white/70">FORKOM UMKM KEPUHARJO</p><p className="mt-1 font-display text-xl font-bold">Pemulihan akun</p></div></div>
         <p className="mt-4 max-w-xs text-[11px] leading-5 text-white/75">Verifikasi email untuk mengatur kata sandi baru.</p>
       </div>
       <div className="pt-1 text-center">

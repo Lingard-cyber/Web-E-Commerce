@@ -5,9 +5,9 @@ export const metadata: Metadata = {
   title: "Admin Forkom UMKM Kepuharjo",
   description: "Dashboard operasional Admin Forkom UMKM Kepuharjo.",
   icons: {
-    icon: "/forkom-favicon-small.png",
-    shortcut: "/forkom-favicon-small.png",
-    apple: "/forkom-favicon-small.png",
+    icon: "/favicon-kepuharjo.svg",
+    shortcut: "/favicon-kepuharjo.svg",
+    apple: "/logo-kepuharjo.jpeg",
   },
 };
 

@@ -24,7 +24,7 @@ export function SiteFooter() {
       <div className="relative z-10">
         <div className="mx-auto grid max-w-[1240px] gap-10 px-4 py-10 sm:grid-cols-2 sm:px-6 md:grid-cols-[1.1fr_.9fr] md:gap-12 md:py-12">
           <div className="flex items-center gap-4">
-            <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl border-2 border-white bg-white shadow-lg"><img src="/forkom-umkm-kepuharjo.jpg" alt="Logo FORKOM UMKM KEPUHARJO" className="h-full w-full object-cover" /></span>
+            <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl border-2 border-white bg-white shadow-lg"><img src="/logo-kepuharjo.jpeg" alt="Logo FORKOM UMKM KEPUHARJO" className="h-full w-full object-contain" /></span>
             <div><p className="text-sm font-bold text-white">FORKOM UMKM KEPUHARJO</p><p className="mt-1 text-xs text-white/75">Media sosial dan website resmi Kepuharjo</p></div>
           </div>
 
