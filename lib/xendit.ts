@@ -21,7 +21,7 @@ export async function createXenditPaymentSession(input: PaymentSessionInput) {
   const response = await fetch("https://api.xendit.co/sessions", {
     method: "POST",
     headers: { Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString("base64")}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ reference_id: input.referenceId, session_type: "PAY", mode: "COMPONENTS", amount: input.amount, currency: "IDR", country: "ID", locale: "id", allow_save_payment_method: "DISABLED", customer: { reference_id: input.referenceId, type: "INDIVIDUAL", email: input.email, mobile_number: input.phone || undefined, individual_detail: input.name ? { given_names: input.name } : undefined }, description: `Pembayaran pesanan ${input.referenceId}`, return_url: `${siteOrigin.origin}/pesanan/${input.referenceId}?payment=return`, components_configuration: { origins: [siteOrigin.origin] } }),
+    body: JSON.stringify({ reference_id: input.referenceId, session_type: "PAY", mode: "COMPONENTS", amount: input.amount, currency: "IDR", country: "ID", locale: "id", allow_save_payment_method: "DISABLED", customer: { reference_id: input.referenceId, type: "INDIVIDUAL", email: input.email, mobile_number: input.phone || undefined, individual_detail: input.name ? { given_names: input.name } : undefined }, description: `Pembayaran pesanan ${input.referenceId}`, components_configuration: { origins: [siteOrigin.origin], return_url: `${siteOrigin.origin}/pesanan/${input.referenceId}?payment=return` } }),
     cache: "no-store",
   });
   const result = await response.json().catch(() => ({})) as PaymentSessionResponse & { error_code?: string; message?: string };

@@ -34,7 +34,12 @@ export function XenditComponentsCheckout({ sdkKey, publicCode, amount }: { sdkKe
       sdk.addEventListener("submission-end", () => setBusy(false));
       sdk.addEventListener("session-complete", () => window.location.assign(`/pesanan/${encodeURIComponent(publicCode)}?payment=success`));
       sdk.addEventListener("session-expired-or-canceled", () => setMessage("Sesi pembayaran berakhir. Silakan kembali ke pesanan dan coba lagi."));
-      sdk.addEventListener("fatal-error", () => setMessage("Metode pembayaran belum dapat dimuat. Muat ulang halaman atau coba lagi nanti."));
+      sdk.addEventListener("fatal-error", (event) => {
+        const fatalError = event as Event & { message?: string; userErrorMessage?: string[] };
+        if (fatalError.message) console.error("Xendit Components gagal memuat:", fatalError.message);
+        const userMessage = fatalError.userErrorMessage?.filter(Boolean).join(" ");
+        setMessage(userMessage || "Metode pembayaran belum dapat dimuat. Muat ulang halaman atau coba lagi nanti.");
+      });
     } catch {
       setMessage("Metode pembayaran belum dapat dimuat. Muat ulang halaman atau coba lagi nanti.");
     }
