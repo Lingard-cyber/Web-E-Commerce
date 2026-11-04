@@ -112,18 +112,18 @@ export function SiteHeader({ catalogEntries }: { catalogEntries: CatalogEntry[] 
   }, []);
 
   const closeMenu = () => setOpen(false);
-  const linkClass = (href: string) => `${isActive(href) ? "bg-forest-950 text-white " : "text-forest-950 hover:bg-green-50 "}whitespace-nowrap rounded-full px-1.5 py-2.5 text-[11px] font-bold transition xl:px-2.5 xl:text-[12px]`;
+  const linkClass = (href: string) => `${isActive(href) ? "bg-forest-950 text-white " : "text-forest-950 hover:bg-green-50 "}whitespace-nowrap rounded-full px-1.5 py-2.5 text-[12px] font-bold transition lg:px-2 lg:text-[13px] xl:px-2.5 xl:text-sm 2xl:px-3 2xl:text-[15px]`;
 
   return <>
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-[#f8faf7]/95 backdrop-blur-xl">
-      <div className="mx-auto max-w-[1240px] px-4 sm:px-6">
+      <div className="mx-auto max-w-[1240px] px-4 sm:px-6 xl:max-w-[1360px] 2xl:max-w-[1440px]">
         <div className="flex min-h-[82px] flex-nowrap items-center gap-2 sm:gap-3 lg:gap-2">
-          <button className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-forest-950 shadow-sm lg:hidden" onClick={() => setOpen((value) => !value)} aria-expanded={open} aria-label="Buka menu">{open ? <X size={21} /> : <Menu size={21} />}</button>
-          <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2 lg:w-[188px] xl:w-[200px]" onClick={closeMenu}>
-            <span className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-accent bg-white shadow-sm"><img src="/forkom-umkm-kepuharjo.jpg" alt="Logo FORKOM UMKM KEPUHARJO" className="h-full w-full object-cover" /></span>
-            <span className="min-w-0 leading-none"><span className="block text-[11px] font-extrabold leading-[.98] tracking-[-.02em] text-forest-950 sm:text-[12px] lg:text-[12px]">FORKOM UMKM<br />KEPUHARJO</span><span className="mt-1 hidden text-[10px] text-muted sm:block sm:text-xs">Produk lokal, pasar lebih luas</span></span>
+          <button className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-forest-950 shadow-sm xl:hidden" onClick={() => setOpen((value) => !value)} aria-expanded={open} aria-label="Buka menu">{open ? <X size={21} /> : <Menu size={21} />}</button>
+          <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2 lg:w-[188px] xl:w-[200px] 2xl:w-[220px]" onClick={closeMenu}>
+            <span className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-accent bg-white shadow-sm lg:h-14 lg:w-14"><img src="/forkom-umkm-kepuharjo.jpg" alt="Logo FORKOM UMKM KEPUHARJO" className="h-full w-full object-cover" /></span>
+            <span className="min-w-0 leading-none"><span className="block text-[12px] font-extrabold leading-[.98] tracking-[-.02em] text-forest-950 sm:text-[13px] lg:text-sm">FORKOM UMKM<br />KEPUHARJO</span><span className="mt-1 hidden text-[11px] text-muted sm:block lg:text-xs">Produk lokal, pasar lebih luas</span></span>
           </Link>
-          <nav className="scrollbar-hide hidden min-w-0 flex-1 items-center justify-start gap-0 overflow-x-auto lg:flex">{primaryLinks.map((item) => <Link key={item.href} href={item.href} className={linkClass(item.href)}>{item.label}</Link>)}<span className="mx-1 h-6 w-px shrink-0 bg-slate-200 xl:mx-1.5" aria-hidden="true" />{topUtilityLinks.map((item) => <Link key={item.href} href={item.href} className={linkClass(item.href)}>{item.label}</Link>)}</nav>
+          <nav className="scrollbar-hide hidden min-w-0 flex-1 items-center justify-start gap-0 overflow-x-auto xl:flex">{primaryLinks.map((item) => <Link key={item.href} href={item.href} className={linkClass(item.href)}>{item.label}</Link>)}<span className="mx-1 h-6 w-px shrink-0 bg-slate-200 xl:mx-1.5" aria-hidden="true" />{topUtilityLinks.map((item) => <Link key={item.href} href={item.href} className={linkClass(item.href)}>{item.label}</Link>)}</nav>
           {searchOpen ? <form onSubmit={submitSearch} className="relative ml-1 hidden h-11 w-64 shrink-0 items-center overflow-visible rounded-full border border-slate-200 bg-white px-3 text-forest-950 shadow-sm xl:flex">
             <input autoFocus value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent px-2 text-xs outline-none" placeholder="Cari produk atau halaman..." aria-label="Cari produk atau halaman" />
             <button type="button" onClick={closeSearch} className="grid h-9 w-9 shrink-0 place-items-center rounded-full hover:bg-green-50" aria-label="Tutup pencarian"><X size={17} /></button>
@@ -135,7 +135,7 @@ export function SiteHeader({ catalogEntries }: { catalogEntries: CatalogEntry[] 
             {userName && <button type="button" onClick={openLogoutDialog} disabled={loggingOut} title="Keluar dari akun" aria-label="Keluar dari akun" className="hidden h-11 items-center gap-2 rounded-full border border-red-100 bg-white px-4 text-[12px] font-bold text-red-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-red-50 disabled:cursor-wait disabled:opacity-60 sm:flex"><LogOut size={16} />Keluar</button>}
           </div>
         </div>
-        <nav className={(open ? "flex animate-fade-up " : "hidden ") + "absolute left-4 right-4 top-[94px] max-h-[calc(100vh-110px)] flex-col overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl lg:hidden"}>
+        <nav className={(open ? "flex animate-fade-up " : "hidden ") + "absolute left-4 right-4 top-[94px] max-h-[calc(100vh-110px)] flex-col overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl xl:hidden"}>
           <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[.16em] text-muted">Belanja</p>
           {primaryLinks.map((item) => <Link key={item.href} href={item.href} onClick={closeMenu} className={`${isActive(item.href) ? "bg-forest-950 text-white" : "text-forest-950 hover:bg-green-50"} flex items-center justify-between rounded-xl px-3 py-3 text-[13px] font-bold transition`}>{item.label}</Link>)}
           <p className="mt-2 border-t border-slate-100 px-3 pb-2 pt-4 text-[10px] font-bold uppercase tracking-[.16em] text-muted">Informasi</p>
