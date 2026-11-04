@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentDatabaseUser } from "@/lib/account-server";
-import { createXenditPaymentSession } from "@/lib/xendit";
+import { createXenditPaymentSession, getXenditSiteUrl } from "@/lib/xendit";
 
 export async function POST(_request: Request, { params }: { params: { id: string } }) {
   const user = await getCurrentDatabaseUser();
@@ -11,7 +11,7 @@ export async function POST(_request: Request, { params }: { params: { id: string
   if (order.status !== "pending_payment" || order.payment.status !== "pending") return NextResponse.json({ error: "Pesanan ini tidak menunggu pembayaran." }, { status: 409 });
 
   try {
-    const siteUrl = process.env.NEXT_PUBLIC_STORE_URL || process.env.NEXT_PUBLIC_SITE_URL || new URL(_request.url).origin;
+    const siteUrl = getXenditSiteUrl(_request);
     const session = await createXenditPaymentSession({ referenceId: order.publicCode, amount: order.totalIdr, email: user.email, name: user.name, phone: user.phone, siteUrl });
     await prisma.payment.update({ where: { orderId: order.id }, data: { providerPaymentId: session.payment_session_id, checkoutUrl: null, rawLastEvent: { payment_session_id: session.payment_session_id, mode: "COMPONENTS" } } });
     return NextResponse.json({ publicCode: order.publicCode, componentsSdkKey: session.components_sdk_key, amount: order.totalIdr });

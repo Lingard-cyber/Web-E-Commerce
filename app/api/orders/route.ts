@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { syncAuthUser } from "@/lib/auth-profile";
 import { createClient } from "@/lib/supabase/server";
-import { createXenditPaymentSession, getXenditComponentsSdkKey } from "@/lib/xendit";
+import { createXenditPaymentSession, getXenditComponentsSdkKey, getXenditSiteUrl } from "@/lib/xendit";
 
 type OrderBody = { idempotencyKey?: string; items?: Array<{ variantId?: string; quantity?: number }>; addressId?: string };
 
@@ -67,9 +67,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const requestUrl = new URL(request.url);
-    const isLocalHost = requestUrl.hostname === "localhost" || requestUrl.hostname === "127.0.0.1" || requestUrl.hostname === "[::1]";
-    const siteUrl = isLocalHost ? requestUrl.origin : process.env.NEXT_PUBLIC_STORE_URL || process.env.NEXT_PUBLIC_SITE_URL || requestUrl.origin;
+    const siteUrl = getXenditSiteUrl(request);
     const session = await createXenditPaymentSession({ referenceId: order.publicCode, amount: order.totalIdr, email: authUser.email, name: databaseUser.name, phone: databaseUser.phone, siteUrl });
     await prisma.payment.update({ where: { orderId: order.id }, data: { providerPaymentId: session.payment_session_id, rawLastEvent: { payment_session_id: session.payment_session_id, mode: "COMPONENTS" } } });
     return NextResponse.json({ publicCode: order.publicCode, componentsSdkKey: session.components_sdk_key }, { status: 201 });

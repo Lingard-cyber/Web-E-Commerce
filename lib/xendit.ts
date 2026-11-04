@@ -13,6 +13,22 @@ type PaymentSessionResponse = {
   components_sdk_key?: string;
 };
 
+export function getXenditSiteUrl(request: Request) {
+  const requestOrigin = request.headers.get("origin");
+  if (requestOrigin) {
+    try {
+      const parsedOrigin = new URL(requestOrigin);
+      if ((parsedOrigin.protocol === "https:" || parsedOrigin.protocol === "http:") && parsedOrigin.origin === requestOrigin) {
+        return parsedOrigin.origin;
+      }
+    } catch {
+      // Fall back to the configured public URL if the Origin header is malformed.
+    }
+  }
+
+  return process.env.NEXT_PUBLIC_STORE_URL || process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
+}
+
 export async function createXenditPaymentSession(input: PaymentSessionInput) {
   const apiKey = process.env.XENDIT_SECRET_KEY;
   if (!apiKey) throw new Error("XENDIT_SECRET_KEY belum dikonfigurasi.");

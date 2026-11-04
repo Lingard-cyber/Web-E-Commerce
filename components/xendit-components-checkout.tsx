@@ -38,10 +38,13 @@ export function XenditComponentsCheckout({ sdkKey, publicCode, amount }: { sdkKe
         const fatalError = event as Event & { message?: string; userErrorMessage?: string[] };
         if (fatalError.message) console.error("Xendit Components gagal memuat:", fatalError.message);
         const userMessage = fatalError.userErrorMessage?.filter(Boolean).join(" ");
-        setMessage(userMessage || "Metode pembayaran belum dapat dimuat. Muat ulang halaman atau coba lagi nanti.");
+        const diagnostic = process.env.NODE_ENV === "development" && fatalError.message ? ` (${fatalError.message})` : "";
+        setMessage(userMessage || `Metode pembayaran belum dapat dimuat. Muat ulang halaman atau coba lagi nanti.${diagnostic}`);
       });
-    } catch {
-      setMessage("Metode pembayaran belum dapat dimuat. Muat ulang halaman atau coba lagi nanti.");
+    } catch (error) {
+      console.error("Xendit Components gagal diinisialisasi:", error);
+      const diagnostic = process.env.NODE_ENV === "development" && error instanceof Error ? ` (${error.message})` : "";
+      setMessage(`Metode pembayaran belum dapat dimuat. Muat ulang halaman atau coba lagi nanti.${diagnostic}`);
     }
     return () => {
       pickerRef.current?.replaceChildren();
