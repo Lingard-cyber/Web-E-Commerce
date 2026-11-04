@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { formatAdminRupiah } from "@/lib/admin-data";
+import { formatAdminRupiah } from "@/lib/admin-format";
 
 type SalesPoint = { label: string; orders: number; revenue: number };
 

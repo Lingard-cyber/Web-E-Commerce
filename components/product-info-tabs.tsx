@@ -7,11 +7,10 @@ type ProductInfoTabsProps = {
   isService: boolean;
   intro: string;
   description: string;
-  handling: string;
   purchaseSummary: string[];
 };
 
-export function ProductInfoTabs({ isService, intro, description, handling, purchaseSummary }: ProductInfoTabsProps) {
+export function ProductInfoTabs({ isService, intro, description, purchaseSummary }: ProductInfoTabsProps) {
   const [activeTab, setActiveTab] = useState<"description" | "purchase">("description");
 
   return <section id="informasi-produk" className="mt-6 overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-card">
@@ -27,7 +26,6 @@ export function ProductInfoTabs({ isService, intro, description, handling, purch
       {activeTab === "description" ? <div className="space-y-4 text-sm leading-7 text-slate-600">
         <p>{intro}</p>
         <p>{description || (isService ? "Belum ada deskripsi untuk layanan ini." : "Belum ada deskripsi untuk barang ini.")}</p>
-        <div className="rounded-xl bg-[#f5f8f4] p-4 text-forest-950"><p className="mb-1 text-xs font-bold text-forest-800">Catatan pemenuhan</p>{handling}</div>
       </div> : <div className="space-y-4 text-sm leading-6 text-slate-600">
         {purchaseSummary.map((item, index) => <p key={index} className="flex items-start gap-3"><span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-forest-700" />{item}</p>)}
       </div>}

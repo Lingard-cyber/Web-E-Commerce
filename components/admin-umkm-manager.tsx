@@ -8,13 +8,13 @@ import { AdminFloatingPanel } from "@/components/admin-floating-panel";
 import { AdminToast } from "@/components/admin-toast";
 
 type ManagedUmkm = {
-  id: string; name: string; description: string | null; isPublished: boolean; productCount: number; profileImage: string;
+  id: string; name: string; slug: string; description: string | null; isPublished: boolean; productCount: number; profileImage: string;
   ownerName: string; businessType: string; nib: string; halalPermit: string; sppirt: string;
-  ktp: string; address: string; instagram: string;
+  address: string; instagram: string;
 };
 const blank = {
   name: "", description: "", ownerName: "", businessType: "", nib: "", halalPermit: "", sppirt: "", profileImage: "",
-  ktp: "", address: "", instagram: "", isPublished: false,
+  address: "", instagram: "", isPublished: false,
 };
 
 export function AdminUmkmManager({ initialItems }: { initialItems: ManagedUmkm[] }) {
@@ -37,7 +37,13 @@ export function AdminUmkmManager({ initialItems }: { initialItems: ManagedUmkm[]
   const set = (key: keyof typeof blank, value: string | boolean) => setForm((current) => ({ ...current, [key]: value }));
   const edit = (item: ManagedUmkm) => {
     setEditingId(item.id); setOpen(true);
-    setForm({ name: item.name, description: item.description || "", ownerName: item.ownerName, businessType: item.businessType, nib: item.nib, halalPermit: item.halalPermit, sppirt: item.sppirt, profileImage: item.profileImage || "", ktp: item.ktp, address: item.address, instagram: item.instagram, isPublished: item.isPublished });
+    setForm({ name: item.name, description: item.description || "", ownerName: item.ownerName, businessType: item.businessType, nib: item.nib, halalPermit: item.halalPermit, sppirt: item.sppirt, profileImage: item.profileImage || "", address: item.address, instagram: item.instagram, isPublished: item.isPublished });
+  };
+  const openProfile = (item: ManagedUmkm) => {
+    if (!item.isPublished) { edit(item); return; }
+    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    const storeUrl = isLocal ? "https://localhost:3000" : process.env.NEXT_PUBLIC_STORE_URL || window.location.origin;
+    window.open(new URL(`/umkm/${encodeURIComponent(item.slug)}`, storeUrl).toString(), "_blank", "noopener,noreferrer");
   };
   const reset = () => { setEditingId(null); setOpen(false); setForm(blank); setMessage(""); };
   const chooseProfileImage = (file?: File) => {
@@ -77,10 +83,10 @@ export function AdminUmkmManager({ initialItems }: { initialItems: ManagedUmkm[]
         <Field label="Nama usaha" value={form.name} onChange={(v) => set("name", v)} required />
         <Field label="Nama pemilik usaha" value={form.ownerName} onChange={(v) => set("ownerName", v)} /><Field label="Jenis produk/jasa" value={form.businessType} onChange={(v) => set("businessType", v)} />
         <Field label="NIB" value={form.nib} onChange={(v) => set("nib", v)} /><Field label="Sertifikat halal" value={form.halalPermit} onChange={(v) => set("halalPermit", v)} /><Field label="SPP-IRT" value={form.sppirt} onChange={(v) => set("sppirt", v)} />
-        <Field label="KTP (admin saja)" value={form.ktp} onChange={(v) => set("ktp", v)} /><Field label="Alamat usaha (tampil di storefront)" value={form.address} onChange={(v) => set("address", v)} />
+        <Field label="Alamat usaha (tampil di storefront)" value={form.address} onChange={(v) => set("address", v)} />
         <Field label="Instagram publik" value={form.instagram} onChange={(v) => set("instagram", v)} />
         <label className="text-[10px] font-bold sm:col-span-2">Narasi profil<textarea value={form.description} onChange={(e) => set("description", e.target.value)} rows={4} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-normal outline-none focus:border-forest-700" /></label>
-        <label className="flex items-center gap-2 text-[10px] font-bold sm:col-span-2"><input type="checkbox" checked={form.isPublished} onChange={(e) => set("isPublished", e.target.checked)} />Tampilkan profil pada storefront</label>
+        <label className="flex items-center gap-2 text-[10px] font-bold sm:col-span-2"><input type="checkbox" checked={form.isPublished} disabled={!form.profileImage} onChange={(e) => set("isPublished", e.target.checked)} />Tampilkan profil pada storefront{!form.profileImage && <span className="font-normal text-muted">(unggah foto profil terlebih dahulu)</span>}</label>
         <div className="flex gap-2 sm:col-span-2"><button className="inline-flex min-h-10 items-center rounded-xl bg-forest-800 px-4 text-[10px] font-bold text-white"><Save size={14} className="mr-2" />Simpan</button><button type="button" onClick={reset} className="inline-flex min-h-10 items-center rounded-xl border border-slate-200 bg-white px-4 text-[10px] font-bold"><X size={14} className="mr-2" />Batal</button></div>
       </form></AdminFloatingPanel>}
       <div className="mt-5 grid gap-3 rounded-xl bg-slate-50 p-3 sm:grid-cols-[minmax(0,1fr)_220px_auto] sm:items-end">
@@ -88,7 +94,7 @@ export function AdminUmkmManager({ initialItems }: { initialItems: ManagedUmkm[]
         <label className="text-[10px] font-bold text-slate-600">Status profil<select value={selectedStatus} onChange={(event) => setSelectedStatus(event.target.value)} className="mt-1.5 h-9 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs font-normal"><option value="all">Semua status</option><option value="published">Tayang</option><option value="draft">Draft</option></select></label>
         <div className="flex items-center justify-between gap-3 text-[10px] text-muted sm:justify-end"><span>{filteredItems.length} dari {items.length} UMKM</span><button type="button" onClick={() => { setSearchTerm(""); setSelectedStatus("all"); }} className="rounded-lg border border-slate-200 bg-white px-3 py-2 font-bold text-ink">Reset</button></div>
       </div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{items.length === 0 ? <p className="rounded-xl bg-slate-50 p-6 text-center text-xs text-muted sm:col-span-2 lg:col-span-3">Belum ada data UMKM.</p> : filteredItems.length === 0 ? <p className="rounded-xl bg-slate-50 p-6 text-center text-xs text-muted sm:col-span-2 lg:col-span-3">Tidak ada UMKM yang cocok dengan filter.</p> : filteredItems.map((item) => <article key={item.id} className="rounded-xl border border-slate-100 p-4"><div className="flex items-start justify-between gap-3"><div><strong className="block text-sm">{item.name}</strong></div><span className={`rounded-full px-2 py-1 text-[9px] font-bold ${item.isPublished ? "bg-green-100 text-forest-800" : "bg-slate-100 text-slate-600"}`}>{item.isPublished ? "Tayang" : "Draft"}</span></div><p className="mt-4 line-clamp-2 text-xs leading-5 text-muted">{item.description || "—"}</p><p className="mt-3 text-[10px] text-muted">{item.productCount} produk/jasa · {item.ownerName || "—"}</p><div className="mt-4 flex gap-2"><button onClick={() => edit(item)} className="inline-flex items-center rounded-lg border border-slate-200 px-2 py-1.5 text-[9px] font-bold"><Pencil size={12} className="mr-1" />Edit</button><button onClick={() => setPendingDeactivateId(item.id)} className="rounded-lg border border-red-200 px-2 py-1.5 text-[9px] font-bold text-red-700">Nonaktifkan</button></div></article>)}</div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{items.length === 0 ? <p className="rounded-xl bg-slate-50 p-6 text-center text-xs text-muted sm:col-span-2 lg:col-span-3">Belum ada data UMKM.</p> : filteredItems.length === 0 ? <p className="rounded-xl bg-slate-50 p-6 text-center text-xs text-muted sm:col-span-2 lg:col-span-3">Tidak ada UMKM yang cocok dengan filter.</p> : filteredItems.map((item) => <article key={item.id} role={item.isPublished ? "link" : "button"} tabIndex={0} aria-label={item.isPublished ? `Buka profil ${item.name} di storefront` : `Lihat detail draft ${item.name}`} onClick={() => openProfile(item)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openProfile(item); } }} className="cursor-pointer rounded-xl border border-slate-100 p-4 transition hover:border-forest-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700"><div className="flex items-start justify-between gap-3"><div><strong className="block text-sm">{item.name}</strong></div><span className={`rounded-full px-2 py-1 text-[9px] font-bold ${item.isPublished ? "bg-green-100 text-forest-800" : "bg-slate-100 text-slate-600"}`}>{item.isPublished ? "Tayang" : "Draft"}</span></div><p className="mt-4 line-clamp-2 text-xs leading-5 text-muted">{item.description || "—"}</p><p className="mt-3 text-[10px] text-muted">{item.productCount} produk/jasa · {item.ownerName || "—"}</p><p className="mt-2 text-[9px] font-bold text-forest-700">{item.isPublished ? "Klik kartu untuk membuka detail profil" : "Klik kartu untuk melihat detail draft"}</p><div className="relative mt-4 flex gap-2" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}><button onClick={() => edit(item)} className="inline-flex items-center rounded-lg border border-slate-200 px-2 py-1.5 text-[9px] font-bold"><Pencil size={12} className="mr-1" />Edit</button><button onClick={() => setPendingDeactivateId(item.id)} className="rounded-lg border border-red-200 px-2 py-1.5 text-[9px] font-bold text-red-700">Nonaktifkan</button></div></article>)}</div>
     </section><AdminToast message={message} onClose={() => setMessage("")} /><ConfirmDialog open={Boolean(pendingDeactivateId)} title="Nonaktifkan profil UMKM?" description="Produk dan histori transaksi tidak dihapus, tetapi profil tidak lagi ditampilkan sebagai aktif." confirmLabel="Nonaktifkan" onCancel={() => setPendingDeactivateId(null)} onConfirm={() => void confirmDeactivate()} />
   </>;
 }

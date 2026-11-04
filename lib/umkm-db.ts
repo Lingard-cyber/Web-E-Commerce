@@ -32,7 +32,7 @@ function readContact(value: unknown, address?: string | null): PublicUmkm["conta
 
 function readProfileImage(value: unknown) {
   const contact = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
-  return typeof contact.profileImage === "string" && contact.profileImage.startsWith("data:image/") ? contact.profileImage : undefined;
+  return typeof contact.profileImage === "string" && (contact.profileImage.startsWith("data:image/") || /^\/umkm-profiles\/[a-zA-Z0-9._-]+$/.test(contact.profileImage)) ? contact.profileImage : undefined;
 }
 
 const readPublishedUmkm = unstable_cache(async () => {

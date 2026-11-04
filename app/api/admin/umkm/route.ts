@@ -12,12 +12,13 @@ export async function POST(request: Request) {
   const slug = slugValue(body?.slug || name);
   if (!name || !slug) return validationError("Nama UMKM wajib diisi.");
   if (await prisma.umkm.findUnique({ where: { slug }, select: { id: true } })) return NextResponse.json({ error: "Slug UMKM sudah digunakan." }, { status: 409 });
+  const profileImage = textValue(body?.profileImage, 6 * 1024 * 1024) || "";
   const created = await prisma.umkm.create({ data: {
     name, slug, description: textValue(body?.description, 8000) || null,
     ownerName: textValue(body?.ownerName, 160) || null, businessType: textValue(body?.businessType, 500) || null,
     nib: textValue(body?.nib, 160) || null, halalPermit: textValue(body?.halalPermit, 160) || null, sppirt: textValue(body?.sppirt, 160) || null,
-    privateKtp: textValue(body?.ktp, 80) || null, privateAddress: textValue(body?.address, 1000) || null,
-    isPublished: Boolean(body?.isPublished), publicContact: { instagram: textValue(body?.instagram, 160) || "", profileImage: textValue(body?.profileImage, 6 * 1024 * 1024) || "" },
+    privateAddress: textValue(body?.address, 1000) || null,
+    isPublished: Boolean(body?.isPublished && profileImage), publicContact: { instagram: textValue(body?.instagram, 160) || "", profileImage },
   } });
   await prisma.auditLog.create({ data: { action: "create", entity: "umkm", entityId: created.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom" } } });
   revalidatePath("/");

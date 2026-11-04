@@ -17,16 +17,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 function buildDetailedDescription(entry: Awaited<ReturnType<typeof getPublicProduct>>, typeLabel: string) {
-  if (!entry) return { intro: "", source: "", handling: "" };
+  if (!entry) return { intro: "", source: "" };
   const source = entry.description.trim();
   const producer = entry.producer ? ` dari ${entry.producer}` : " dari pelaku usaha lokal Kepuharjo";
   const intro = `${entry.name} merupakan ${typeLabel.toLowerCase()}${producer} pada kategori ${entry.category}.`;
-  const handling = entry.productType === "service"
-    ? "Harga yang ditampilkan adalah harga mulai. Biaya akhir dikonfirmasi setelah ukuran, bahan, model, jumlah, dan detail pekerjaan disepakati bersama penyedia layanan."
-    : entry.productType === "fresh_preorder"
-      ? "Produk disiapkan berdasarkan pesanan. Ketersediaan, waktu produksi, dan jadwal pengiriman dikonfirmasi sebelum pesanan diproses."
-      : "Ketersediaan produk dan jumlah stok mengikuti varian yang dipilih serta konfirmasi pemenuhan dari pengelola.";
-  return { intro, source, handling };
+  return { intro, source };
 }
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
@@ -52,6 +47,6 @@ export default async function ProductPage({ params }: { params: { slug: string }
 
     {isService && <section className="mt-6 rounded-3xl border border-forest-700/10 bg-white p-6 shadow-card sm:p-8"><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center"><div><p className="text-[10px] font-bold uppercase tracking-[.16em] text-forest-700">Pesan melalui WhatsApp</p><h2 className="mt-2 font-display text-2xl font-bold text-forest-950">Hubungi penyedia layanan</h2><p className="mt-2 text-xs leading-5 text-muted">Pilih salah satu nomor untuk menanyakan detail jasa atau membuat pesanan.</p></div><MessageCircle className="hidden text-[#25D366] sm:block" size={32} /></div><div className="mt-5 grid gap-3 sm:grid-cols-2">{orderingContacts.map((contact) => <a key={contact.number} href={orderingWhatsappUrl(contact.number, `Halo, saya tertarik dengan layanan ${entry.name}. Mohon informasi selengkapnya.`)} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 text-xs font-bold text-white transition hover:bg-[#1ebe5d]"><MessageCircle size={16} />{contact.display}</a>)}</div></section>}
 
-    <ProductInfoTabs isService={isService} intro={detailedDescription.intro} description={detailedDescription.source} handling={detailedDescription.handling} purchaseSummary={purchaseSummary} />
+    <ProductInfoTabs isService={isService} intro={detailedDescription.intro} description={detailedDescription.source} purchaseSummary={purchaseSummary} />
   </main></SiteShell>;
 }

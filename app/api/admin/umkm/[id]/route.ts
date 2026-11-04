@@ -15,6 +15,8 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   const duplicate = await prisma.umkm.findFirst({ where: { slug, id: { not: params.id } }, select: { id: true } });
   if (duplicate) return NextResponse.json({ error: "Slug UMKM sudah digunakan." }, { status: 409 });
   const existingContact = current.publicContact && typeof current.publicContact === "object" && !Array.isArray(current.publicContact) ? current.publicContact as { instagram?: string; profileImage?: string } : {};
+  const profileImage = body && "profileImage" in body ? textValue(body.profileImage, 6 * 1024 * 1024) : existingContact.profileImage || "";
+  const requestedPublished = body && "isPublished" in body ? Boolean(body.isPublished) : current.isPublished;
   await prisma.umkm.update({ where: { id: params.id }, data: {
     name, slug,
     description: body && "description" in body ? textValue(body.description, 8000) || null : current.description,
@@ -23,12 +25,11 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     nib: body && "nib" in body ? textValue(body.nib, 160) || null : current.nib,
     halalPermit: body && "halalPermit" in body ? textValue(body.halalPermit, 160) || null : current.halalPermit,
     sppirt: body && "sppirt" in body ? textValue(body.sppirt, 160) || null : current.sppirt,
-    privateKtp: body && "ktp" in body ? textValue(body.ktp, 80) || null : current.privateKtp,
     privateAddress: body && "address" in body ? textValue(body.address, 1000) || null : current.privateAddress,
-    isPublished: body && "isPublished" in body ? Boolean(body.isPublished) : current.isPublished,
+    isPublished: Boolean(requestedPublished && profileImage),
     publicContact: {
       instagram: body && "instagram" in body ? textValue(body.instagram, 160) : existingContact.instagram || "",
-      profileImage: body && "profileImage" in body ? textValue(body.profileImage, 6 * 1024 * 1024) : existingContact.profileImage || "",
+      profileImage,
     },
   } });
   await prisma.auditLog.create({ data: { action: "update", entity: "umkm", entityId: params.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom" } } });

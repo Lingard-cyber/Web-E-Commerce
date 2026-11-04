@@ -14,6 +14,7 @@ type ImportRow = {
   sppirt?: unknown;
   ktp?: unknown;
   address?: unknown;
+  profileImage?: unknown;
   matchProductSlugs?: unknown;
 };
 
@@ -54,6 +55,9 @@ export async function POST(request: Request) {
     const importKey = `induk-umkm-row-${rowNumber}`;
     const name = ownerName;
     const slug = slugValue(`umkm-${rowNumber}-${ownerName}`);
+    const existingProfile = await prisma.umkm.findUnique({ where: { importKey }, select: { id: true, publicContact: true } });
+    const existingContact = existingProfile?.publicContact && typeof existingProfile.publicContact === "object" && !Array.isArray(existingProfile.publicContact) ? existingProfile.publicContact as { instagram?: string; profileImage?: string } : {};
+    const profileImage = filledValue(row.profileImage, 6 * 1024 * 1024) || existingContact.profileImage || "";
     const values = {
       name, slug,
       description: filledValue(row.narrative, 8000) || null,
@@ -62,11 +66,10 @@ export async function POST(request: Request) {
       nib: filledValue(row.nib, 160) || null,
       halalPermit: filledValue(row.halalPermit, 160) || null,
       sppirt: filledValue(row.sppirt, 160) || null,
-      privateKtp: filledValue(row.ktp, 80) || null,
       privateAddress: filledValue(row.address, 1000) || null,
-      isPublished: true,
+      isPublished: Boolean(profileImage),
+      publicContact: { instagram: existingContact.instagram || "", profileImage },
     };
-    const existingProfile = await prisma.umkm.findUnique({ where: { importKey }, select: { id: true, slug: true } });
     const profile = await prisma.umkm.upsert({ where: { importKey }, create: { ...values, importKey }, update: values });
     if (existingProfile) summary.profilesUpdated++; else summary.profilesCreated++;
 
