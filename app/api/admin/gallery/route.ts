@@ -49,7 +49,11 @@ export async function POST(request: Request) {
   if (!title) return validationError("Judul foto wajib diisi.");
   if (!alt) return validationError("Teks alternatif foto wajib diisi.");
   const sortOrder = Number.isFinite(Number(body?.sortOrder)) ? Math.max(0, Math.round(Number(body?.sortOrder))) : 0;
-  const created = await prisma.galleryImage.create({ data: { src, title, alt, sortOrder, isPublished: body?.isPublished !== false && body?.isPublished !== "false", isHero: body?.isHero !== false && body?.isHero !== "false" } });
+  const created = await prisma.$transaction(async (tx) => {
+    const image = await tx.galleryImage.create({ data: { src, title, alt, sortOrder, isPublished: body?.isPublished !== false && body?.isPublished !== "false", isHero: body?.isHero !== false && body?.isHero !== "false" } });
+    await tx.auditLog.create({ data: { action: "create", entity: "gallery-image", entityId: image.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom", title, isPublished: image.isPublished, isHero: image.isHero } } });
+    return image;
+  });
   revalidatePath("/");
   revalidatePath("/galeri");
   return NextResponse.json({ id: created.id }, { status: 201 });

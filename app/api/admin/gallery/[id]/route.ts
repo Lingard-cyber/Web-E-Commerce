@@ -49,7 +49,11 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   if (!title) return validationError("Judul foto wajib diisi.");
   if (!alt) return validationError("Teks alternatif foto wajib diisi.");
   const sortOrder = Number.isFinite(Number(body?.sortOrder)) ? Math.max(0, Math.round(Number(body?.sortOrder))) : 0;
-  const updated = await prisma.galleryImage.update({ where: { id: params.id }, data: { src, title, alt, sortOrder, isPublished: body?.isPublished !== false && body?.isPublished !== "false", isHero: body?.isHero !== false && body?.isHero !== "false" } });
+  const updated = await prisma.$transaction(async (tx) => {
+    const image = await tx.galleryImage.update({ where: { id: params.id }, data: { src, title, alt, sortOrder, isPublished: body?.isPublished !== false && body?.isPublished !== "false", isHero: body?.isHero !== false && body?.isHero !== "false" } });
+    await tx.auditLog.create({ data: { action: "update", entity: "gallery-image", entityId: image.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom", title, isPublished: image.isPublished, isHero: image.isHero } } });
+    return image;
+  });
   revalidatePath("/");
   revalidatePath("/galeri");
   return NextResponse.json({ id: updated.id });
@@ -58,7 +62,11 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
   const { response } = await requireAdminApi();
   if (response) return response;
-  await prisma.galleryImage.delete({ where: { id: params.id } });
+  await prisma.$transaction(async (tx) => {
+    const image = await tx.galleryImage.findUniqueOrThrow({ where: { id: params.id }, select: { title: true } });
+    await tx.galleryImage.delete({ where: { id: params.id } });
+    await tx.auditLog.create({ data: { action: "delete", entity: "gallery-image", entityId: params.id, metadata: { actor: process.env.ADMIN_LOGIN_NAME || "Admin Forkom", title: image.title } } });
+  });
   revalidatePath("/");
   revalidatePath("/galeri");
   return NextResponse.json({ ok: true });
