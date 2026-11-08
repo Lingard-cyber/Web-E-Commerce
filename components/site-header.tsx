@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, Menu, Search, UserRound, X } from "lucide-react";
+import { ArrowUpRight, LogOut, Menu, Search, UserRound, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { CartDrawer } from "@/components/cart-drawer";
 import { LogoutDialog } from "@/components/logout-dialog";
@@ -44,11 +44,14 @@ const searchablePages = [
 
 type SearchResult = { label: string; description: string; href: string; group: "Halaman" | "Produk" | "Layanan" };
 
-function SearchResultPanel({ results, onSelect }: { results: SearchResult[]; onSelect: (href: string) => void }) {
-  if (!results.length) return <div className="absolute right-0 top-[calc(100%+8px)] z-[70] w-72 rounded-2xl border border-slate-200 bg-white p-4 text-[11px] text-muted shadow-2xl sm:w-80">Tidak ada halaman, fitur, atau produk yang cocok.</div>;
-  return <div className="absolute right-0 top-[calc(100%+8px)] z-[70] max-h-[min(70vh,420px)] w-[min(22rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl"><p className="px-3 pb-2 pt-1 text-[9px] font-bold uppercase tracking-[.16em] text-muted">Hasil pencarian</p>{results.map((result) => <button type="button" key={`${result.group}-${result.href}`} onClick={() => onSelect(result.href)} className="flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition hover:bg-green-50"><span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-[#f0f7f1] text-[9px] font-bold text-forest-800">{result.group === "Produk" ? "P" : "↗"}</span><span className="min-w-0"><strong className="block truncate text-[11px] text-forest-950">{result.label}</strong><small className="mt-0.5 block line-clamp-2 text-[10px] leading-4 text-muted">{result.description}</small></span></button>)}</div>;
+function normalizeSearchText(value: string) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("id-ID").trim();
 }
 
+function SearchResultPanel({ results, activeIndex, onSelect, onHover }: { results: SearchResult[]; activeIndex: number; onSelect: (href: string) => void; onHover: (index: number) => void }) {
+  if (!results.length) return <div className="absolute right-0 top-[calc(100%+8px)] z-[70] w-72 rounded-2xl border border-slate-200 bg-white p-4 text-[11px] text-muted shadow-2xl sm:w-80">Tidak ada halaman, fitur, atau produk yang cocok.</div>;
+  return <div role="listbox" aria-label="Hasil pencarian" className="absolute right-0 top-[calc(100%+8px)] z-[70] max-h-[min(70vh,420px)] w-[min(22rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl"><p className="px-3 pb-2 pt-1 text-[9px] font-bold uppercase tracking-[.16em] text-muted">Hasil pencarian</p>{results.map((result, index) => <button type="button" role="option" aria-selected={index === activeIndex} key={`${result.group}-${result.href}`} onMouseEnter={() => onHover(index)} onClick={() => onSelect(result.href)} className={`flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition ${index === activeIndex ? "bg-green-50" : "hover:bg-green-50"}`}><span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-[#f0f7f1] text-forest-800">{result.group === "Produk" ? <span className="text-[9px] font-bold">P</span> : <ArrowUpRight size={14} />}</span><span className="min-w-0"><strong className="block truncate text-[11px] text-forest-950">{result.label}</strong><small className="mt-0.5 block line-clamp-2 text-[10px] leading-4 text-muted">{result.description}</small></span><small className="ml-auto mt-1 shrink-0 text-[9px] text-muted">{result.group}</small></button>)}</div>;
+}
 export function SiteHeader({ catalogEntries }: { catalogEntries: CatalogEntry[] }) {
   const [open, setOpen] = useState(false);
   const [userName, setUserName] = useState("");
@@ -56,22 +59,47 @@ export function SiteHeader({ catalogEntries }: { catalogEntries: CatalogEntry[] 
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeSearchIndex, setActiveSearchIndex] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
   const accountHref = userName ? "/akun" : "/akun/login";
   const isActive = (href: string) => href === "/" ? pathname === href : pathname.startsWith(href);
   const searchResults = useMemo<SearchResult[]>(() => {
-    const term = searchQuery.trim().toLowerCase();
+    const term = normalizeSearchText(searchQuery);
     if (!term) return [];
-    const pages = searchablePages
-      .filter((item) => `${item.label} ${item.description}`.toLowerCase().includes(term))
-      .map((item) => ({ ...item, group: "Halaman" as const }));
-    const products = catalogEntries
-      .filter((item) => `${item.name} ${item.category} ${item.description} ${item.producer || ""}`.toLowerCase().includes(term))
-      .map((item) => ({ label: item.name, description: `${item.category} · ${item.producer || "Produk UMKM Kepuharjo"}`, href: `/${item.productType === "service" ? "jasa" : "produk"}/${item.slug}`, group: item.productType === "service" ? "Layanan" as const : "Produk" as const }));
-    return [...pages, ...products].slice(0, 10);
-  }, [searchQuery]);
+    const terms = term.split(/\s+/).filter(Boolean);
+    const ranked: Array<{ result: SearchResult; score: number }> = [];
+    const addResult = (result: SearchResult, fields: { label: string; producer?: string; category?: string; description: string }) => {
+      const label = normalizeSearchText(fields.label);
+      const producer = normalizeSearchText(fields.producer || "");
+      const category = normalizeSearchText(fields.category || "");
+      const description = normalizeSearchText(fields.description);
+      const allText = `${label} ${producer} ${category} ${description}`;
+      if (!terms.every((word) => allText.includes(word))) return;
+      let score = label === term ? 120 : label.startsWith(term) ? 90 : label.includes(term) ? 70 : 0;
+      for (const word of terms) {
+        if (label.includes(word)) score += 20;
+        else if (producer.includes(word)) score += 14;
+        else if (category.includes(word)) score += 10;
+        else if (description.includes(word)) score += 3;
+      }
+      ranked.push({ result, score });
+    };
 
+    searchablePages.forEach((page) => addResult({ ...page, group: "Halaman" }, page));
+    catalogEntries.forEach((item) => {
+      const group = item.productType === "service" ? "Layanan" as const : "Produk" as const;
+      addResult({ label: item.name, description: `${item.category} · ${item.producer || "Produk UMKM Kepuharjo"}`, href: `/${group === "Layanan" ? "jasa" : "produk"}/${item.slug}`, group }, {
+        label: item.name,
+        producer: item.producer,
+        category: item.category,
+        description: [item.description, item.serviceRequirements, item.serviceAvailability, item.serviceDuration].filter(Boolean).join(" "),
+      });
+    });
+    return ranked.sort((a, b) => b.score - a.score || a.result.label.localeCompare(b.result.label, "id")).slice(0, 10).map(({ result }) => result);
+  }, [catalogEntries, searchQuery]);
+
+  useEffect(() => setActiveSearchIndex(0), [searchQuery]);
   const closeSearch = () => {
     setSearchOpen(false);
     setSearchQuery("");
@@ -97,8 +125,23 @@ export function SiteHeader({ catalogEntries }: { catalogEntries: CatalogEntry[] 
 
   const submitSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (searchResults[0]) selectSearchResult(searchResults[0].href);
+    const selected = searchResults[activeSearchIndex] || searchResults[0];
+    if (selected) selectSearchResult(selected.href);
   };
+
+  const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeSearch();
+    } else if (event.key === "ArrowDown" && searchResults.length) {
+      event.preventDefault();
+      setActiveSearchIndex((index) => (index + 1) % searchResults.length);
+    } else if (event.key === "ArrowUp" && searchResults.length) {
+      event.preventDefault();
+      setActiveSearchIndex((index) => (index - 1 + searchResults.length) % searchResults.length);
+    }
+  };
+  const searchPanelProps = { results: searchResults, activeIndex: activeSearchIndex, onSelect: selectSearchResult, onHover: setActiveSearchIndex };
 
   useEffect(() => {
     const supabase = createClient();
@@ -125,12 +168,12 @@ export function SiteHeader({ catalogEntries }: { catalogEntries: CatalogEntry[] 
           </Link>
           <nav className="scrollbar-hide hidden min-w-0 flex-1 items-center justify-start gap-0 overflow-x-auto xl:flex">{primaryLinks.map((item) => <Link key={item.href} href={item.href} className={linkClass(item.href)}>{item.label}</Link>)}<span className="mx-1 h-6 w-px shrink-0 bg-slate-200 xl:mx-1.5" aria-hidden="true" />{topUtilityLinks.map((item) => <Link key={item.href} href={item.href} className={linkClass(item.href)}>{item.label}</Link>)}</nav>
           {searchOpen ? <form onSubmit={submitSearch} className="relative ml-1 hidden h-11 w-64 shrink-0 items-center overflow-visible rounded-full border border-slate-200 bg-white px-3 text-forest-950 shadow-sm xl:flex">
-            <input autoFocus value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent px-2 text-xs outline-none" placeholder="Cari produk atau halaman..." aria-label="Cari produk atau halaman" />
+            <input autoFocus value={searchQuery} onKeyDown={handleSearchKeyDown} onChange={(event) => setSearchQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent px-2 text-xs outline-none" placeholder="Cari produk atau halaman..." aria-label="Cari produk atau halaman" aria-autocomplete="list" />
             <button type="button" onClick={closeSearch} className="grid h-9 w-9 shrink-0 place-items-center rounded-full hover:bg-green-50" aria-label="Tutup pencarian"><X size={17} /></button>
-            {searchQuery.trim() && <SearchResultPanel results={searchResults} onSelect={selectSearchResult} />}
+            {searchQuery.trim() && <SearchResultPanel {...searchPanelProps} />}
           </form> : <button type="button" onClick={() => setSearchOpen(true)} className="ml-1 hidden h-11 w-11 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-forest-950 shadow-sm hover:bg-green-50 xl:grid" aria-label="Buka pencarian"><Search size={18} /></button>}
           <div className="ml-auto flex items-center gap-3 sm:ml-0">
-            {searchOpen ? <form onSubmit={submitSearch} className="relative flex h-12 w-48 shrink-0 items-center overflow-visible rounded-full border border-slate-200 bg-white px-2 text-forest-950 shadow-sm transition-all duration-300 sm:w-60 xl:hidden"><input autoFocus value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent px-2 text-xs outline-none" placeholder="Cari..." aria-label="Cari produk" /><button type="button" onClick={closeSearch} className="grid h-10 w-10 shrink-0 place-items-center rounded-full hover:bg-green-50" aria-label="Tutup pencarian"><X size={20} /></button>{searchQuery.trim() && <SearchResultPanel results={searchResults} onSelect={selectSearchResult} />}</form> : <button type="button" onClick={() => setSearchOpen(true)} className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-forest-950 shadow-sm hover:bg-green-50 xl:hidden" aria-label="Buka pencarian"><Search size={20} /></button>}<CartDrawer /><span className="hidden h-8 w-px bg-slate-200 sm:block" />
+            {searchOpen ? <form onSubmit={submitSearch} className="relative flex h-12 w-48 shrink-0 items-center overflow-visible rounded-full border border-slate-200 bg-white px-2 text-forest-950 shadow-sm transition-all duration-300 sm:w-60 xl:hidden"><input autoFocus value={searchQuery} onKeyDown={handleSearchKeyDown} onChange={(event) => setSearchQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent px-2 text-xs outline-none" placeholder="Cari..." aria-label="Cari produk atau halaman" aria-autocomplete="list" /><button type="button" onClick={closeSearch} className="grid h-10 w-10 shrink-0 place-items-center rounded-full hover:bg-green-50" aria-label="Tutup pencarian"><X size={20} /></button>{searchQuery.trim() && <SearchResultPanel {...searchPanelProps} />}</form> : <button type="button" onClick={() => setSearchOpen(true)} className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-forest-950 shadow-sm hover:bg-green-50 xl:hidden" aria-label="Buka pencarian"><Search size={20} /></button>}<CartDrawer /><span className="hidden h-8 w-px bg-slate-200 sm:block" />
             {userName ? <Link href={accountHref} title={`Akun ${userName}`} className="group grid h-12 w-12 place-items-center rounded-full border border-slate-200 bg-white text-forest-950 shadow-sm transition hover:-translate-y-0.5 hover:border-forest-700"><UserRound size={20} className="transition group-hover:scale-110" /></Link> : <div className="hidden items-center gap-2 sm:flex"><Link href="/akun/login" className="inline-flex h-11 items-center rounded-full border border-forest-800 bg-white px-4 text-[12px] font-bold text-forest-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-forest-800 hover:text-white">Masuk</Link><Link href="/akun/daftar" className="inline-flex h-11 items-center rounded-full bg-forest-800 px-4 text-[12px] font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-forest-700">Daftar</Link></div>}
             {userName && <button type="button" onClick={openLogoutDialog} disabled={loggingOut} title="Keluar dari akun" aria-label="Keluar dari akun" className="hidden h-11 items-center gap-2 rounded-full border border-red-100 bg-white px-4 text-[12px] font-bold text-red-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-red-50 disabled:cursor-wait disabled:opacity-60 sm:flex"><LogOut size={16} />Keluar</button>}
           </div>
