@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminServicesPage() {
   const admin = await requireAdmin();
   const [services, inquiries, categories, umkm] = process.env.DATABASE_URL ? await Promise.all([
-    prisma.product.findMany({ where: { productType: "service", publishStatus: { not: "archived" } }, orderBy: { updatedAt: "desc" }, include: { variants: { where: { isActive: true }, take: 1 }, images: { where: { isPrimary: true }, take: 1 } } }),
+    prisma.product.findMany({ where: { productType: "service" }, orderBy: { updatedAt: "desc" }, include: { variants: { take: 1 }, images: { where: { isPrimary: true }, take: 1 } } }),
     prisma.serviceInquiry.findMany({ orderBy: { createdAt: "desc" }, include: { product: true } }),
     prisma.category.findMany({ orderBy: { sortOrder: "asc" }, select: { id: true, name: true } }),
     prisma.umkm.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),

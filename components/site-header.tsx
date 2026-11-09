@@ -125,8 +125,11 @@ export function SiteHeader({ catalogEntries }: { catalogEntries: CatalogEntry[] 
 
   const submitSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const selected = searchResults[activeSearchIndex] || searchResults[0];
-    if (selected) selectSearchResult(selected.href);
+    const query = searchQuery.trim();
+    if (!query) return;
+    router.push(`/cari?q=${encodeURIComponent(query)}`);
+    closeSearch();
+    closeMenu();
   };
 
   const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
