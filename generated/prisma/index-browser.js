@@ -341,11 +341,17 @@ exports.Prisma.ServiceInquiryScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.SiteContentScalarFieldEnum = {
+exports.Prisma.FinancialEntryScalarFieldEnum = {
   id: 'id',
-  key: 'key',
-  value: 'value',
-  isPublished: 'isPublished',
+  type: 'type',
+  category: 'category',
+  description: 'description',
+  amountIdr: 'amountIdr',
+  transactionDate: 'transactionDate',
+  paymentMethod: 'paymentMethod',
+  evidenceUrl: 'evidenceUrl',
+  umkmId: 'umkmId',
+  createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
@@ -450,6 +456,20 @@ exports.ServiceInquiryStatus = exports.$Enums.ServiceInquiryStatus = {
   cancelled: 'cancelled'
 };
 
+exports.FinancialEntryType = exports.$Enums.FinancialEntryType = {
+  income: 'income',
+  cost_of_goods: 'cost_of_goods',
+  expense: 'expense'
+};
+
+exports.FinancialPaymentMethod = exports.$Enums.FinancialPaymentMethod = {
+  cash: 'cash',
+  bank_transfer: 'bank_transfer',
+  qris: 'qris',
+  marketplace: 'marketplace',
+  other: 'other'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   PasswordResetChallenge: 'PasswordResetChallenge',
@@ -469,7 +489,7 @@ exports.Prisma.ModelName = {
   PaymentEvent: 'PaymentEvent',
   Shipment: 'Shipment',
   ServiceInquiry: 'ServiceInquiry',
-  SiteContent: 'SiteContent',
+  FinancialEntry: 'FinancialEntry',
   AuditLog: 'AuditLog'
 };
 

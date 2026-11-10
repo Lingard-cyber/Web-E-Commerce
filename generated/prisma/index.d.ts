@@ -104,10 +104,10 @@ export type Shipment = $Result.DefaultSelection<Prisma.$ShipmentPayload>
  */
 export type ServiceInquiry = $Result.DefaultSelection<Prisma.$ServiceInquiryPayload>
 /**
- * Model SiteContent
+ * Model FinancialEntry
  * 
  */
-export type SiteContent = $Result.DefaultSelection<Prisma.$SiteContentPayload>
+export type FinancialEntry = $Result.DefaultSelection<Prisma.$FinancialEntryPayload>
 /**
  * Model AuditLog
  * 
@@ -206,6 +206,26 @@ export const ServiceBookingMode: {
 
 export type ServiceBookingMode = (typeof ServiceBookingMode)[keyof typeof ServiceBookingMode]
 
+
+export const FinancialEntryType: {
+  income: 'income',
+  cost_of_goods: 'cost_of_goods',
+  expense: 'expense'
+};
+
+export type FinancialEntryType = (typeof FinancialEntryType)[keyof typeof FinancialEntryType]
+
+
+export const FinancialPaymentMethod: {
+  cash: 'cash',
+  bank_transfer: 'bank_transfer',
+  qris: 'qris',
+  marketplace: 'marketplace',
+  other: 'other'
+};
+
+export type FinancialPaymentMethod = (typeof FinancialPaymentMethod)[keyof typeof FinancialPaymentMethod]
+
 }
 
 export type UserRole = $Enums.UserRole
@@ -243,6 +263,14 @@ export const ServiceInquiryStatus: typeof $Enums.ServiceInquiryStatus
 export type ServiceBookingMode = $Enums.ServiceBookingMode
 
 export const ServiceBookingMode: typeof $Enums.ServiceBookingMode
+
+export type FinancialEntryType = $Enums.FinancialEntryType
+
+export const FinancialEntryType: typeof $Enums.FinancialEntryType
+
+export type FinancialPaymentMethod = $Enums.FinancialPaymentMethod
+
+export const FinancialPaymentMethod: typeof $Enums.FinancialPaymentMethod
 
 /**
  * ##  Prisma Client ʲˢ
@@ -543,14 +571,14 @@ export class PrismaClient<
   get serviceInquiry(): Prisma.ServiceInquiryDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.siteContent`: Exposes CRUD operations for the **SiteContent** model.
+   * `prisma.financialEntry`: Exposes CRUD operations for the **FinancialEntry** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more SiteContents
-    * const siteContents = await prisma.siteContent.findMany()
+    * // Fetch zero or more FinancialEntries
+    * const financialEntries = await prisma.financialEntry.findMany()
     * ```
     */
-  get siteContent(): Prisma.SiteContentDelegate<ExtArgs, ClientOptions>;
+  get financialEntry(): Prisma.FinancialEntryDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.auditLog`: Exposes CRUD operations for the **AuditLog** model.
@@ -1020,7 +1048,7 @@ export namespace Prisma {
     PaymentEvent: 'PaymentEvent',
     Shipment: 'Shipment',
     ServiceInquiry: 'ServiceInquiry',
-    SiteContent: 'SiteContent',
+    FinancialEntry: 'FinancialEntry',
     AuditLog: 'AuditLog'
   };
 
@@ -1040,7 +1068,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "passwordResetChallenge" | "galleryImage" | "address" | "umkm" | "category" | "product" | "productVariant" | "productImage" | "stockMovement" | "cart" | "cartItem" | "order" | "orderItem" | "payment" | "paymentEvent" | "shipment" | "serviceInquiry" | "siteContent" | "auditLog"
+      modelProps: "user" | "passwordResetChallenge" | "galleryImage" | "address" | "umkm" | "category" | "product" | "productVariant" | "productImage" | "stockMovement" | "cart" | "cartItem" | "order" | "orderItem" | "payment" | "paymentEvent" | "shipment" | "serviceInquiry" | "financialEntry" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2376,77 +2404,77 @@ export namespace Prisma {
           }
         }
       }
-      SiteContent: {
-        payload: Prisma.$SiteContentPayload<ExtArgs>
-        fields: Prisma.SiteContentFieldRefs
+      FinancialEntry: {
+        payload: Prisma.$FinancialEntryPayload<ExtArgs>
+        fields: Prisma.FinancialEntryFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.SiteContentFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload> | null
+            args: Prisma.FinancialEntryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialEntryPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.SiteContentFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>
+            args: Prisma.FinancialEntryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialEntryPayload>
           }
           findFirst: {
-            args: Prisma.SiteContentFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload> | null
+            args: Prisma.FinancialEntryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialEntryPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.SiteContentFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>
+            args: Prisma.FinancialEntryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialEntryPayload>
           }
           findMany: {
-            args: Prisma.SiteContentFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>[]
+            args: Prisma.FinancialEntryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialEntryPayload>[]
           }
           create: {
-            args: Prisma.SiteContentCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>
+            args: Prisma.FinancialEntryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialEntryPayload>
           }
           createMany: {
-            args: Prisma.SiteContentCreateManyArgs<ExtArgs>
+            args: Prisma.FinancialEntryCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.SiteContentCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>[]
+            args: Prisma.FinancialEntryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialEntryPayload>[]
           }
           delete: {
-            args: Prisma.SiteContentDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>
+            args: Prisma.FinancialEntryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialEntryPayload>
           }
           update: {
-            args: Prisma.SiteContentUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>
+            args: Prisma.FinancialEntryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialEntryPayload>
           }
           deleteMany: {
-            args: Prisma.SiteContentDeleteManyArgs<ExtArgs>
+            args: Prisma.FinancialEntryDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.SiteContentUpdateManyArgs<ExtArgs>
+            args: Prisma.FinancialEntryUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.SiteContentUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>[]
+            args: Prisma.FinancialEntryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialEntryPayload>[]
           }
           upsert: {
-            args: Prisma.SiteContentUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>
+            args: Prisma.FinancialEntryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FinancialEntryPayload>
           }
           aggregate: {
-            args: Prisma.SiteContentAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateSiteContent>
+            args: Prisma.FinancialEntryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFinancialEntry>
           }
           groupBy: {
-            args: Prisma.SiteContentGroupByArgs<ExtArgs>
-            result: $Utils.Optional<SiteContentGroupByOutputType>[]
+            args: Prisma.FinancialEntryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FinancialEntryGroupByOutputType>[]
           }
           count: {
-            args: Prisma.SiteContentCountArgs<ExtArgs>
-            result: $Utils.Optional<SiteContentCountAggregateOutputType> | number
+            args: Prisma.FinancialEntryCountArgs<ExtArgs>
+            result: $Utils.Optional<FinancialEntryCountAggregateOutputType> | number
           }
         }
       }
@@ -2638,7 +2666,7 @@ export namespace Prisma {
     paymentEvent?: PaymentEventOmit
     shipment?: ShipmentOmit
     serviceInquiry?: ServiceInquiryOmit
-    siteContent?: SiteContentOmit
+    financialEntry?: FinancialEntryOmit
     auditLog?: AuditLogOmit
   }
 
@@ -2810,10 +2838,12 @@ export namespace Prisma {
 
   export type UmkmCountOutputType = {
     products: number
+    financialEntries: number
   }
 
   export type UmkmCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     products?: boolean | UmkmCountOutputTypeCountProductsArgs
+    financialEntries?: boolean | UmkmCountOutputTypeCountFinancialEntriesArgs
   }
 
   // Custom InputTypes
@@ -2832,6 +2862,13 @@ export namespace Prisma {
    */
   export type UmkmCountOutputTypeCountProductsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProductWhereInput
+  }
+
+  /**
+   * UmkmCountOutputType without action
+   */
+  export type UmkmCountOutputTypeCountFinancialEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FinancialEntryWhereInput
   }
 
 
@@ -7829,6 +7866,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     products?: boolean | Umkm$productsArgs<ExtArgs>
+    financialEntries?: boolean | Umkm$financialEntriesArgs<ExtArgs>
     _count?: boolean | UmkmCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["umkm"]>
 
@@ -7892,6 +7930,7 @@ export namespace Prisma {
   export type UmkmOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "importKey" | "name" | "slug" | "description" | "ownerName" | "businessType" | "nib" | "halalPermit" | "sppirt" | "privateKtp" | "privateAddress" | "publicContact" | "isPublished" | "createdAt" | "updatedAt", ExtArgs["result"]["umkm"]>
   export type UmkmInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     products?: boolean | Umkm$productsArgs<ExtArgs>
+    financialEntries?: boolean | Umkm$financialEntriesArgs<ExtArgs>
     _count?: boolean | UmkmCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UmkmIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -7901,6 +7940,7 @@ export namespace Prisma {
     name: "Umkm"
     objects: {
       products: Prisma.$ProductPayload<ExtArgs>[]
+      financialEntries: Prisma.$FinancialEntryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8314,6 +8354,7 @@ export namespace Prisma {
   export interface Prisma__UmkmClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     products<T extends Umkm$productsArgs<ExtArgs> = {}>(args?: Subset<T, Umkm$productsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    financialEntries<T extends Umkm$financialEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Umkm$financialEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FinancialEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8768,6 +8809,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ProductScalarFieldEnum | ProductScalarFieldEnum[]
+  }
+
+  /**
+   * Umkm.financialEntries
+   */
+  export type Umkm$financialEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialEntry
+     */
+    select?: FinancialEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FinancialEntry
+     */
+    omit?: FinancialEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialEntryInclude<ExtArgs> | null
+    where?: FinancialEntryWhereInput
+    orderBy?: FinancialEntryOrderByWithRelationInput | FinancialEntryOrderByWithRelationInput[]
+    cursor?: FinancialEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FinancialEntryScalarFieldEnum | FinancialEntryScalarFieldEnum[]
   }
 
   /**
@@ -23932,332 +23997,456 @@ export namespace Prisma {
 
 
   /**
-   * Model SiteContent
+   * Model FinancialEntry
    */
 
-  export type AggregateSiteContent = {
-    _count: SiteContentCountAggregateOutputType | null
-    _min: SiteContentMinAggregateOutputType | null
-    _max: SiteContentMaxAggregateOutputType | null
+  export type AggregateFinancialEntry = {
+    _count: FinancialEntryCountAggregateOutputType | null
+    _avg: FinancialEntryAvgAggregateOutputType | null
+    _sum: FinancialEntrySumAggregateOutputType | null
+    _min: FinancialEntryMinAggregateOutputType | null
+    _max: FinancialEntryMaxAggregateOutputType | null
   }
 
-  export type SiteContentMinAggregateOutputType = {
+  export type FinancialEntryAvgAggregateOutputType = {
+    amountIdr: number | null
+  }
+
+  export type FinancialEntrySumAggregateOutputType = {
+    amountIdr: number | null
+  }
+
+  export type FinancialEntryMinAggregateOutputType = {
     id: string | null
-    key: string | null
-    isPublished: boolean | null
+    type: $Enums.FinancialEntryType | null
+    category: string | null
+    description: string | null
+    amountIdr: number | null
+    transactionDate: Date | null
+    paymentMethod: $Enums.FinancialPaymentMethod | null
+    evidenceUrl: string | null
+    umkmId: string | null
+    createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type SiteContentMaxAggregateOutputType = {
+  export type FinancialEntryMaxAggregateOutputType = {
     id: string | null
-    key: string | null
-    isPublished: boolean | null
+    type: $Enums.FinancialEntryType | null
+    category: string | null
+    description: string | null
+    amountIdr: number | null
+    transactionDate: Date | null
+    paymentMethod: $Enums.FinancialPaymentMethod | null
+    evidenceUrl: string | null
+    umkmId: string | null
+    createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type SiteContentCountAggregateOutputType = {
+  export type FinancialEntryCountAggregateOutputType = {
     id: number
-    key: number
-    value: number
-    isPublished: number
+    type: number
+    category: number
+    description: number
+    amountIdr: number
+    transactionDate: number
+    paymentMethod: number
+    evidenceUrl: number
+    umkmId: number
+    createdAt: number
     updatedAt: number
     _all: number
   }
 
 
-  export type SiteContentMinAggregateInputType = {
+  export type FinancialEntryAvgAggregateInputType = {
+    amountIdr?: true
+  }
+
+  export type FinancialEntrySumAggregateInputType = {
+    amountIdr?: true
+  }
+
+  export type FinancialEntryMinAggregateInputType = {
     id?: true
-    key?: true
-    isPublished?: true
+    type?: true
+    category?: true
+    description?: true
+    amountIdr?: true
+    transactionDate?: true
+    paymentMethod?: true
+    evidenceUrl?: true
+    umkmId?: true
+    createdAt?: true
     updatedAt?: true
   }
 
-  export type SiteContentMaxAggregateInputType = {
+  export type FinancialEntryMaxAggregateInputType = {
     id?: true
-    key?: true
-    isPublished?: true
+    type?: true
+    category?: true
+    description?: true
+    amountIdr?: true
+    transactionDate?: true
+    paymentMethod?: true
+    evidenceUrl?: true
+    umkmId?: true
+    createdAt?: true
     updatedAt?: true
   }
 
-  export type SiteContentCountAggregateInputType = {
+  export type FinancialEntryCountAggregateInputType = {
     id?: true
-    key?: true
-    value?: true
-    isPublished?: true
+    type?: true
+    category?: true
+    description?: true
+    amountIdr?: true
+    transactionDate?: true
+    paymentMethod?: true
+    evidenceUrl?: true
+    umkmId?: true
+    createdAt?: true
     updatedAt?: true
     _all?: true
   }
 
-  export type SiteContentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which SiteContent to aggregate.
+     * Filter which FinancialEntry to aggregate.
      */
-    where?: SiteContentWhereInput
+    where?: FinancialEntryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of SiteContents to fetch.
+     * Determine the order of FinancialEntries to fetch.
      */
-    orderBy?: SiteContentOrderByWithRelationInput | SiteContentOrderByWithRelationInput[]
+    orderBy?: FinancialEntryOrderByWithRelationInput | FinancialEntryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: SiteContentWhereUniqueInput
+    cursor?: FinancialEntryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` SiteContents from the position of the cursor.
+     * Take `±n` FinancialEntries from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` SiteContents.
+     * Skip the first `n` FinancialEntries.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned SiteContents
+     * Count returned FinancialEntries
     **/
-    _count?: true | SiteContentCountAggregateInputType
+    _count?: true | FinancialEntryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: FinancialEntryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: FinancialEntrySumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: SiteContentMinAggregateInputType
+    _min?: FinancialEntryMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: SiteContentMaxAggregateInputType
+    _max?: FinancialEntryMaxAggregateInputType
   }
 
-  export type GetSiteContentAggregateType<T extends SiteContentAggregateArgs> = {
-        [P in keyof T & keyof AggregateSiteContent]: P extends '_count' | 'count'
+  export type GetFinancialEntryAggregateType<T extends FinancialEntryAggregateArgs> = {
+        [P in keyof T & keyof AggregateFinancialEntry]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateSiteContent[P]>
-      : GetScalarType<T[P], AggregateSiteContent[P]>
+        : GetScalarType<T[P], AggregateFinancialEntry[P]>
+      : GetScalarType<T[P], AggregateFinancialEntry[P]>
   }
 
 
 
 
-  export type SiteContentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: SiteContentWhereInput
-    orderBy?: SiteContentOrderByWithAggregationInput | SiteContentOrderByWithAggregationInput[]
-    by: SiteContentScalarFieldEnum[] | SiteContentScalarFieldEnum
-    having?: SiteContentScalarWhereWithAggregatesInput
+  export type FinancialEntryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FinancialEntryWhereInput
+    orderBy?: FinancialEntryOrderByWithAggregationInput | FinancialEntryOrderByWithAggregationInput[]
+    by: FinancialEntryScalarFieldEnum[] | FinancialEntryScalarFieldEnum
+    having?: FinancialEntryScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: SiteContentCountAggregateInputType | true
-    _min?: SiteContentMinAggregateInputType
-    _max?: SiteContentMaxAggregateInputType
+    _count?: FinancialEntryCountAggregateInputType | true
+    _avg?: FinancialEntryAvgAggregateInputType
+    _sum?: FinancialEntrySumAggregateInputType
+    _min?: FinancialEntryMinAggregateInputType
+    _max?: FinancialEntryMaxAggregateInputType
   }
 
-  export type SiteContentGroupByOutputType = {
+  export type FinancialEntryGroupByOutputType = {
     id: string
-    key: string
-    value: JsonValue
-    isPublished: boolean
+    type: $Enums.FinancialEntryType
+    category: string
+    description: string
+    amountIdr: number
+    transactionDate: Date
+    paymentMethod: $Enums.FinancialPaymentMethod
+    evidenceUrl: string | null
+    umkmId: string | null
+    createdAt: Date
     updatedAt: Date
-    _count: SiteContentCountAggregateOutputType | null
-    _min: SiteContentMinAggregateOutputType | null
-    _max: SiteContentMaxAggregateOutputType | null
+    _count: FinancialEntryCountAggregateOutputType | null
+    _avg: FinancialEntryAvgAggregateOutputType | null
+    _sum: FinancialEntrySumAggregateOutputType | null
+    _min: FinancialEntryMinAggregateOutputType | null
+    _max: FinancialEntryMaxAggregateOutputType | null
   }
 
-  type GetSiteContentGroupByPayload<T extends SiteContentGroupByArgs> = Prisma.PrismaPromise<
+  type GetFinancialEntryGroupByPayload<T extends FinancialEntryGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<SiteContentGroupByOutputType, T['by']> &
+      PickEnumerable<FinancialEntryGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof SiteContentGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof FinancialEntryGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], SiteContentGroupByOutputType[P]>
-            : GetScalarType<T[P], SiteContentGroupByOutputType[P]>
+              : GetScalarType<T[P], FinancialEntryGroupByOutputType[P]>
+            : GetScalarType<T[P], FinancialEntryGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type SiteContentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type FinancialEntrySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    key?: boolean
-    value?: boolean
-    isPublished?: boolean
+    type?: boolean
+    category?: boolean
+    description?: boolean
+    amountIdr?: boolean
+    transactionDate?: boolean
+    paymentMethod?: boolean
+    evidenceUrl?: boolean
+    umkmId?: boolean
+    createdAt?: boolean
     updatedAt?: boolean
-  }, ExtArgs["result"]["siteContent"]>
+    umkm?: boolean | FinancialEntry$umkmArgs<ExtArgs>
+  }, ExtArgs["result"]["financialEntry"]>
 
-  export type SiteContentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type FinancialEntrySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    key?: boolean
-    value?: boolean
-    isPublished?: boolean
+    type?: boolean
+    category?: boolean
+    description?: boolean
+    amountIdr?: boolean
+    transactionDate?: boolean
+    paymentMethod?: boolean
+    evidenceUrl?: boolean
+    umkmId?: boolean
+    createdAt?: boolean
     updatedAt?: boolean
-  }, ExtArgs["result"]["siteContent"]>
+    umkm?: boolean | FinancialEntry$umkmArgs<ExtArgs>
+  }, ExtArgs["result"]["financialEntry"]>
 
-  export type SiteContentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type FinancialEntrySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    key?: boolean
-    value?: boolean
-    isPublished?: boolean
+    type?: boolean
+    category?: boolean
+    description?: boolean
+    amountIdr?: boolean
+    transactionDate?: boolean
+    paymentMethod?: boolean
+    evidenceUrl?: boolean
+    umkmId?: boolean
+    createdAt?: boolean
     updatedAt?: boolean
-  }, ExtArgs["result"]["siteContent"]>
+    umkm?: boolean | FinancialEntry$umkmArgs<ExtArgs>
+  }, ExtArgs["result"]["financialEntry"]>
 
-  export type SiteContentSelectScalar = {
+  export type FinancialEntrySelectScalar = {
     id?: boolean
-    key?: boolean
-    value?: boolean
-    isPublished?: boolean
+    type?: boolean
+    category?: boolean
+    description?: boolean
+    amountIdr?: boolean
+    transactionDate?: boolean
+    paymentMethod?: boolean
+    evidenceUrl?: boolean
+    umkmId?: boolean
+    createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type SiteContentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "key" | "value" | "isPublished" | "updatedAt", ExtArgs["result"]["siteContent"]>
+  export type FinancialEntryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "category" | "description" | "amountIdr" | "transactionDate" | "paymentMethod" | "evidenceUrl" | "umkmId" | "createdAt" | "updatedAt", ExtArgs["result"]["financialEntry"]>
+  export type FinancialEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    umkm?: boolean | FinancialEntry$umkmArgs<ExtArgs>
+  }
+  export type FinancialEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    umkm?: boolean | FinancialEntry$umkmArgs<ExtArgs>
+  }
+  export type FinancialEntryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    umkm?: boolean | FinancialEntry$umkmArgs<ExtArgs>
+  }
 
-  export type $SiteContentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "SiteContent"
-    objects: {}
+  export type $FinancialEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FinancialEntry"
+    objects: {
+      umkm: Prisma.$UmkmPayload<ExtArgs> | null
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      key: string
-      value: Prisma.JsonValue
-      isPublished: boolean
+      type: $Enums.FinancialEntryType
+      category: string
+      description: string
+      amountIdr: number
+      transactionDate: Date
+      paymentMethod: $Enums.FinancialPaymentMethod
+      evidenceUrl: string | null
+      umkmId: string | null
+      createdAt: Date
       updatedAt: Date
-    }, ExtArgs["result"]["siteContent"]>
+    }, ExtArgs["result"]["financialEntry"]>
     composites: {}
   }
 
-  type SiteContentGetPayload<S extends boolean | null | undefined | SiteContentDefaultArgs> = $Result.GetResult<Prisma.$SiteContentPayload, S>
+  type FinancialEntryGetPayload<S extends boolean | null | undefined | FinancialEntryDefaultArgs> = $Result.GetResult<Prisma.$FinancialEntryPayload, S>
 
-  type SiteContentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<SiteContentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: SiteContentCountAggregateInputType | true
+  type FinancialEntryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FinancialEntryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FinancialEntryCountAggregateInputType | true
     }
 
-  export interface SiteContentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SiteContent'], meta: { name: 'SiteContent' } }
+  export interface FinancialEntryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FinancialEntry'], meta: { name: 'FinancialEntry' } }
     /**
-     * Find zero or one SiteContent that matches the filter.
-     * @param {SiteContentFindUniqueArgs} args - Arguments to find a SiteContent
+     * Find zero or one FinancialEntry that matches the filter.
+     * @param {FinancialEntryFindUniqueArgs} args - Arguments to find a FinancialEntry
      * @example
-     * // Get one SiteContent
-     * const siteContent = await prisma.siteContent.findUnique({
+     * // Get one FinancialEntry
+     * const financialEntry = await prisma.financialEntry.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends SiteContentFindUniqueArgs>(args: SelectSubset<T, SiteContentFindUniqueArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends FinancialEntryFindUniqueArgs>(args: SelectSubset<T, FinancialEntryFindUniqueArgs<ExtArgs>>): Prisma__FinancialEntryClient<$Result.GetResult<Prisma.$FinancialEntryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one SiteContent that matches the filter or throw an error with `error.code='P2025'`
+     * Find one FinancialEntry that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {SiteContentFindUniqueOrThrowArgs} args - Arguments to find a SiteContent
+     * @param {FinancialEntryFindUniqueOrThrowArgs} args - Arguments to find a FinancialEntry
      * @example
-     * // Get one SiteContent
-     * const siteContent = await prisma.siteContent.findUniqueOrThrow({
+     * // Get one FinancialEntry
+     * const financialEntry = await prisma.financialEntry.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends SiteContentFindUniqueOrThrowArgs>(args: SelectSubset<T, SiteContentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends FinancialEntryFindUniqueOrThrowArgs>(args: SelectSubset<T, FinancialEntryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FinancialEntryClient<$Result.GetResult<Prisma.$FinancialEntryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first SiteContent that matches the filter.
+     * Find the first FinancialEntry that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {SiteContentFindFirstArgs} args - Arguments to find a SiteContent
+     * @param {FinancialEntryFindFirstArgs} args - Arguments to find a FinancialEntry
      * @example
-     * // Get one SiteContent
-     * const siteContent = await prisma.siteContent.findFirst({
+     * // Get one FinancialEntry
+     * const financialEntry = await prisma.financialEntry.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends SiteContentFindFirstArgs>(args?: SelectSubset<T, SiteContentFindFirstArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends FinancialEntryFindFirstArgs>(args?: SelectSubset<T, FinancialEntryFindFirstArgs<ExtArgs>>): Prisma__FinancialEntryClient<$Result.GetResult<Prisma.$FinancialEntryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first SiteContent that matches the filter or
+     * Find the first FinancialEntry that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {SiteContentFindFirstOrThrowArgs} args - Arguments to find a SiteContent
+     * @param {FinancialEntryFindFirstOrThrowArgs} args - Arguments to find a FinancialEntry
      * @example
-     * // Get one SiteContent
-     * const siteContent = await prisma.siteContent.findFirstOrThrow({
+     * // Get one FinancialEntry
+     * const financialEntry = await prisma.financialEntry.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends SiteContentFindFirstOrThrowArgs>(args?: SelectSubset<T, SiteContentFindFirstOrThrowArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends FinancialEntryFindFirstOrThrowArgs>(args?: SelectSubset<T, FinancialEntryFindFirstOrThrowArgs<ExtArgs>>): Prisma__FinancialEntryClient<$Result.GetResult<Prisma.$FinancialEntryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more SiteContents that matches the filter.
+     * Find zero or more FinancialEntries that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {SiteContentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {FinancialEntryFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all SiteContents
-     * const siteContents = await prisma.siteContent.findMany()
+     * // Get all FinancialEntries
+     * const financialEntries = await prisma.financialEntry.findMany()
      * 
-     * // Get first 10 SiteContents
-     * const siteContents = await prisma.siteContent.findMany({ take: 10 })
+     * // Get first 10 FinancialEntries
+     * const financialEntries = await prisma.financialEntry.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const siteContentWithIdOnly = await prisma.siteContent.findMany({ select: { id: true } })
+     * const financialEntryWithIdOnly = await prisma.financialEntry.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends SiteContentFindManyArgs>(args?: SelectSubset<T, SiteContentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends FinancialEntryFindManyArgs>(args?: SelectSubset<T, FinancialEntryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FinancialEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a SiteContent.
-     * @param {SiteContentCreateArgs} args - Arguments to create a SiteContent.
+     * Create a FinancialEntry.
+     * @param {FinancialEntryCreateArgs} args - Arguments to create a FinancialEntry.
      * @example
-     * // Create one SiteContent
-     * const SiteContent = await prisma.siteContent.create({
+     * // Create one FinancialEntry
+     * const FinancialEntry = await prisma.financialEntry.create({
      *   data: {
-     *     // ... data to create a SiteContent
+     *     // ... data to create a FinancialEntry
      *   }
      * })
      * 
      */
-    create<T extends SiteContentCreateArgs>(args: SelectSubset<T, SiteContentCreateArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends FinancialEntryCreateArgs>(args: SelectSubset<T, FinancialEntryCreateArgs<ExtArgs>>): Prisma__FinancialEntryClient<$Result.GetResult<Prisma.$FinancialEntryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many SiteContents.
-     * @param {SiteContentCreateManyArgs} args - Arguments to create many SiteContents.
+     * Create many FinancialEntries.
+     * @param {FinancialEntryCreateManyArgs} args - Arguments to create many FinancialEntries.
      * @example
-     * // Create many SiteContents
-     * const siteContent = await prisma.siteContent.createMany({
+     * // Create many FinancialEntries
+     * const financialEntry = await prisma.financialEntry.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends SiteContentCreateManyArgs>(args?: SelectSubset<T, SiteContentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends FinancialEntryCreateManyArgs>(args?: SelectSubset<T, FinancialEntryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many SiteContents and returns the data saved in the database.
-     * @param {SiteContentCreateManyAndReturnArgs} args - Arguments to create many SiteContents.
+     * Create many FinancialEntries and returns the data saved in the database.
+     * @param {FinancialEntryCreateManyAndReturnArgs} args - Arguments to create many FinancialEntries.
      * @example
-     * // Create many SiteContents
-     * const siteContent = await prisma.siteContent.createManyAndReturn({
+     * // Create many FinancialEntries
+     * const financialEntry = await prisma.financialEntry.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many SiteContents and only return the `id`
-     * const siteContentWithIdOnly = await prisma.siteContent.createManyAndReturn({
+     * // Create many FinancialEntries and only return the `id`
+     * const financialEntryWithIdOnly = await prisma.financialEntry.createManyAndReturn({
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -24267,28 +24456,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends SiteContentCreateManyAndReturnArgs>(args?: SelectSubset<T, SiteContentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends FinancialEntryCreateManyAndReturnArgs>(args?: SelectSubset<T, FinancialEntryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FinancialEntryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a SiteContent.
-     * @param {SiteContentDeleteArgs} args - Arguments to delete one SiteContent.
+     * Delete a FinancialEntry.
+     * @param {FinancialEntryDeleteArgs} args - Arguments to delete one FinancialEntry.
      * @example
-     * // Delete one SiteContent
-     * const SiteContent = await prisma.siteContent.delete({
+     * // Delete one FinancialEntry
+     * const FinancialEntry = await prisma.financialEntry.delete({
      *   where: {
-     *     // ... filter to delete one SiteContent
+     *     // ... filter to delete one FinancialEntry
      *   }
      * })
      * 
      */
-    delete<T extends SiteContentDeleteArgs>(args: SelectSubset<T, SiteContentDeleteArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends FinancialEntryDeleteArgs>(args: SelectSubset<T, FinancialEntryDeleteArgs<ExtArgs>>): Prisma__FinancialEntryClient<$Result.GetResult<Prisma.$FinancialEntryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one SiteContent.
-     * @param {SiteContentUpdateArgs} args - Arguments to update one SiteContent.
+     * Update one FinancialEntry.
+     * @param {FinancialEntryUpdateArgs} args - Arguments to update one FinancialEntry.
      * @example
-     * // Update one SiteContent
-     * const siteContent = await prisma.siteContent.update({
+     * // Update one FinancialEntry
+     * const financialEntry = await prisma.financialEntry.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -24298,30 +24487,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends SiteContentUpdateArgs>(args: SelectSubset<T, SiteContentUpdateArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends FinancialEntryUpdateArgs>(args: SelectSubset<T, FinancialEntryUpdateArgs<ExtArgs>>): Prisma__FinancialEntryClient<$Result.GetResult<Prisma.$FinancialEntryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more SiteContents.
-     * @param {SiteContentDeleteManyArgs} args - Arguments to filter SiteContents to delete.
+     * Delete zero or more FinancialEntries.
+     * @param {FinancialEntryDeleteManyArgs} args - Arguments to filter FinancialEntries to delete.
      * @example
-     * // Delete a few SiteContents
-     * const { count } = await prisma.siteContent.deleteMany({
+     * // Delete a few FinancialEntries
+     * const { count } = await prisma.financialEntry.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends SiteContentDeleteManyArgs>(args?: SelectSubset<T, SiteContentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends FinancialEntryDeleteManyArgs>(args?: SelectSubset<T, FinancialEntryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more SiteContents.
+     * Update zero or more FinancialEntries.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {SiteContentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {FinancialEntryUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many SiteContents
-     * const siteContent = await prisma.siteContent.updateMany({
+     * // Update many FinancialEntries
+     * const financialEntry = await prisma.financialEntry.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -24331,14 +24520,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends SiteContentUpdateManyArgs>(args: SelectSubset<T, SiteContentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends FinancialEntryUpdateManyArgs>(args: SelectSubset<T, FinancialEntryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more SiteContents and returns the data updated in the database.
-     * @param {SiteContentUpdateManyAndReturnArgs} args - Arguments to update many SiteContents.
+     * Update zero or more FinancialEntries and returns the data updated in the database.
+     * @param {FinancialEntryUpdateManyAndReturnArgs} args - Arguments to update many FinancialEntries.
      * @example
-     * // Update many SiteContents
-     * const siteContent = await prisma.siteContent.updateManyAndReturn({
+     * // Update many FinancialEntries
+     * const financialEntry = await prisma.financialEntry.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -24347,8 +24536,8 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more SiteContents and only return the `id`
-     * const siteContentWithIdOnly = await prisma.siteContent.updateManyAndReturn({
+     * // Update zero or more FinancialEntries and only return the `id`
+     * const financialEntryWithIdOnly = await prisma.financialEntry.updateManyAndReturn({
      *   select: { id: true },
      *   where: {
      *     // ... provide filter here
@@ -24361,56 +24550,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends SiteContentUpdateManyAndReturnArgs>(args: SelectSubset<T, SiteContentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends FinancialEntryUpdateManyAndReturnArgs>(args: SelectSubset<T, FinancialEntryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FinancialEntryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one SiteContent.
-     * @param {SiteContentUpsertArgs} args - Arguments to update or create a SiteContent.
+     * Create or update one FinancialEntry.
+     * @param {FinancialEntryUpsertArgs} args - Arguments to update or create a FinancialEntry.
      * @example
-     * // Update or create a SiteContent
-     * const siteContent = await prisma.siteContent.upsert({
+     * // Update or create a FinancialEntry
+     * const financialEntry = await prisma.financialEntry.upsert({
      *   create: {
-     *     // ... data to create a SiteContent
+     *     // ... data to create a FinancialEntry
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the SiteContent we want to update
+     *     // ... the filter for the FinancialEntry we want to update
      *   }
      * })
      */
-    upsert<T extends SiteContentUpsertArgs>(args: SelectSubset<T, SiteContentUpsertArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends FinancialEntryUpsertArgs>(args: SelectSubset<T, FinancialEntryUpsertArgs<ExtArgs>>): Prisma__FinancialEntryClient<$Result.GetResult<Prisma.$FinancialEntryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of SiteContents.
+     * Count the number of FinancialEntries.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {SiteContentCountArgs} args - Arguments to filter SiteContents to count.
+     * @param {FinancialEntryCountArgs} args - Arguments to filter FinancialEntries to count.
      * @example
-     * // Count the number of SiteContents
-     * const count = await prisma.siteContent.count({
+     * // Count the number of FinancialEntries
+     * const count = await prisma.financialEntry.count({
      *   where: {
-     *     // ... the filter for the SiteContents we want to count
+     *     // ... the filter for the FinancialEntries we want to count
      *   }
      * })
     **/
-    count<T extends SiteContentCountArgs>(
-      args?: Subset<T, SiteContentCountArgs>,
+    count<T extends FinancialEntryCountArgs>(
+      args?: Subset<T, FinancialEntryCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], SiteContentCountAggregateOutputType>
+          : GetScalarType<T['select'], FinancialEntryCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a SiteContent.
+     * Allows you to perform aggregations operations on a FinancialEntry.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {SiteContentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {FinancialEntryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -24430,13 +24619,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends SiteContentAggregateArgs>(args: Subset<T, SiteContentAggregateArgs>): Prisma.PrismaPromise<GetSiteContentAggregateType<T>>
+    aggregate<T extends FinancialEntryAggregateArgs>(args: Subset<T, FinancialEntryAggregateArgs>): Prisma.PrismaPromise<GetFinancialEntryAggregateType<T>>
 
     /**
-     * Group by SiteContent.
+     * Group by FinancialEntry.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {SiteContentGroupByArgs} args - Group by arguments.
+     * @param {FinancialEntryGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -24451,14 +24640,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends SiteContentGroupByArgs,
+      T extends FinancialEntryGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: SiteContentGroupByArgs['orderBy'] }
-        : { orderBy?: SiteContentGroupByArgs['orderBy'] },
+        ? { orderBy: FinancialEntryGroupByArgs['orderBy'] }
+        : { orderBy?: FinancialEntryGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -24507,21 +24696,22 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, SiteContentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSiteContentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, FinancialEntryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFinancialEntryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the SiteContent model
+   * Fields of the FinancialEntry model
    */
-  readonly fields: SiteContentFieldRefs;
+  readonly fields: FinancialEntryFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for SiteContent.
+   * The delegate class that acts as a "Promise-like" for FinancialEntry.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__SiteContentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__FinancialEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    umkm<T extends FinancialEntry$umkmArgs<ExtArgs> = {}>(args?: Subset<T, FinancialEntry$umkmArgs<ExtArgs>>): Prisma__UmkmClient<$Result.GetResult<Prisma.$UmkmPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -24548,377 +24738,450 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the SiteContent model
+   * Fields of the FinancialEntry model
    */
-  interface SiteContentFieldRefs {
-    readonly id: FieldRef<"SiteContent", 'String'>
-    readonly key: FieldRef<"SiteContent", 'String'>
-    readonly value: FieldRef<"SiteContent", 'Json'>
-    readonly isPublished: FieldRef<"SiteContent", 'Boolean'>
-    readonly updatedAt: FieldRef<"SiteContent", 'DateTime'>
+  interface FinancialEntryFieldRefs {
+    readonly id: FieldRef<"FinancialEntry", 'String'>
+    readonly type: FieldRef<"FinancialEntry", 'FinancialEntryType'>
+    readonly category: FieldRef<"FinancialEntry", 'String'>
+    readonly description: FieldRef<"FinancialEntry", 'String'>
+    readonly amountIdr: FieldRef<"FinancialEntry", 'Int'>
+    readonly transactionDate: FieldRef<"FinancialEntry", 'DateTime'>
+    readonly paymentMethod: FieldRef<"FinancialEntry", 'FinancialPaymentMethod'>
+    readonly evidenceUrl: FieldRef<"FinancialEntry", 'String'>
+    readonly umkmId: FieldRef<"FinancialEntry", 'String'>
+    readonly createdAt: FieldRef<"FinancialEntry", 'DateTime'>
+    readonly updatedAt: FieldRef<"FinancialEntry", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * SiteContent findUnique
+   * FinancialEntry findUnique
    */
-  export type SiteContentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the SiteContent
+     * Select specific fields to fetch from the FinancialEntry
      */
-    select?: SiteContentSelect<ExtArgs> | null
+    select?: FinancialEntrySelect<ExtArgs> | null
     /**
-     * Omit specific fields from the SiteContent
+     * Omit specific fields from the FinancialEntry
      */
-    omit?: SiteContentOmit<ExtArgs> | null
+    omit?: FinancialEntryOmit<ExtArgs> | null
     /**
-     * Filter, which SiteContent to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where: SiteContentWhereUniqueInput
+    include?: FinancialEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which FinancialEntry to fetch.
+     */
+    where: FinancialEntryWhereUniqueInput
   }
 
   /**
-   * SiteContent findUniqueOrThrow
+   * FinancialEntry findUniqueOrThrow
    */
-  export type SiteContentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the SiteContent
+     * Select specific fields to fetch from the FinancialEntry
      */
-    select?: SiteContentSelect<ExtArgs> | null
+    select?: FinancialEntrySelect<ExtArgs> | null
     /**
-     * Omit specific fields from the SiteContent
+     * Omit specific fields from the FinancialEntry
      */
-    omit?: SiteContentOmit<ExtArgs> | null
+    omit?: FinancialEntryOmit<ExtArgs> | null
     /**
-     * Filter, which SiteContent to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where: SiteContentWhereUniqueInput
+    include?: FinancialEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which FinancialEntry to fetch.
+     */
+    where: FinancialEntryWhereUniqueInput
   }
 
   /**
-   * SiteContent findFirst
+   * FinancialEntry findFirst
    */
-  export type SiteContentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the SiteContent
+     * Select specific fields to fetch from the FinancialEntry
      */
-    select?: SiteContentSelect<ExtArgs> | null
+    select?: FinancialEntrySelect<ExtArgs> | null
     /**
-     * Omit specific fields from the SiteContent
+     * Omit specific fields from the FinancialEntry
      */
-    omit?: SiteContentOmit<ExtArgs> | null
+    omit?: FinancialEntryOmit<ExtArgs> | null
     /**
-     * Filter, which SiteContent to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where?: SiteContentWhereInput
+    include?: FinancialEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which FinancialEntry to fetch.
+     */
+    where?: FinancialEntryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of SiteContents to fetch.
+     * Determine the order of FinancialEntries to fetch.
      */
-    orderBy?: SiteContentOrderByWithRelationInput | SiteContentOrderByWithRelationInput[]
+    orderBy?: FinancialEntryOrderByWithRelationInput | FinancialEntryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for SiteContents.
+     * Sets the position for searching for FinancialEntries.
      */
-    cursor?: SiteContentWhereUniqueInput
+    cursor?: FinancialEntryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` SiteContents from the position of the cursor.
+     * Take `±n` FinancialEntries from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` SiteContents.
+     * Skip the first `n` FinancialEntries.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of SiteContents.
+     * Filter by unique combinations of FinancialEntries.
      */
-    distinct?: SiteContentScalarFieldEnum | SiteContentScalarFieldEnum[]
+    distinct?: FinancialEntryScalarFieldEnum | FinancialEntryScalarFieldEnum[]
   }
 
   /**
-   * SiteContent findFirstOrThrow
+   * FinancialEntry findFirstOrThrow
    */
-  export type SiteContentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the SiteContent
+     * Select specific fields to fetch from the FinancialEntry
      */
-    select?: SiteContentSelect<ExtArgs> | null
+    select?: FinancialEntrySelect<ExtArgs> | null
     /**
-     * Omit specific fields from the SiteContent
+     * Omit specific fields from the FinancialEntry
      */
-    omit?: SiteContentOmit<ExtArgs> | null
+    omit?: FinancialEntryOmit<ExtArgs> | null
     /**
-     * Filter, which SiteContent to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where?: SiteContentWhereInput
+    include?: FinancialEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which FinancialEntry to fetch.
+     */
+    where?: FinancialEntryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of SiteContents to fetch.
+     * Determine the order of FinancialEntries to fetch.
      */
-    orderBy?: SiteContentOrderByWithRelationInput | SiteContentOrderByWithRelationInput[]
+    orderBy?: FinancialEntryOrderByWithRelationInput | FinancialEntryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for SiteContents.
+     * Sets the position for searching for FinancialEntries.
      */
-    cursor?: SiteContentWhereUniqueInput
+    cursor?: FinancialEntryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` SiteContents from the position of the cursor.
+     * Take `±n` FinancialEntries from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` SiteContents.
+     * Skip the first `n` FinancialEntries.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of SiteContents.
+     * Filter by unique combinations of FinancialEntries.
      */
-    distinct?: SiteContentScalarFieldEnum | SiteContentScalarFieldEnum[]
+    distinct?: FinancialEntryScalarFieldEnum | FinancialEntryScalarFieldEnum[]
   }
 
   /**
-   * SiteContent findMany
+   * FinancialEntry findMany
    */
-  export type SiteContentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the SiteContent
+     * Select specific fields to fetch from the FinancialEntry
      */
-    select?: SiteContentSelect<ExtArgs> | null
+    select?: FinancialEntrySelect<ExtArgs> | null
     /**
-     * Omit specific fields from the SiteContent
+     * Omit specific fields from the FinancialEntry
      */
-    omit?: SiteContentOmit<ExtArgs> | null
+    omit?: FinancialEntryOmit<ExtArgs> | null
     /**
-     * Filter, which SiteContents to fetch.
+     * Choose, which related nodes to fetch as well
      */
-    where?: SiteContentWhereInput
+    include?: FinancialEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which FinancialEntries to fetch.
+     */
+    where?: FinancialEntryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of SiteContents to fetch.
+     * Determine the order of FinancialEntries to fetch.
      */
-    orderBy?: SiteContentOrderByWithRelationInput | SiteContentOrderByWithRelationInput[]
+    orderBy?: FinancialEntryOrderByWithRelationInput | FinancialEntryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing SiteContents.
+     * Sets the position for listing FinancialEntries.
      */
-    cursor?: SiteContentWhereUniqueInput
+    cursor?: FinancialEntryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` SiteContents from the position of the cursor.
+     * Take `±n` FinancialEntries from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` SiteContents.
+     * Skip the first `n` FinancialEntries.
      */
     skip?: number
-    distinct?: SiteContentScalarFieldEnum | SiteContentScalarFieldEnum[]
+    distinct?: FinancialEntryScalarFieldEnum | FinancialEntryScalarFieldEnum[]
   }
 
   /**
-   * SiteContent create
+   * FinancialEntry create
    */
-  export type SiteContentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the SiteContent
+     * Select specific fields to fetch from the FinancialEntry
      */
-    select?: SiteContentSelect<ExtArgs> | null
+    select?: FinancialEntrySelect<ExtArgs> | null
     /**
-     * Omit specific fields from the SiteContent
+     * Omit specific fields from the FinancialEntry
      */
-    omit?: SiteContentOmit<ExtArgs> | null
+    omit?: FinancialEntryOmit<ExtArgs> | null
     /**
-     * The data needed to create a SiteContent.
+     * Choose, which related nodes to fetch as well
      */
-    data: XOR<SiteContentCreateInput, SiteContentUncheckedCreateInput>
+    include?: FinancialEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a FinancialEntry.
+     */
+    data: XOR<FinancialEntryCreateInput, FinancialEntryUncheckedCreateInput>
   }
 
   /**
-   * SiteContent createMany
+   * FinancialEntry createMany
    */
-  export type SiteContentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many SiteContents.
+     * The data used to create many FinancialEntries.
      */
-    data: SiteContentCreateManyInput | SiteContentCreateManyInput[]
+    data: FinancialEntryCreateManyInput | FinancialEntryCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * SiteContent createManyAndReturn
+   * FinancialEntry createManyAndReturn
    */
-  export type SiteContentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the SiteContent
+     * Select specific fields to fetch from the FinancialEntry
      */
-    select?: SiteContentSelectCreateManyAndReturn<ExtArgs> | null
+    select?: FinancialEntrySelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the SiteContent
+     * Omit specific fields from the FinancialEntry
      */
-    omit?: SiteContentOmit<ExtArgs> | null
+    omit?: FinancialEntryOmit<ExtArgs> | null
     /**
-     * The data used to create many SiteContents.
+     * The data used to create many FinancialEntries.
      */
-    data: SiteContentCreateManyInput | SiteContentCreateManyInput[]
+    data: FinancialEntryCreateManyInput | FinancialEntryCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialEntryIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * SiteContent update
+   * FinancialEntry update
    */
-  export type SiteContentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the SiteContent
+     * Select specific fields to fetch from the FinancialEntry
      */
-    select?: SiteContentSelect<ExtArgs> | null
+    select?: FinancialEntrySelect<ExtArgs> | null
     /**
-     * Omit specific fields from the SiteContent
+     * Omit specific fields from the FinancialEntry
      */
-    omit?: SiteContentOmit<ExtArgs> | null
+    omit?: FinancialEntryOmit<ExtArgs> | null
     /**
-     * The data needed to update a SiteContent.
+     * Choose, which related nodes to fetch as well
      */
-    data: XOR<SiteContentUpdateInput, SiteContentUncheckedUpdateInput>
+    include?: FinancialEntryInclude<ExtArgs> | null
     /**
-     * Choose, which SiteContent to update.
+     * The data needed to update a FinancialEntry.
      */
-    where: SiteContentWhereUniqueInput
+    data: XOR<FinancialEntryUpdateInput, FinancialEntryUncheckedUpdateInput>
+    /**
+     * Choose, which FinancialEntry to update.
+     */
+    where: FinancialEntryWhereUniqueInput
   }
 
   /**
-   * SiteContent updateMany
+   * FinancialEntry updateMany
    */
-  export type SiteContentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update SiteContents.
+     * The data used to update FinancialEntries.
      */
-    data: XOR<SiteContentUpdateManyMutationInput, SiteContentUncheckedUpdateManyInput>
+    data: XOR<FinancialEntryUpdateManyMutationInput, FinancialEntryUncheckedUpdateManyInput>
     /**
-     * Filter which SiteContents to update
+     * Filter which FinancialEntries to update
      */
-    where?: SiteContentWhereInput
+    where?: FinancialEntryWhereInput
     /**
-     * Limit how many SiteContents to update.
+     * Limit how many FinancialEntries to update.
      */
     limit?: number
   }
 
   /**
-   * SiteContent updateManyAndReturn
+   * FinancialEntry updateManyAndReturn
    */
-  export type SiteContentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the SiteContent
+     * Select specific fields to fetch from the FinancialEntry
      */
-    select?: SiteContentSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: FinancialEntrySelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the SiteContent
+     * Omit specific fields from the FinancialEntry
      */
-    omit?: SiteContentOmit<ExtArgs> | null
+    omit?: FinancialEntryOmit<ExtArgs> | null
     /**
-     * The data used to update SiteContents.
+     * The data used to update FinancialEntries.
      */
-    data: XOR<SiteContentUpdateManyMutationInput, SiteContentUncheckedUpdateManyInput>
+    data: XOR<FinancialEntryUpdateManyMutationInput, FinancialEntryUncheckedUpdateManyInput>
     /**
-     * Filter which SiteContents to update
+     * Filter which FinancialEntries to update
      */
-    where?: SiteContentWhereInput
+    where?: FinancialEntryWhereInput
     /**
-     * Limit how many SiteContents to update.
+     * Limit how many FinancialEntries to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialEntryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FinancialEntry upsert
+   */
+  export type FinancialEntryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialEntry
+     */
+    select?: FinancialEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FinancialEntry
+     */
+    omit?: FinancialEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialEntryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the FinancialEntry to update in case it exists.
+     */
+    where: FinancialEntryWhereUniqueInput
+    /**
+     * In case the FinancialEntry found by the `where` argument doesn't exist, create a new FinancialEntry with this data.
+     */
+    create: XOR<FinancialEntryCreateInput, FinancialEntryUncheckedCreateInput>
+    /**
+     * In case the FinancialEntry was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FinancialEntryUpdateInput, FinancialEntryUncheckedUpdateInput>
+  }
+
+  /**
+   * FinancialEntry delete
+   */
+  export type FinancialEntryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FinancialEntry
+     */
+    select?: FinancialEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FinancialEntry
+     */
+    omit?: FinancialEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FinancialEntryInclude<ExtArgs> | null
+    /**
+     * Filter which FinancialEntry to delete.
+     */
+    where: FinancialEntryWhereUniqueInput
+  }
+
+  /**
+   * FinancialEntry deleteMany
+   */
+  export type FinancialEntryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FinancialEntries to delete
+     */
+    where?: FinancialEntryWhereInput
+    /**
+     * Limit how many FinancialEntries to delete.
      */
     limit?: number
   }
 
   /**
-   * SiteContent upsert
+   * FinancialEntry.umkm
    */
-  export type SiteContentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntry$umkmArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the SiteContent
+     * Select specific fields to fetch from the Umkm
      */
-    select?: SiteContentSelect<ExtArgs> | null
+    select?: UmkmSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the SiteContent
+     * Omit specific fields from the Umkm
      */
-    omit?: SiteContentOmit<ExtArgs> | null
+    omit?: UmkmOmit<ExtArgs> | null
     /**
-     * The filter to search for the SiteContent to update in case it exists.
+     * Choose, which related nodes to fetch as well
      */
-    where: SiteContentWhereUniqueInput
-    /**
-     * In case the SiteContent found by the `where` argument doesn't exist, create a new SiteContent with this data.
-     */
-    create: XOR<SiteContentCreateInput, SiteContentUncheckedCreateInput>
-    /**
-     * In case the SiteContent was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<SiteContentUpdateInput, SiteContentUncheckedUpdateInput>
+    include?: UmkmInclude<ExtArgs> | null
+    where?: UmkmWhereInput
   }
 
   /**
-   * SiteContent delete
+   * FinancialEntry without action
    */
-  export type SiteContentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type FinancialEntryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the SiteContent
+     * Select specific fields to fetch from the FinancialEntry
      */
-    select?: SiteContentSelect<ExtArgs> | null
+    select?: FinancialEntrySelect<ExtArgs> | null
     /**
-     * Omit specific fields from the SiteContent
+     * Omit specific fields from the FinancialEntry
      */
-    omit?: SiteContentOmit<ExtArgs> | null
+    omit?: FinancialEntryOmit<ExtArgs> | null
     /**
-     * Filter which SiteContent to delete.
+     * Choose, which related nodes to fetch as well
      */
-    where: SiteContentWhereUniqueInput
-  }
-
-  /**
-   * SiteContent deleteMany
-   */
-  export type SiteContentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which SiteContents to delete
-     */
-    where?: SiteContentWhereInput
-    /**
-     * Limit how many SiteContents to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * SiteContent without action
-   */
-  export type SiteContentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the SiteContent
-     */
-    select?: SiteContentSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the SiteContent
-     */
-    omit?: SiteContentOmit<ExtArgs> | null
+    include?: FinancialEntryInclude<ExtArgs> | null
   }
 
 
@@ -26309,15 +26572,21 @@ export namespace Prisma {
   export type ServiceInquiryScalarFieldEnum = (typeof ServiceInquiryScalarFieldEnum)[keyof typeof ServiceInquiryScalarFieldEnum]
 
 
-  export const SiteContentScalarFieldEnum: {
+  export const FinancialEntryScalarFieldEnum: {
     id: 'id',
-    key: 'key',
-    value: 'value',
-    isPublished: 'isPublished',
+    type: 'type',
+    category: 'category',
+    description: 'description',
+    amountIdr: 'amountIdr',
+    transactionDate: 'transactionDate',
+    paymentMethod: 'paymentMethod',
+    evidenceUrl: 'evidenceUrl',
+    umkmId: 'umkmId',
+    createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
-  export type SiteContentScalarFieldEnum = (typeof SiteContentScalarFieldEnum)[keyof typeof SiteContentScalarFieldEnum]
+  export type FinancialEntryScalarFieldEnum = (typeof FinancialEntryScalarFieldEnum)[keyof typeof FinancialEntryScalarFieldEnum]
 
 
   export const AuditLogScalarFieldEnum: {
@@ -26572,6 +26841,34 @@ export namespace Prisma {
    * Reference to a field of type 'ServiceInquiryStatus[]'
    */
   export type ListEnumServiceInquiryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceInquiryStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'FinancialEntryType'
+   */
+  export type EnumFinancialEntryTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinancialEntryType'>
+    
+
+
+  /**
+   * Reference to a field of type 'FinancialEntryType[]'
+   */
+  export type ListEnumFinancialEntryTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinancialEntryType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'FinancialPaymentMethod'
+   */
+  export type EnumFinancialPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinancialPaymentMethod'>
+    
+
+
+  /**
+   * Reference to a field of type 'FinancialPaymentMethod[]'
+   */
+  export type ListEnumFinancialPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FinancialPaymentMethod[]'>
     
 
 
@@ -26929,6 +27226,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Umkm"> | Date | string
     updatedAt?: DateTimeFilter<"Umkm"> | Date | string
     products?: ProductListRelationFilter
+    financialEntries?: FinancialEntryListRelationFilter
   }
 
   export type UmkmOrderByWithRelationInput = {
@@ -26949,6 +27247,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     products?: ProductOrderByRelationAggregateInput
+    financialEntries?: FinancialEntryOrderByRelationAggregateInput
   }
 
   export type UmkmWhereUniqueInput = Prisma.AtLeast<{
@@ -26972,6 +27271,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Umkm"> | Date | string
     updatedAt?: DateTimeFilter<"Umkm"> | Date | string
     products?: ProductListRelationFilter
+    financialEntries?: FinancialEntryListRelationFilter
   }, "id" | "importKey" | "slug">
 
   export type UmkmOrderByWithAggregationInput = {
@@ -28044,56 +28344,91 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"ServiceInquiry"> | Date | string
   }
 
-  export type SiteContentWhereInput = {
-    AND?: SiteContentWhereInput | SiteContentWhereInput[]
-    OR?: SiteContentWhereInput[]
-    NOT?: SiteContentWhereInput | SiteContentWhereInput[]
-    id?: StringFilter<"SiteContent"> | string
-    key?: StringFilter<"SiteContent"> | string
-    value?: JsonFilter<"SiteContent">
-    isPublished?: BoolFilter<"SiteContent"> | boolean
-    updatedAt?: DateTimeFilter<"SiteContent"> | Date | string
+  export type FinancialEntryWhereInput = {
+    AND?: FinancialEntryWhereInput | FinancialEntryWhereInput[]
+    OR?: FinancialEntryWhereInput[]
+    NOT?: FinancialEntryWhereInput | FinancialEntryWhereInput[]
+    id?: StringFilter<"FinancialEntry"> | string
+    type?: EnumFinancialEntryTypeFilter<"FinancialEntry"> | $Enums.FinancialEntryType
+    category?: StringFilter<"FinancialEntry"> | string
+    description?: StringFilter<"FinancialEntry"> | string
+    amountIdr?: IntFilter<"FinancialEntry"> | number
+    transactionDate?: DateTimeFilter<"FinancialEntry"> | Date | string
+    paymentMethod?: EnumFinancialPaymentMethodFilter<"FinancialEntry"> | $Enums.FinancialPaymentMethod
+    evidenceUrl?: StringNullableFilter<"FinancialEntry"> | string | null
+    umkmId?: StringNullableFilter<"FinancialEntry"> | string | null
+    createdAt?: DateTimeFilter<"FinancialEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"FinancialEntry"> | Date | string
+    umkm?: XOR<UmkmNullableScalarRelationFilter, UmkmWhereInput> | null
   }
 
-  export type SiteContentOrderByWithRelationInput = {
+  export type FinancialEntryOrderByWithRelationInput = {
     id?: SortOrder
-    key?: SortOrder
-    value?: SortOrder
-    isPublished?: SortOrder
+    type?: SortOrder
+    category?: SortOrder
+    description?: SortOrder
+    amountIdr?: SortOrder
+    transactionDate?: SortOrder
+    paymentMethod?: SortOrder
+    evidenceUrl?: SortOrderInput | SortOrder
+    umkmId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
     updatedAt?: SortOrder
+    umkm?: UmkmOrderByWithRelationInput
   }
 
-  export type SiteContentWhereUniqueInput = Prisma.AtLeast<{
+  export type FinancialEntryWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    key?: string
-    AND?: SiteContentWhereInput | SiteContentWhereInput[]
-    OR?: SiteContentWhereInput[]
-    NOT?: SiteContentWhereInput | SiteContentWhereInput[]
-    value?: JsonFilter<"SiteContent">
-    isPublished?: BoolFilter<"SiteContent"> | boolean
-    updatedAt?: DateTimeFilter<"SiteContent"> | Date | string
-  }, "id" | "key">
+    AND?: FinancialEntryWhereInput | FinancialEntryWhereInput[]
+    OR?: FinancialEntryWhereInput[]
+    NOT?: FinancialEntryWhereInput | FinancialEntryWhereInput[]
+    type?: EnumFinancialEntryTypeFilter<"FinancialEntry"> | $Enums.FinancialEntryType
+    category?: StringFilter<"FinancialEntry"> | string
+    description?: StringFilter<"FinancialEntry"> | string
+    amountIdr?: IntFilter<"FinancialEntry"> | number
+    transactionDate?: DateTimeFilter<"FinancialEntry"> | Date | string
+    paymentMethod?: EnumFinancialPaymentMethodFilter<"FinancialEntry"> | $Enums.FinancialPaymentMethod
+    evidenceUrl?: StringNullableFilter<"FinancialEntry"> | string | null
+    umkmId?: StringNullableFilter<"FinancialEntry"> | string | null
+    createdAt?: DateTimeFilter<"FinancialEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"FinancialEntry"> | Date | string
+    umkm?: XOR<UmkmNullableScalarRelationFilter, UmkmWhereInput> | null
+  }, "id">
 
-  export type SiteContentOrderByWithAggregationInput = {
+  export type FinancialEntryOrderByWithAggregationInput = {
     id?: SortOrder
-    key?: SortOrder
-    value?: SortOrder
-    isPublished?: SortOrder
+    type?: SortOrder
+    category?: SortOrder
+    description?: SortOrder
+    amountIdr?: SortOrder
+    transactionDate?: SortOrder
+    paymentMethod?: SortOrder
+    evidenceUrl?: SortOrderInput | SortOrder
+    umkmId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
     updatedAt?: SortOrder
-    _count?: SiteContentCountOrderByAggregateInput
-    _max?: SiteContentMaxOrderByAggregateInput
-    _min?: SiteContentMinOrderByAggregateInput
+    _count?: FinancialEntryCountOrderByAggregateInput
+    _avg?: FinancialEntryAvgOrderByAggregateInput
+    _max?: FinancialEntryMaxOrderByAggregateInput
+    _min?: FinancialEntryMinOrderByAggregateInput
+    _sum?: FinancialEntrySumOrderByAggregateInput
   }
 
-  export type SiteContentScalarWhereWithAggregatesInput = {
-    AND?: SiteContentScalarWhereWithAggregatesInput | SiteContentScalarWhereWithAggregatesInput[]
-    OR?: SiteContentScalarWhereWithAggregatesInput[]
-    NOT?: SiteContentScalarWhereWithAggregatesInput | SiteContentScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"SiteContent"> | string
-    key?: StringWithAggregatesFilter<"SiteContent"> | string
-    value?: JsonWithAggregatesFilter<"SiteContent">
-    isPublished?: BoolWithAggregatesFilter<"SiteContent"> | boolean
-    updatedAt?: DateTimeWithAggregatesFilter<"SiteContent"> | Date | string
+  export type FinancialEntryScalarWhereWithAggregatesInput = {
+    AND?: FinancialEntryScalarWhereWithAggregatesInput | FinancialEntryScalarWhereWithAggregatesInput[]
+    OR?: FinancialEntryScalarWhereWithAggregatesInput[]
+    NOT?: FinancialEntryScalarWhereWithAggregatesInput | FinancialEntryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"FinancialEntry"> | string
+    type?: EnumFinancialEntryTypeWithAggregatesFilter<"FinancialEntry"> | $Enums.FinancialEntryType
+    category?: StringWithAggregatesFilter<"FinancialEntry"> | string
+    description?: StringWithAggregatesFilter<"FinancialEntry"> | string
+    amountIdr?: IntWithAggregatesFilter<"FinancialEntry"> | number
+    transactionDate?: DateTimeWithAggregatesFilter<"FinancialEntry"> | Date | string
+    paymentMethod?: EnumFinancialPaymentMethodWithAggregatesFilter<"FinancialEntry"> | $Enums.FinancialPaymentMethod
+    evidenceUrl?: StringNullableWithAggregatesFilter<"FinancialEntry"> | string | null
+    umkmId?: StringNullableWithAggregatesFilter<"FinancialEntry"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"FinancialEntry"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"FinancialEntry"> | Date | string
   }
 
   export type AuditLogWhereInput = {
@@ -28545,6 +28880,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     products?: ProductCreateNestedManyWithoutUmkmInput
+    financialEntries?: FinancialEntryCreateNestedManyWithoutUmkmInput
   }
 
   export type UmkmUncheckedCreateInput = {
@@ -28565,6 +28901,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     products?: ProductUncheckedCreateNestedManyWithoutUmkmInput
+    financialEntries?: FinancialEntryUncheckedCreateNestedManyWithoutUmkmInput
   }
 
   export type UmkmUpdateInput = {
@@ -28585,6 +28922,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     products?: ProductUpdateManyWithoutUmkmNestedInput
+    financialEntries?: FinancialEntryUpdateManyWithoutUmkmNestedInput
   }
 
   export type UmkmUncheckedUpdateInput = {
@@ -28605,6 +28943,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     products?: ProductUncheckedUpdateManyWithoutUmkmNestedInput
+    financialEntries?: FinancialEntryUncheckedUpdateManyWithoutUmkmNestedInput
   }
 
   export type UmkmCreateManyInput = {
@@ -29762,59 +30101,100 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type SiteContentCreateInput = {
+  export type FinancialEntryCreateInput = {
     id?: string
-    key: string
-    value: JsonNullValueInput | InputJsonValue
-    isPublished?: boolean
+    type: $Enums.FinancialEntryType
+    category: string
+    description: string
+    amountIdr: number
+    transactionDate: Date | string
+    paymentMethod: $Enums.FinancialPaymentMethod
+    evidenceUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    umkm?: UmkmCreateNestedOneWithoutFinancialEntriesInput
+  }
+
+  export type FinancialEntryUncheckedCreateInput = {
+    id?: string
+    type: $Enums.FinancialEntryType
+    category: string
+    description: string
+    amountIdr: number
+    transactionDate: Date | string
+    paymentMethod: $Enums.FinancialPaymentMethod
+    evidenceUrl?: string | null
+    umkmId?: string | null
+    createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type SiteContentUncheckedCreateInput = {
+  export type FinancialEntryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFinancialEntryTypeFieldUpdateOperationsInput | $Enums.FinancialEntryType
+    category?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amountIdr?: IntFieldUpdateOperationsInput | number
+    transactionDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentMethod?: EnumFinancialPaymentMethodFieldUpdateOperationsInput | $Enums.FinancialPaymentMethod
+    evidenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    umkm?: UmkmUpdateOneWithoutFinancialEntriesNestedInput
+  }
+
+  export type FinancialEntryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFinancialEntryTypeFieldUpdateOperationsInput | $Enums.FinancialEntryType
+    category?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amountIdr?: IntFieldUpdateOperationsInput | number
+    transactionDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentMethod?: EnumFinancialPaymentMethodFieldUpdateOperationsInput | $Enums.FinancialPaymentMethod
+    evidenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    umkmId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FinancialEntryCreateManyInput = {
     id?: string
-    key: string
-    value: JsonNullValueInput | InputJsonValue
-    isPublished?: boolean
+    type: $Enums.FinancialEntryType
+    category: string
+    description: string
+    amountIdr: number
+    transactionDate: Date | string
+    paymentMethod: $Enums.FinancialPaymentMethod
+    evidenceUrl?: string | null
+    umkmId?: string | null
+    createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type SiteContentUpdateInput = {
+  export type FinancialEntryUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    key?: StringFieldUpdateOperationsInput | string
-    value?: JsonNullValueInput | InputJsonValue
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    type?: EnumFinancialEntryTypeFieldUpdateOperationsInput | $Enums.FinancialEntryType
+    category?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amountIdr?: IntFieldUpdateOperationsInput | number
+    transactionDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentMethod?: EnumFinancialPaymentMethodFieldUpdateOperationsInput | $Enums.FinancialPaymentMethod
+    evidenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type SiteContentUncheckedUpdateInput = {
+  export type FinancialEntryUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    key?: StringFieldUpdateOperationsInput | string
-    value?: JsonNullValueInput | InputJsonValue
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type SiteContentCreateManyInput = {
-    id?: string
-    key: string
-    value: JsonNullValueInput | InputJsonValue
-    isPublished?: boolean
-    updatedAt?: Date | string
-  }
-
-  export type SiteContentUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    key?: StringFieldUpdateOperationsInput | string
-    value?: JsonNullValueInput | InputJsonValue
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type SiteContentUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    key?: StringFieldUpdateOperationsInput | string
-    value?: JsonNullValueInput | InputJsonValue
-    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    type?: EnumFinancialEntryTypeFieldUpdateOperationsInput | $Enums.FinancialEntryType
+    category?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amountIdr?: IntFieldUpdateOperationsInput | number
+    transactionDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentMethod?: EnumFinancialPaymentMethodFieldUpdateOperationsInput | $Enums.FinancialPaymentMethod
+    evidenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    umkmId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -30299,7 +30679,17 @@ export namespace Prisma {
     none?: ProductWhereInput
   }
 
+  export type FinancialEntryListRelationFilter = {
+    every?: FinancialEntryWhereInput
+    some?: FinancialEntryWhereInput
+    none?: FinancialEntryWhereInput
+  }
+
   export type ProductOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FinancialEntryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -31241,26 +31631,88 @@ export namespace Prisma {
     _max?: NestedEnumServiceInquiryStatusFilter<$PrismaModel>
   }
 
-  export type SiteContentCountOrderByAggregateInput = {
+  export type EnumFinancialEntryTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.FinancialEntryType | EnumFinancialEntryTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.FinancialEntryType[] | ListEnumFinancialEntryTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.FinancialEntryType[] | ListEnumFinancialEntryTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumFinancialEntryTypeFilter<$PrismaModel> | $Enums.FinancialEntryType
+  }
+
+  export type EnumFinancialPaymentMethodFilter<$PrismaModel = never> = {
+    equals?: $Enums.FinancialPaymentMethod | EnumFinancialPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.FinancialPaymentMethod[] | ListEnumFinancialPaymentMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.FinancialPaymentMethod[] | ListEnumFinancialPaymentMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumFinancialPaymentMethodFilter<$PrismaModel> | $Enums.FinancialPaymentMethod
+  }
+
+  export type FinancialEntryCountOrderByAggregateInput = {
     id?: SortOrder
-    key?: SortOrder
-    value?: SortOrder
-    isPublished?: SortOrder
+    type?: SortOrder
+    category?: SortOrder
+    description?: SortOrder
+    amountIdr?: SortOrder
+    transactionDate?: SortOrder
+    paymentMethod?: SortOrder
+    evidenceUrl?: SortOrder
+    umkmId?: SortOrder
+    createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type SiteContentMaxOrderByAggregateInput = {
+  export type FinancialEntryAvgOrderByAggregateInput = {
+    amountIdr?: SortOrder
+  }
+
+  export type FinancialEntryMaxOrderByAggregateInput = {
     id?: SortOrder
-    key?: SortOrder
-    isPublished?: SortOrder
+    type?: SortOrder
+    category?: SortOrder
+    description?: SortOrder
+    amountIdr?: SortOrder
+    transactionDate?: SortOrder
+    paymentMethod?: SortOrder
+    evidenceUrl?: SortOrder
+    umkmId?: SortOrder
+    createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type SiteContentMinOrderByAggregateInput = {
+  export type FinancialEntryMinOrderByAggregateInput = {
     id?: SortOrder
-    key?: SortOrder
-    isPublished?: SortOrder
+    type?: SortOrder
+    category?: SortOrder
+    description?: SortOrder
+    amountIdr?: SortOrder
+    transactionDate?: SortOrder
+    paymentMethod?: SortOrder
+    evidenceUrl?: SortOrder
+    umkmId?: SortOrder
+    createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type FinancialEntrySumOrderByAggregateInput = {
+    amountIdr?: SortOrder
+  }
+
+  export type EnumFinancialEntryTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.FinancialEntryType | EnumFinancialEntryTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.FinancialEntryType[] | ListEnumFinancialEntryTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.FinancialEntryType[] | ListEnumFinancialEntryTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumFinancialEntryTypeWithAggregatesFilter<$PrismaModel> | $Enums.FinancialEntryType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumFinancialEntryTypeFilter<$PrismaModel>
+    _max?: NestedEnumFinancialEntryTypeFilter<$PrismaModel>
+  }
+
+  export type EnumFinancialPaymentMethodWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.FinancialPaymentMethod | EnumFinancialPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.FinancialPaymentMethod[] | ListEnumFinancialPaymentMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.FinancialPaymentMethod[] | ListEnumFinancialPaymentMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumFinancialPaymentMethodWithAggregatesFilter<$PrismaModel> | $Enums.FinancialPaymentMethod
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumFinancialPaymentMethodFilter<$PrismaModel>
+    _max?: NestedEnumFinancialPaymentMethodFilter<$PrismaModel>
   }
 
   export type AuditLogCountOrderByAggregateInput = {
@@ -31586,11 +32038,25 @@ export namespace Prisma {
     connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
   }
 
+  export type FinancialEntryCreateNestedManyWithoutUmkmInput = {
+    create?: XOR<FinancialEntryCreateWithoutUmkmInput, FinancialEntryUncheckedCreateWithoutUmkmInput> | FinancialEntryCreateWithoutUmkmInput[] | FinancialEntryUncheckedCreateWithoutUmkmInput[]
+    connectOrCreate?: FinancialEntryCreateOrConnectWithoutUmkmInput | FinancialEntryCreateOrConnectWithoutUmkmInput[]
+    createMany?: FinancialEntryCreateManyUmkmInputEnvelope
+    connect?: FinancialEntryWhereUniqueInput | FinancialEntryWhereUniqueInput[]
+  }
+
   export type ProductUncheckedCreateNestedManyWithoutUmkmInput = {
     create?: XOR<ProductCreateWithoutUmkmInput, ProductUncheckedCreateWithoutUmkmInput> | ProductCreateWithoutUmkmInput[] | ProductUncheckedCreateWithoutUmkmInput[]
     connectOrCreate?: ProductCreateOrConnectWithoutUmkmInput | ProductCreateOrConnectWithoutUmkmInput[]
     createMany?: ProductCreateManyUmkmInputEnvelope
     connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+  }
+
+  export type FinancialEntryUncheckedCreateNestedManyWithoutUmkmInput = {
+    create?: XOR<FinancialEntryCreateWithoutUmkmInput, FinancialEntryUncheckedCreateWithoutUmkmInput> | FinancialEntryCreateWithoutUmkmInput[] | FinancialEntryUncheckedCreateWithoutUmkmInput[]
+    connectOrCreate?: FinancialEntryCreateOrConnectWithoutUmkmInput | FinancialEntryCreateOrConnectWithoutUmkmInput[]
+    createMany?: FinancialEntryCreateManyUmkmInputEnvelope
+    connect?: FinancialEntryWhereUniqueInput | FinancialEntryWhereUniqueInput[]
   }
 
   export type ProductUpdateManyWithoutUmkmNestedInput = {
@@ -31607,6 +32073,20 @@ export namespace Prisma {
     deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
   }
 
+  export type FinancialEntryUpdateManyWithoutUmkmNestedInput = {
+    create?: XOR<FinancialEntryCreateWithoutUmkmInput, FinancialEntryUncheckedCreateWithoutUmkmInput> | FinancialEntryCreateWithoutUmkmInput[] | FinancialEntryUncheckedCreateWithoutUmkmInput[]
+    connectOrCreate?: FinancialEntryCreateOrConnectWithoutUmkmInput | FinancialEntryCreateOrConnectWithoutUmkmInput[]
+    upsert?: FinancialEntryUpsertWithWhereUniqueWithoutUmkmInput | FinancialEntryUpsertWithWhereUniqueWithoutUmkmInput[]
+    createMany?: FinancialEntryCreateManyUmkmInputEnvelope
+    set?: FinancialEntryWhereUniqueInput | FinancialEntryWhereUniqueInput[]
+    disconnect?: FinancialEntryWhereUniqueInput | FinancialEntryWhereUniqueInput[]
+    delete?: FinancialEntryWhereUniqueInput | FinancialEntryWhereUniqueInput[]
+    connect?: FinancialEntryWhereUniqueInput | FinancialEntryWhereUniqueInput[]
+    update?: FinancialEntryUpdateWithWhereUniqueWithoutUmkmInput | FinancialEntryUpdateWithWhereUniqueWithoutUmkmInput[]
+    updateMany?: FinancialEntryUpdateManyWithWhereWithoutUmkmInput | FinancialEntryUpdateManyWithWhereWithoutUmkmInput[]
+    deleteMany?: FinancialEntryScalarWhereInput | FinancialEntryScalarWhereInput[]
+  }
+
   export type ProductUncheckedUpdateManyWithoutUmkmNestedInput = {
     create?: XOR<ProductCreateWithoutUmkmInput, ProductUncheckedCreateWithoutUmkmInput> | ProductCreateWithoutUmkmInput[] | ProductUncheckedCreateWithoutUmkmInput[]
     connectOrCreate?: ProductCreateOrConnectWithoutUmkmInput | ProductCreateOrConnectWithoutUmkmInput[]
@@ -31619,6 +32099,20 @@ export namespace Prisma {
     update?: ProductUpdateWithWhereUniqueWithoutUmkmInput | ProductUpdateWithWhereUniqueWithoutUmkmInput[]
     updateMany?: ProductUpdateManyWithWhereWithoutUmkmInput | ProductUpdateManyWithWhereWithoutUmkmInput[]
     deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
+  }
+
+  export type FinancialEntryUncheckedUpdateManyWithoutUmkmNestedInput = {
+    create?: XOR<FinancialEntryCreateWithoutUmkmInput, FinancialEntryUncheckedCreateWithoutUmkmInput> | FinancialEntryCreateWithoutUmkmInput[] | FinancialEntryUncheckedCreateWithoutUmkmInput[]
+    connectOrCreate?: FinancialEntryCreateOrConnectWithoutUmkmInput | FinancialEntryCreateOrConnectWithoutUmkmInput[]
+    upsert?: FinancialEntryUpsertWithWhereUniqueWithoutUmkmInput | FinancialEntryUpsertWithWhereUniqueWithoutUmkmInput[]
+    createMany?: FinancialEntryCreateManyUmkmInputEnvelope
+    set?: FinancialEntryWhereUniqueInput | FinancialEntryWhereUniqueInput[]
+    disconnect?: FinancialEntryWhereUniqueInput | FinancialEntryWhereUniqueInput[]
+    delete?: FinancialEntryWhereUniqueInput | FinancialEntryWhereUniqueInput[]
+    connect?: FinancialEntryWhereUniqueInput | FinancialEntryWhereUniqueInput[]
+    update?: FinancialEntryUpdateWithWhereUniqueWithoutUmkmInput | FinancialEntryUpdateWithWhereUniqueWithoutUmkmInput[]
+    updateMany?: FinancialEntryUpdateManyWithWhereWithoutUmkmInput | FinancialEntryUpdateManyWithWhereWithoutUmkmInput[]
+    deleteMany?: FinancialEntryScalarWhereInput | FinancialEntryScalarWhereInput[]
   }
 
   export type ProductCreateNestedManyWithoutCategoryInput = {
@@ -32447,6 +32941,30 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutServiceInquiriesInput, UserUpdateWithoutServiceInquiriesInput>, UserUncheckedUpdateWithoutServiceInquiriesInput>
   }
 
+  export type UmkmCreateNestedOneWithoutFinancialEntriesInput = {
+    create?: XOR<UmkmCreateWithoutFinancialEntriesInput, UmkmUncheckedCreateWithoutFinancialEntriesInput>
+    connectOrCreate?: UmkmCreateOrConnectWithoutFinancialEntriesInput
+    connect?: UmkmWhereUniqueInput
+  }
+
+  export type EnumFinancialEntryTypeFieldUpdateOperationsInput = {
+    set?: $Enums.FinancialEntryType
+  }
+
+  export type EnumFinancialPaymentMethodFieldUpdateOperationsInput = {
+    set?: $Enums.FinancialPaymentMethod
+  }
+
+  export type UmkmUpdateOneWithoutFinancialEntriesNestedInput = {
+    create?: XOR<UmkmCreateWithoutFinancialEntriesInput, UmkmUncheckedCreateWithoutFinancialEntriesInput>
+    connectOrCreate?: UmkmCreateOrConnectWithoutFinancialEntriesInput
+    upsert?: UmkmUpsertWithoutFinancialEntriesInput
+    disconnect?: UmkmWhereInput | boolean
+    delete?: UmkmWhereInput | boolean
+    connect?: UmkmWhereUniqueInput
+    update?: XOR<XOR<UmkmUpdateToOneWithWhereWithoutFinancialEntriesInput, UmkmUpdateWithoutFinancialEntriesInput>, UmkmUncheckedUpdateWithoutFinancialEntriesInput>
+  }
+
   export type UserCreateNestedOneWithoutAuditLogsInput = {
     create?: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAuditLogsInput
@@ -32861,6 +33379,40 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumServiceInquiryStatusFilter<$PrismaModel>
     _max?: NestedEnumServiceInquiryStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumFinancialEntryTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.FinancialEntryType | EnumFinancialEntryTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.FinancialEntryType[] | ListEnumFinancialEntryTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.FinancialEntryType[] | ListEnumFinancialEntryTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumFinancialEntryTypeFilter<$PrismaModel> | $Enums.FinancialEntryType
+  }
+
+  export type NestedEnumFinancialPaymentMethodFilter<$PrismaModel = never> = {
+    equals?: $Enums.FinancialPaymentMethod | EnumFinancialPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.FinancialPaymentMethod[] | ListEnumFinancialPaymentMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.FinancialPaymentMethod[] | ListEnumFinancialPaymentMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumFinancialPaymentMethodFilter<$PrismaModel> | $Enums.FinancialPaymentMethod
+  }
+
+  export type NestedEnumFinancialEntryTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.FinancialEntryType | EnumFinancialEntryTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.FinancialEntryType[] | ListEnumFinancialEntryTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.FinancialEntryType[] | ListEnumFinancialEntryTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumFinancialEntryTypeWithAggregatesFilter<$PrismaModel> | $Enums.FinancialEntryType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumFinancialEntryTypeFilter<$PrismaModel>
+    _max?: NestedEnumFinancialEntryTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumFinancialPaymentMethodWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.FinancialPaymentMethod | EnumFinancialPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.FinancialPaymentMethod[] | ListEnumFinancialPaymentMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.FinancialPaymentMethod[] | ListEnumFinancialPaymentMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumFinancialPaymentMethodWithAggregatesFilter<$PrismaModel> | $Enums.FinancialPaymentMethod
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumFinancialPaymentMethodFilter<$PrismaModel>
+    _max?: NestedEnumFinancialPaymentMethodFilter<$PrismaModel>
   }
 
   export type AddressCreateWithoutUserInput = {
@@ -33381,6 +33933,42 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type FinancialEntryCreateWithoutUmkmInput = {
+    id?: string
+    type: $Enums.FinancialEntryType
+    category: string
+    description: string
+    amountIdr: number
+    transactionDate: Date | string
+    paymentMethod: $Enums.FinancialPaymentMethod
+    evidenceUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FinancialEntryUncheckedCreateWithoutUmkmInput = {
+    id?: string
+    type: $Enums.FinancialEntryType
+    category: string
+    description: string
+    amountIdr: number
+    transactionDate: Date | string
+    paymentMethod: $Enums.FinancialPaymentMethod
+    evidenceUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FinancialEntryCreateOrConnectWithoutUmkmInput = {
+    where: FinancialEntryWhereUniqueInput
+    create: XOR<FinancialEntryCreateWithoutUmkmInput, FinancialEntryUncheckedCreateWithoutUmkmInput>
+  }
+
+  export type FinancialEntryCreateManyUmkmInputEnvelope = {
+    data: FinancialEntryCreateManyUmkmInput | FinancialEntryCreateManyUmkmInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ProductUpsertWithWhereUniqueWithoutUmkmInput = {
     where: ProductWhereUniqueInput
     update: XOR<ProductUpdateWithoutUmkmInput, ProductUncheckedUpdateWithoutUmkmInput>
@@ -33419,6 +34007,39 @@ export namespace Prisma {
     sourceCatalogEntry?: IntNullableFilter<"Product"> | number | null
     createdAt?: DateTimeFilter<"Product"> | Date | string
     updatedAt?: DateTimeFilter<"Product"> | Date | string
+  }
+
+  export type FinancialEntryUpsertWithWhereUniqueWithoutUmkmInput = {
+    where: FinancialEntryWhereUniqueInput
+    update: XOR<FinancialEntryUpdateWithoutUmkmInput, FinancialEntryUncheckedUpdateWithoutUmkmInput>
+    create: XOR<FinancialEntryCreateWithoutUmkmInput, FinancialEntryUncheckedCreateWithoutUmkmInput>
+  }
+
+  export type FinancialEntryUpdateWithWhereUniqueWithoutUmkmInput = {
+    where: FinancialEntryWhereUniqueInput
+    data: XOR<FinancialEntryUpdateWithoutUmkmInput, FinancialEntryUncheckedUpdateWithoutUmkmInput>
+  }
+
+  export type FinancialEntryUpdateManyWithWhereWithoutUmkmInput = {
+    where: FinancialEntryScalarWhereInput
+    data: XOR<FinancialEntryUpdateManyMutationInput, FinancialEntryUncheckedUpdateManyWithoutUmkmInput>
+  }
+
+  export type FinancialEntryScalarWhereInput = {
+    AND?: FinancialEntryScalarWhereInput | FinancialEntryScalarWhereInput[]
+    OR?: FinancialEntryScalarWhereInput[]
+    NOT?: FinancialEntryScalarWhereInput | FinancialEntryScalarWhereInput[]
+    id?: StringFilter<"FinancialEntry"> | string
+    type?: EnumFinancialEntryTypeFilter<"FinancialEntry"> | $Enums.FinancialEntryType
+    category?: StringFilter<"FinancialEntry"> | string
+    description?: StringFilter<"FinancialEntry"> | string
+    amountIdr?: IntFilter<"FinancialEntry"> | number
+    transactionDate?: DateTimeFilter<"FinancialEntry"> | Date | string
+    paymentMethod?: EnumFinancialPaymentMethodFilter<"FinancialEntry"> | $Enums.FinancialPaymentMethod
+    evidenceUrl?: StringNullableFilter<"FinancialEntry"> | string | null
+    umkmId?: StringNullableFilter<"FinancialEntry"> | string | null
+    createdAt?: DateTimeFilter<"FinancialEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"FinancialEntry"> | Date | string
   }
 
   export type ProductCreateWithoutCategoryInput = {
@@ -33512,6 +34133,7 @@ export namespace Prisma {
     isPublished?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    financialEntries?: FinancialEntryCreateNestedManyWithoutUmkmInput
   }
 
   export type UmkmUncheckedCreateWithoutProductsInput = {
@@ -33531,6 +34153,7 @@ export namespace Prisma {
     isPublished?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    financialEntries?: FinancialEntryUncheckedCreateNestedManyWithoutUmkmInput
   }
 
   export type UmkmCreateOrConnectWithoutProductsInput = {
@@ -33719,6 +34342,7 @@ export namespace Prisma {
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    financialEntries?: FinancialEntryUpdateManyWithoutUmkmNestedInput
   }
 
   export type UmkmUncheckedUpdateWithoutProductsInput = {
@@ -33738,6 +34362,7 @@ export namespace Prisma {
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    financialEntries?: FinancialEntryUncheckedUpdateManyWithoutUmkmNestedInput
   }
 
   export type CategoryUpsertWithoutProductsInput = {
@@ -35643,6 +36268,102 @@ export namespace Prisma {
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type UmkmCreateWithoutFinancialEntriesInput = {
+    id?: string
+    importKey?: string | null
+    name: string
+    slug: string
+    description?: string | null
+    ownerName?: string | null
+    businessType?: string | null
+    nib?: string | null
+    halalPermit?: string | null
+    sppirt?: string | null
+    privateKtp?: string | null
+    privateAddress?: string | null
+    publicContact?: NullableJsonNullValueInput | InputJsonValue
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    products?: ProductCreateNestedManyWithoutUmkmInput
+  }
+
+  export type UmkmUncheckedCreateWithoutFinancialEntriesInput = {
+    id?: string
+    importKey?: string | null
+    name: string
+    slug: string
+    description?: string | null
+    ownerName?: string | null
+    businessType?: string | null
+    nib?: string | null
+    halalPermit?: string | null
+    sppirt?: string | null
+    privateKtp?: string | null
+    privateAddress?: string | null
+    publicContact?: NullableJsonNullValueInput | InputJsonValue
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    products?: ProductUncheckedCreateNestedManyWithoutUmkmInput
+  }
+
+  export type UmkmCreateOrConnectWithoutFinancialEntriesInput = {
+    where: UmkmWhereUniqueInput
+    create: XOR<UmkmCreateWithoutFinancialEntriesInput, UmkmUncheckedCreateWithoutFinancialEntriesInput>
+  }
+
+  export type UmkmUpsertWithoutFinancialEntriesInput = {
+    update: XOR<UmkmUpdateWithoutFinancialEntriesInput, UmkmUncheckedUpdateWithoutFinancialEntriesInput>
+    create: XOR<UmkmCreateWithoutFinancialEntriesInput, UmkmUncheckedCreateWithoutFinancialEntriesInput>
+    where?: UmkmWhereInput
+  }
+
+  export type UmkmUpdateToOneWithWhereWithoutFinancialEntriesInput = {
+    where?: UmkmWhereInput
+    data: XOR<UmkmUpdateWithoutFinancialEntriesInput, UmkmUncheckedUpdateWithoutFinancialEntriesInput>
+  }
+
+  export type UmkmUpdateWithoutFinancialEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    importKey?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerName?: NullableStringFieldUpdateOperationsInput | string | null
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    nib?: NullableStringFieldUpdateOperationsInput | string | null
+    halalPermit?: NullableStringFieldUpdateOperationsInput | string | null
+    sppirt?: NullableStringFieldUpdateOperationsInput | string | null
+    privateKtp?: NullableStringFieldUpdateOperationsInput | string | null
+    privateAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicContact?: NullableJsonNullValueInput | InputJsonValue
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    products?: ProductUpdateManyWithoutUmkmNestedInput
+  }
+
+  export type UmkmUncheckedUpdateWithoutFinancialEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    importKey?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerName?: NullableStringFieldUpdateOperationsInput | string | null
+    businessType?: NullableStringFieldUpdateOperationsInput | string | null
+    nib?: NullableStringFieldUpdateOperationsInput | string | null
+    halalPermit?: NullableStringFieldUpdateOperationsInput | string | null
+    sppirt?: NullableStringFieldUpdateOperationsInput | string | null
+    privateKtp?: NullableStringFieldUpdateOperationsInput | string | null
+    privateAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    publicContact?: NullableJsonNullValueInput | InputJsonValue
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    products?: ProductUncheckedUpdateManyWithoutUmkmNestedInput
+  }
+
   export type UserCreateWithoutAuditLogsInput = {
     id?: string
     authId?: string | null
@@ -36013,6 +36734,19 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type FinancialEntryCreateManyUmkmInput = {
+    id?: string
+    type: $Enums.FinancialEntryType
+    category: string
+    description: string
+    amountIdr: number
+    transactionDate: Date | string
+    paymentMethod: $Enums.FinancialPaymentMethod
+    evidenceUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ProductUpdateWithoutUmkmInput = {
     id?: StringFieldUpdateOperationsInput | string
     importKey?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36077,6 +36811,45 @@ export namespace Prisma {
     serviceDuration?: NullableStringFieldUpdateOperationsInput | string | null
     sourcePdfPage?: NullableIntFieldUpdateOperationsInput | number | null
     sourceCatalogEntry?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FinancialEntryUpdateWithoutUmkmInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFinancialEntryTypeFieldUpdateOperationsInput | $Enums.FinancialEntryType
+    category?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amountIdr?: IntFieldUpdateOperationsInput | number
+    transactionDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentMethod?: EnumFinancialPaymentMethodFieldUpdateOperationsInput | $Enums.FinancialPaymentMethod
+    evidenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FinancialEntryUncheckedUpdateWithoutUmkmInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFinancialEntryTypeFieldUpdateOperationsInput | $Enums.FinancialEntryType
+    category?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amountIdr?: IntFieldUpdateOperationsInput | number
+    transactionDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentMethod?: EnumFinancialPaymentMethodFieldUpdateOperationsInput | $Enums.FinancialPaymentMethod
+    evidenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FinancialEntryUncheckedUpdateManyWithoutUmkmInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumFinancialEntryTypeFieldUpdateOperationsInput | $Enums.FinancialEntryType
+    category?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    amountIdr?: IntFieldUpdateOperationsInput | number
+    transactionDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    paymentMethod?: EnumFinancialPaymentMethodFieldUpdateOperationsInput | $Enums.FinancialPaymentMethod
+    evidenceUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

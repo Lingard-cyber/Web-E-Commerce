@@ -71,6 +71,20 @@ enum ServiceBookingMode {
   quotation
 }
 
+enum FinancialEntryType {
+  income
+  cost_of_goods
+  expense
+}
+
+enum FinancialPaymentMethod {
+  cash
+  bank_transfer
+  qris
+  marketplace
+  other
+}
+
 model User {
   id               String           @id @default(cuid())
   authId           String?          @unique // ID dari Supabase Auth
@@ -140,23 +154,24 @@ model Address {
 }
 
 model Umkm {
-  id             String    @id @default(cuid())
-  importKey      String?   @unique
-  name           String
-  slug           String    @unique
-  description    String?
-  ownerName      String?
-  businessType   String?
-  nib            String?
-  halalPermit    String?
-  sppirt         String?
-  privateKtp     String?
-  privateAddress String?
-  publicContact  Json?
-  isPublished    Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  products       Product[]
+  id               String           @id @default(cuid())
+  importKey        String?          @unique
+  name             String
+  slug             String           @unique
+  description      String?
+  ownerName        String?
+  businessType     String?
+  nib              String?
+  halalPermit      String?
+  sppirt           String?
+  privateKtp       String?
+  privateAddress   String?
+  publicContact    Json?
+  isPublished      Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  products         Product[]
+  financialEntries FinancialEntry[]
 
   @@map("umkm")
 }
@@ -386,14 +401,23 @@ model ServiceInquiry {
   @@map("permintaan_jasa")
 }
 
-model SiteContent {
-  id          String   @id @default(cuid())
-  key         String   @unique
-  value       Json
-  isPublished Boolean  @default(false)
-  updatedAt   DateTime @updatedAt
+model FinancialEntry {
+  id              String                 @id @default(cuid())
+  type            FinancialEntryType
+  category        String
+  description     String
+  amountIdr       Int
+  transactionDate DateTime
+  paymentMethod   FinancialPaymentMethod
+  evidenceUrl     String?
+  umkmId          String?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  umkm            Umkm?                  @relation(fields: [umkmId], references: [id], onDelete: SetNull)
 
-  @@map("konten_situs")
+  @@index([transactionDate, type])
+  @@index([umkmId, transactionDate])
+  @@map("catatan_keuangan")
 }
 
 model AuditLog {
