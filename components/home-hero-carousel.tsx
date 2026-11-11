@@ -9,20 +9,23 @@ export function HomeHeroCarousel({ images }: { images: HomeHeroSlide[] }) {
   const selectedSlides = images.filter((image) => image.isHero);
   const slides = selectedSlides.length ? selectedSlides : images;
   useEffect(() => {
-    const timer = window.setInterval(() => setActive((value) => (value + 1) % Math.max(slides.length, 1)), 5000);
+    if (slides.length < 2) return;
+    const timer = window.setInterval(() => setActive((value) => (value + 1) % slides.length), 5000);
     return () => window.clearInterval(timer);
   }, [slides.length]);
 
-  if (!slides.length) return null;
+  if (!slides.length) return <div className="absolute inset-0 bg-[url('/kepuharjo-mountain.jpg')] bg-cover bg-center after:absolute after:inset-0 after:bg-[linear-gradient(90deg,rgba(3,61,45,.96)_0%,rgba(3,61,45,.83)_30%,rgba(3,61,45,.28)_67%,rgba(3,61,45,.05)_100%)]" aria-hidden="true" />;
   const slide = slides[active % slides.length];
   const next = () => setActive((value) => (value + 1) % slides.length);
   const previous = () => setActive((value) => (value - 1 + slides.length) % slides.length);
 
-  return <div className="absolute inset-x-[3%] -top-6 overflow-hidden rounded-[28px] border border-white/20 bg-white/[.08] shadow-[20px_22px_0_rgba(0,0,0,.16)] backdrop-blur-sm sm:-top-10">
-    <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden bg-[#fff8e9] p-2 sm:p-3">
-      <img key={slide.id} src={slide.src} alt={slide.alt} className="h-full w-full object-cover object-center animate-fade-up" />
-      <div className="absolute right-4 top-4 flex gap-1.5"><button type="button" onClick={previous} className="grid h-8 w-8 place-items-center rounded-full bg-forest-950/55 text-white" aria-label="Slide promo sebelumnya"><ChevronLeft size={14} /></button><button type="button" onClick={next} className="grid h-8 w-8 place-items-center rounded-full bg-forest-950/55 text-white" aria-label="Slide promo berikutnya"><ChevronRight size={14} /></button></div>
-      <div className="absolute bottom-5 left-5 max-w-[75%] rounded-xl bg-forest-950/85 px-4 py-3 text-white"><p className="text-sm font-bold sm:text-base">{slide.title}</p>{slide.alt && <p className="mt-1 line-clamp-2 text-sm leading-5 text-white/95">{slide.alt}</p>}</div><div className="absolute bottom-5 right-5 rounded-full bg-forest-950/75 px-2.5 py-1.5 text-[9px] font-bold text-white">{active + 1}/{slides.length}</div>
-    </div>
+  return <div className="absolute inset-0 z-0 overflow-hidden">
+    <img key={slide.id} src={slide.src} alt={slide.alt} className="h-full w-full object-cover object-center animate-fade-up" />
+    <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(90deg,rgba(3,61,45,.96)_0%,rgba(3,61,45,.83)_30%,rgba(3,61,45,.28)_67%,rgba(3,61,45,.05)_100%)]" />
+    {slides.length > 1 && <>
+      <button type="button" onClick={previous} className="absolute left-4 top-1/2 z-20 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-forest-950 shadow-md hover:bg-white sm:left-5" aria-label="Foto sebelumnya"><ChevronLeft size={19} /></button>
+      <button type="button" onClick={next} className="absolute right-4 top-1/2 z-20 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-forest-950 shadow-md hover:bg-white sm:right-5" aria-label="Foto berikutnya"><ChevronRight size={19} /></button>
+      <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2">{slides.map((item, index) => <button key={item.id} type="button" onClick={() => setActive(index)} aria-label={`Tampilkan foto ${index + 1}`} aria-current={index === active} className={`h-2.5 rounded-full transition-all ${index === active ? "w-7 bg-white" : "w-2.5 bg-white/60 hover:bg-white"}`} />)}</div>
+    </>}
   </div>;
 }
