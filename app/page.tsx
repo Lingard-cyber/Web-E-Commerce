@@ -19,12 +19,12 @@ export default async function HomePage() {
   const heroImages = [...galleryImages, ...productHeroImages].sort((a, b) => a.sortOrder - b.sortOrder);
   return <SiteShell><main className="storefront-home divide-y divide-forest-700/15">
     <section className="mx-auto max-w-[1240px] px-4 pt-5 sm:px-6 sm:pt-8">
-      <div className="relative isolate flex min-h-[420px] items-center overflow-hidden rounded-[22px] bg-forest-950 text-white shadow-[0_24px_60px_rgba(3,61,45,.18)] sm:min-h-[430px] sm:rounded-[28px] lg:min-h-[470px]">
+      <div className="relative isolate flex min-h-[calc(100svh-120px)] items-center overflow-visible rounded-[22px] bg-forest-950 text-white shadow-[0_24px_60px_rgba(3,61,45,.18)] sm:rounded-[28px]">
         <HomeHeroCarousel images={heroImages} />
-        <div className="relative z-10 max-w-[650px] px-4 py-10 sm:px-10 lg:px-14">
+        <div className="relative z-10 max-w-[650px] px-5 py-10 sm:px-10 lg:max-w-[58%] lg:px-10 lg:py-8">
           <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-forest-800/90 px-3.5 py-2 text-[10px] font-bold text-white shadow-sm"><Leaf size={13} className="text-accent" />Belanja produk lokal</p>
-          <h1 className="font-display text-[clamp(1.9rem,8.2vw,4.5rem)] font-bold leading-[.98] tracking-[-.045em] sm:text-[clamp(2.5rem,5.3vw,4.5rem)]">Dari Kepuharjo,<br />untuk <span className="text-accent">perekonomian bersama.</span></h1>
-          <p className="mt-4 max-w-lg text-sm leading-6 text-white/90 sm:mt-5 sm:text-base">Temukan beragam produk dan layanan unggulan dari pelaku UMKM Kepuharjo, Cangkringan, Sleman.</p>
+          <h1 className="max-w-[520px] font-display text-[clamp(1.9rem,8.2vw,3.5rem)] font-bold leading-[.98] tracking-[-.045em] lg:text-[clamp(2.35rem,3.5vw,3rem)]">Dari Kepuharjo,<br />untuk <span className="text-accent">perekonomian bersama.</span></h1>
+          <p className="mt-4 max-w-[420px] text-sm leading-6 text-white/90 sm:mt-5 sm:text-base">Jelajahi produk dan layanan unggulan UMKM Kepuharjo, Cangkringan, Sleman.</p>
           <div className="mt-6 flex flex-wrap gap-3"><Link href="/belanja" className="inline-flex min-h-11 items-center rounded-xl bg-white px-5 text-xs font-bold text-forest-950 shadow-md hover:-translate-y-0.5">Belanja sekarang <ArrowRight size={14} className="ml-2" /></Link><Link href="/umkm" className="inline-flex min-h-11 items-center rounded-xl border border-white/80 px-5 text-xs font-bold text-white hover:bg-white/10">Lihat UMKM</Link></div>
         </div>
       </div>
