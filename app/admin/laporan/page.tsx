@@ -1,4 +1,3 @@
-import { AdminFinancialEntryForm } from "@/components/admin-financial-entry-form";
 import { AdminShell } from "@/components/admin-shell";
 import { requireAdmin } from "@/lib/admin";
 import { formatAdminRupiah } from "@/lib/admin-data";
@@ -53,12 +52,6 @@ export default async function AdminReportsPage({ searchParams }: { searchParams?
         <ReportCard label="Pesanan produk dibayar" value={totals.orderCount} />
       </div>
       <p className="mt-3 rounded-xl bg-amber-50 px-4 py-3 text-xs leading-5 text-amber-900">Pesanan produk berbayar tercatat otomatis. Catat pembayaran jasa atau penjualan di luar checkout setelah diterima. Pilih “Semua UMKM” untuk melihat transaksi umum Forkom.</p>
-
-      <section className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="font-display text-xl font-bold">Catat penjualan jasa/lainnya</h2>
-        <p className="mt-1 text-xs leading-5 text-muted">Gunakan untuk pembayaran yang sudah diterima dan belum tercatat sebagai pesanan produk di situs.</p>
-        <AdminFinancialEntryForm today={today} umkm={report.umkms} />
-      </section>
 
       <section className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="font-display text-xl font-bold">Penjualan per UMKM</h2>
