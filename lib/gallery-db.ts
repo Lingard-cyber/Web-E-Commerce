@@ -25,7 +25,10 @@ function toRecord(item: { id: string; src: string; alt: string; title: string; i
 export async function getPublicGallery(): Promise<GalleryImageRecord[]> {
   if (!process.env.DATABASE_URL) return [];
   try {
-    const items = await prisma.galleryImage.findMany({ where: { isPublished: true }, orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }] });
+    const items = await prisma.galleryImage.findMany({
+      where: { isPublished: true, NOT: { src: { startsWith: "/catalog/" } } },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+    });
     return items.map(toRecord);
   } catch {
     return [];
@@ -34,6 +37,9 @@ export async function getPublicGallery(): Promise<GalleryImageRecord[]> {
 
 export async function getAdminGallery(): Promise<GalleryImageRecord[]> {
   if (!process.env.DATABASE_URL) return [];
-  const items = await prisma.galleryImage.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }] });
+  const items = await prisma.galleryImage.findMany({
+    where: { NOT: { src: { startsWith: "/catalog/" } } },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+  });
   return items.map(toRecord);
 }

@@ -19,7 +19,7 @@ export default async function GaleriPage() {
             <div className="max-w-2xl">
               <p className="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.2em] text-accent"><Camera size={14} /> Galeri Kepuharjo</p>
               <h1 className="font-display text-[clamp(2.2rem,5vw,4.5rem)] font-bold leading-[.95] tracking-[-.04em]">Cerita warga dalam foto.</h1>
-              <p className="mt-5 max-w-xl text-base leading-7 text-white/70">Dokumentasi kegiatan, kebersamaan, dan karya pelaku UMKM Kepuharjo yang terus tumbuh bersama.</p>
+              <p className="mt-5 max-w-xl text-base leading-7 text-white/70">Kumpulan foto kegiatan, pertemuan, dan kebersamaan warga di Kepuharjo.</p>
             </div>
             <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-sm">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent text-forest-950"><Images size={19} /></span>

@@ -97,29 +97,7 @@ const communityGalleryData = fs.readdirSync(galleryDirectory)
   .sort()
   .map((src, index) => ({ src, title: "Dokumentasi UMKM Kepuharjo", alt: "Foto kegiatan dan dokumentasi UMKM Kepuharjo.", sortOrder: 6 + index, isHero: false }));
 
-const unusedCatalogPhotos = [
-  ["page-02-image-01.jpg", "Pelaku UMKM Kepuharjo"],
-  ["page-07-image-02.jpg", "Produk keripik EGI DS"],
-  ["page-10-image-01.jpg", "Kue ulang tahun Arga"],
-  ["page-10-image-02.jpg", "Donat Arga"],
-  ["page-10-image-03.jpg", "Bolu Arga"],
-  ["page-10-image-04.jpg", "Kue kering Arga"],
-  ["page-10-image-05.jpg", "Kue kering Arga"],
-  ["page-10-image-06.jpg", "Cookies Arga"],
-  ["page-11-image-01.jpg", "Chicken katsu Daisuki"],
-  ["page-12-image-01.jpg", "Produk Nasi Bakar Enak"],
-  ["page-13-image-02.jpg", "Pizza mini Kepuharjo"],
-  ["page-21-image-01.jpg", "Produk kopi Merapi"],
-  ["page-24-image-03.jpg", "Hasil jahit Yuni Taylor"],
-];
-const catalogGalleryData = unusedCatalogPhotos.map(([filename, title], index) => ({
-  src: `/catalog/pdf-source/${filename}`,
-  title,
-  alt: `${title}, foto dari katalog Forkom UMKM Kepuharjo.`,
-  sortOrder: 24 + index,
-  isHero: false,
-}));
-const completeGalleryData = [...galeriData, ...communityGalleryData, ...catalogGalleryData];
+const completeGalleryData = [...galeriData, ...communityGalleryData];
 
 async function main() {
   for (const urls of Object.values(suppliedPhotos)) for (const url of urls) {
@@ -128,6 +106,9 @@ async function main() {
   for (const item of completeGalleryData) {
     if (!fs.existsSync(path.join(__dirname, "../public", item.src.slice(1)))) throw new Error(`Foto galeri tidak ditemukan: ${item.src}`);
   }
+
+  // Keluarkan foto katalog produk dari galeri kegiatan.
+  await prisma.galleryImage.deleteMany({ where: { src: { startsWith: "/catalog/" } } });
   for (const item of kategoriData) {
     await prisma.category.upsert({
       where: { slug: item.slug },
